@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { FiMenu } from 'react-icons/fi';
+import { FiMenu } from "react-icons/fi";
+import { ConnectButton } from "@suiet/wallet-kit";
 
 const TopBar: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState<Boolean>(false)
+  const [isMenuOpen, setIsMenuOpen] = useState<Boolean>(false);
 
   const [isTokenHovered, setIsTokenHovered] = useState<Boolean>(false);
   const [isTokenomicsHovered, setIsTokenomicsHovered] = useState<Boolean>(false);
@@ -15,7 +16,7 @@ const TopBar: React.FC = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-  }
+  };
 
   const handleTokenHover = () => {
     setIsTokenHovered(true);
@@ -36,22 +37,13 @@ const TopBar: React.FC = () => {
   };
 
   const handleClickOutside = (e: MouseEvent) => {
-    if (
-      tokenModalRef.current &&
-      !tokenModalRef.current.contains(e.target as Node)
-    ) {
+    if (tokenModalRef.current && !tokenModalRef.current.contains(e.target as Node)) {
       setIsTokenHovered(false);
     }
-    if (
-      tokenomicsModalRef.current &&
-      !tokenomicsModalRef.current.contains(e.target as Node)
-    ) {
+    if (tokenomicsModalRef.current && !tokenomicsModalRef.current.contains(e.target as Node)) {
       setIsTokenomicsHovered(false);
     }
-    if (
-      stakeModalRef.current &&
-      !stakeModalRef.current.contains(e.target as Node)
-    ) {
+    if (stakeModalRef.current && !stakeModalRef.current.contains(e.target as Node)) {
       setIsStakeHovered(false);
     }
   };
@@ -77,17 +69,11 @@ const TopBar: React.FC = () => {
         <div className="xl:block 2xl:block xxl:block lg:block hidden">
           <ul className="flex items-center space-x-4">
             <li className="relative group">
-              <div
-                onMouseEnter={handleTokenHover}
-                className="px-3 py-2 rounded cursor-pointer text-navbar-gray hover:text-blue"
-              >
+              <div onMouseEnter={handleTokenHover} className="px-3 py-2 rounded cursor-pointer text-navbar-gray hover:text-blue">
                 TOKEN
               </div>
               {isTokenHovered && (
-                <div
-                  ref={tokenModalRef}
-                  className="absolute left-0 mt-1 w-40 bg-white p-4 rounded shadow-md"
-                >
+                <div ref={tokenModalRef} className="absolute left-0 mt-1 w-40 bg-white p-4 rounded shadow-md">
                   <ul className="space-y-2">
                     <li className="text-navbar-gray hover:text-blue cursor-pointer">
                       <Link to="/my-tokens">MY TOKENS</Link>
@@ -118,17 +104,11 @@ const TopBar: React.FC = () => {
               )}
             </li>
             <li className="relative group">
-              <div
-                onMouseEnter={handleTokenomicsHover}
-                className="px-3 py-2 rounded cursor-pointer text-navbar-gray hover:text-blue"
-              >
+              <div onMouseEnter={handleTokenomicsHover} className="px-3 py-2 rounded cursor-pointer text-navbar-gray hover:text-blue">
                 TOKENOMICS
               </div>
               {isTokenomicsHovered && (
-                <div
-                  ref={tokenomicsModalRef}
-                  className="absolute left-0 mt-1 w-40 bg-white p-4 rounded shadow-md"
-                >
+                <div ref={tokenomicsModalRef} className="absolute left-0 mt-1 w-40 bg-white p-4 rounded shadow-md">
                   <ul className="space-y-2">
                     <li className="text-navbar-gray hover:text-blue cursor-pointer">
                       <Link to="/tokenomics">CREATE TOKENOMICS</Link>
@@ -141,12 +121,12 @@ const TopBar: React.FC = () => {
               )}
             </li>
             <li className="relative group">
-              <div
-                onMouseEnter={handleStakeHover}
-                className="px-3 py-2 rounded cursor-pointer text-navbar-gray hover:text-blue"
-              >
+              <div onMouseEnter={handleStakeHover} className="px-3 py-2 rounded cursor-pointer text-navbar-gray hover:text-blue">
                 <Link to="/stake">STAKE</Link>
               </div>
+            </li>
+            <li>
+              <ConnectButton />
             </li>
           </ul>
         </div>
@@ -160,11 +140,7 @@ const TopBar: React.FC = () => {
             <div className="p-4">
               <ul className="space-y-4">
                 <li>
-                  <Link
-                    onClick={toggleMenu}
-                    to="/my-tokens"
-                    className="text-navbar-gray hover:text-blue block"
-                  >
+                  <Link onClick={toggleMenu} to="/my-tokens" className="text-navbar-gray hover:text-blue block">
                     MY TOKENS
                   </Link>
                 </li>

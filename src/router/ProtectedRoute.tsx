@@ -1,37 +1,43 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import TopBar from '../components/TopBar';
+import TopBar from "../components/TopBar";
+import Loading from "../assets/loading-spinner.gif";
+import { useWallet } from "@suiet/wallet-kit";
 
 const ProtectedRoute: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [connected, setConnected] = useState<boolean>(true);
+  const { connected, connecting, account } = useWallet();
+  const [loading, setLoading] = useState<boolean>(true);
 
-  if (loading) {
+  useEffect(() => {
+    const localKey = localStorage.getItem("WK__LAST_CONNECT_WALLET_NAME");
+
+    if (localKey === null) {
+      setLoading(false);
+    }
+
+    if (account && localKey && connected) {
+      setLoading(false);
+    }
+  }, [account, connected]);
+
+  if (connecting || loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          width: "50vw",
-        }}
-      >
-        Loading
+      <div className="min-h-screen relative flex flex-col justify-center items-center">
+        <img className="w-14 h-14" src={Loading} alt="Loading Spinner" />
       </div>
     );
   }
 
   return connected ? (
-    <div className='min-h-screen relative'>
+    <div className="min-h-screen relative">
       <TopBar />
-      <div className='h-[calc(100vh-96px)]'>
+      <div className="h-[calc(100vh-96px)]">
         <Outlet />
       </div>
     </div>
   ) : (
     <Navigate to="/login" />
   );
-}
+};
 
-export default ProtectedRoute
+export default ProtectedRoute;
