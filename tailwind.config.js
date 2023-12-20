@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
@@ -7,6 +8,7 @@ module.exports = {
         "navbar-gray": "#91a3b1",
         "navy-blue": "#011829",
         "sui-blue": "#3898ec",
+        "sui-gray": "#91a3b1",
       },
       borderRadius: {
         "sui-radius": "100px",
