@@ -38,10 +38,32 @@ button:focus-visible {
 
 .login {
   background: rgb(255, 255, 255);
-  background: linear-gradient(225deg, rgba(255, 255, 255, 1) 0%, #c1f6fe 100%);
+  background: linear-gradient(45deg, #3898ec8f 10%, rgba(255, 255, 255, 1) 80%);
 }
 
 .login-card {
-  background: linear-gradient(45deg, rgba(255, 255, 255, 1) 0%, #c1f6fe 100%) padding-box, linear-gradient(45deg, rgba(255, 255, 255, 1) 0%, #c1f6fe 100%) border-box;
+  background: linear-gradient(45deg, #3898ec8f 1%, rgba(255, 255, 255, 1) 80%) padding-box, linear-gradient(45deg, #3898ec8f 1%, rgba(255, 255, 255, 1) 80%) border-box;
   border: 4px solid transparent;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.pages-modal {
+  position: absolute;
+  z-index: 50;
+  padding: 1rem;
+  left: 0px;
+  margin-top: 0.5rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  min-width: 120px;
+  max-width: 360px;
+  white-space: nowrap;
 }
