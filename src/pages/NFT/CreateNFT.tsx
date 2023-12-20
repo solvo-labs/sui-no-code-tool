@@ -1,22 +1,24 @@
 import { ChangeEvent, useEffect, useState } from "react";
+import Button from "../../components/Button";
 import Input from "../../components/Input";
 import ImageUpload from "../../components/ImageUpload";
-import Button from "../../components/Button";
-import { TokenForm } from "../../utils/types";
-import { toolBox } from "../../utils";
-import { NFTStorage } from "nft.storage";
+import { NftForm } from "../../utils/types";
+import { NFTStorage, Blob, File } from "nft.storage";
 
-const TokenMint = () => {
-  const [tokenFormData, setTokenFormData] = useState<TokenForm>({
+const CreateNFT = () => {
+  const [file, setFile] = useState<any>();
+  const [fileLoading, setFileLoading] = useState<boolean>(false);
+
+  const [nftFormData, setNftFormData] = useState<NftForm>({
     name: "",
     symbol: "",
     asset: "",
   });
 
-  const { handleFileClear } = toolBox();
-
-  const [file, setFile] = useState<any>();
-  const [fileLoading, setFileLoading] = useState<boolean>(false);
+  const handleClear = () => {
+    setFile(null);
+    // setNftFormData({ ...nftFormData, asset: "" });
+  };
 
   useEffect(() => {
     const storeImage = async () => {
@@ -43,16 +45,16 @@ const TokenMint = () => {
     };
 
     storeImage();
-  }, [file, tokenFormData]);
+  }, [file, nftFormData]);
 
   return (
     <div className="flex flex-col items-center justify-center my-12">
       <div>
-        <p className="page-title">Create your Token</p>
+        <p className="page-title">Create your NFT</p>
       </div>
       <div className="flex flex-col w-96 gap-8">
         <Input
-          onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, name: event?.target.value })}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setNftFormData({ ...nftFormData, name: event?.target.value })}
           placeholder="Name"
           title="Name"
           type="text"
@@ -60,17 +62,17 @@ const TokenMint = () => {
           isRequired={true}
         ></Input>
         <Input
-          onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, symbol: event?.target.value })}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setNftFormData({ ...nftFormData, symbol: event?.target.value })}
           placeholder="Symbol"
           title="Symbol"
           type="text"
           key={"nftSymbol"}
           isRequired={true}
         ></Input>
-        <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={() => handleFileClear}></ImageUpload>
+        <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={handleClear}></ImageUpload>
         <div className="flex justify-center">
           <div className="w-2/5">
-            <Button onClick={() => console.log(tokenFormData)} title="Create Token"></Button>
+            <Button onClick={() => console.log(nftFormData)} title="Create NFT"></Button>
           </div>
         </div>
       </div>
@@ -78,4 +80,4 @@ const TokenMint = () => {
   );
 };
 
-export default TokenMint;
+export default CreateNFT;
