@@ -31,7 +31,7 @@ const ProtectedRoute: React.FC = () => {
   return connected ? (
     <div className="min-h-screen relative">
       <TopBar />
-      <div className="h-[calc(100vh-96px)]">
+      <div className="h-[calc(100vh-96px)] flex flex-col">
         <Outlet />
       </div>
     </div>

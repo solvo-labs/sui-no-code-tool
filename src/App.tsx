@@ -1,5 +1,5 @@
-import React from 'react';
-import './App.css';
+import React from "react";
+import "./App.css";
 import Router from "./router/Router";
 
 const App: React.FC = () => {
@@ -8,6 +8,6 @@ const App: React.FC = () => {
       <Router />
     </div>
   );
-}
+};
 
 export default App;

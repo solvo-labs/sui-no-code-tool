@@ -29,7 +29,7 @@ const Login: React.FC = () => {
         )}
         {status === "connecting" && (
           <div className="p-4 w-full flex flex-col items-center">
-            <ProcessButtton text="Connecting"></ProcessButtton>
+            <ProcessButtton title="Connecting"></ProcessButtton>
           </div>
         )}
       </div>
