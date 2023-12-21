@@ -1,6 +1,8 @@
 import React, { ChangeEvent, useRef, useState } from "react";
 import Button from "./Button";
 import { RxCross1 } from "react-icons/rx";
+import Tooltip from "./Tooltip";
+import { toolBox } from "../utils";
 
 type Props = {
   file: File | undefined;
@@ -11,6 +13,9 @@ type Props = {
 };
 
 const ImageUpload: React.FC<Props> = ({ file, loading, setFile, handleClear }) => {
+  const [crossTooltip, setCroosTooltip] = useState<boolean>(false);
+  const { handleTooltip } = toolBox();
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +33,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, setFile, handleClear }) =
   return (
     <div className="border-2 rounded-lg">
       {!loading && (
-        <div className=" flex flex-row gap-8 p-4 justify-center items-center">
+        <div className="flex flex-row gap-8 p-4 justify-center items-center">
           <div className="flex flex-col gap-2 justify-center">
             <p>Upload image for NFT</p>
             <input className="hidden" accept="image/*" multiple id="contained-button-file" type="file" onChange={handleFileInputChange} ref={inputRef} />
@@ -36,9 +41,15 @@ const ImageUpload: React.FC<Props> = ({ file, loading, setFile, handleClear }) =
           </div>
           {file && (
             <div className="flex flex-row items-center">
-              <button className="bg-transparent flex items-center justify-center w-8 h-8 p-0" onClick={handleClear}>
+              <button
+                className="bg-transparent flex items-center justify-center w-8 h-8 p-0 rounded-full"
+                onClick={handleClear}
+                onMouseEnter={() => handleTooltip(setCroosTooltip, 3000)}
+                onMouseLeave={() => handleTooltip(setCroosTooltip)}
+              >
                 <RxCross1></RxCross1>
               </button>
+              <Tooltip title={"Delete uploaded asset"} position="bottom" isOpen={crossTooltip}></Tooltip>
               <img src={URL.createObjectURL(file)} alt="Selected File Preview" className="w-[100px] rounded-full border-2" />
             </div>
           )}
@@ -46,15 +57,15 @@ const ImageUpload: React.FC<Props> = ({ file, loading, setFile, handleClear }) =
       )}
 
       {loading && (
-        <div className="relative flex flex-row gap-8 p-8 justify-center items-center">
+        <div className="relative flex flex-row gap-8 p-4 justify-center items-center">
           <div className="flex flex-col gap-2 justify-center">
             <p className="text-gray-400">Upload image for NFT</p>
             <input className="hidden" accept="image/*" multiple id="contained-button-file" type="file" onChange={handleFileInputChange} ref={inputRef} />
-            <Button onClick={handleButtonClick} title="Select Icon" disabled={true}></Button>
+            <Button onClick={handleButtonClick} title="Uploading image" disabled={true}></Button>
           </div>
           {file && (
-            <div className="flex flex-row ">
-              <img src={URL.createObjectURL(file)} alt="Selected File Preview" className="w-[80px] rounded-lg border-2" />
+            <div className="flex flex-row">
+              <img src={URL.createObjectURL(file)} alt="Selected File Preview" className="w-[100px] rounded-full border-2" />
             </div>
           )}
           <div role="status" className="absolute rounded-lg -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2 bg-[rgb(0,0,0,0.6)] w-full h-full flex justify-center items-center">
