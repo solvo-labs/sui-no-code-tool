@@ -75,7 +75,7 @@ const TopBar: React.FC = () => {
     const entries = Object.entries(pages);
 
     return entries.map(([pageKey, pageValue]: [string, any]) => (
-      <li className="text-navbar-gray hover:text-sui-blue cursor-pointer" onClick={() => handleRouter(pageKey)}>
+      <li key={pageKey} className="text-navbar-gray hover:text-sui-blue cursor-pointer" onClick={() => handleRouter(pageKey)}>
         {pageValue}
       </li>
     ));
