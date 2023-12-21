@@ -9,6 +9,7 @@ module.exports = {
         "navy-blue": "#011829",
         "sui-blue": "#3898ec",
         "sui-blue-d": "#1F5B7D",
+        "sui-blue-h": "#388BFF",
         "sui-gray": "#91a3b1",
       },
       borderRadius: {
