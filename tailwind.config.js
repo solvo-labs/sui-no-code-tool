@@ -8,6 +8,7 @@ module.exports = {
         "navbar-gray": "#91a3b1",
         "navy-blue": "#011829",
         "sui-blue": "#3898ec",
+        "sui-blue-d": "#1F5B7D",
         "sui-gray": "#91a3b1",
       },
       borderRadius: {
