@@ -35,7 +35,7 @@ const TopBar: React.FC = () => {
 
   const handleRouter = (page: string) => {
     let entries = Object.entries(ROUTES);
-    let [key, value] = entries.find(([key, val]) => key === page) || [];
+    let [, value] = entries.find(([key]) => key === page) || [];
 
     if (value) {
       navigate(value);
