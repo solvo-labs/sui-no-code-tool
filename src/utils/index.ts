@@ -3,5 +3,14 @@ export const toolBox = () => {
     setFile(null);
     // setNftFormData({ ...nftFormData, asset: "" });
   };
-  return { handleFileClear };
+
+  const handleTooltip = (setState: any, second: number = 0) => {
+    setState(true);
+
+    setTimeout(() => {
+      setState(false);
+    }, second);
+  };
+
+  return { handleFileClear, handleTooltip };
 };
