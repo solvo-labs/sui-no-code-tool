@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import TopBar from "../components/TopBar";
 import Loading from "../assets/loading-spinner.gif";
-import { useWallet } from "@suiet/wallet-kit";
+import { WalletProvider, useWallet } from "@suiet/wallet-kit";
+import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
+import { WalletKitProvider } from "@mysten/wallet-kit";
 
 const ProtectedRoute: React.FC = () => {
   const { connected, connecting, account } = useWallet();
   const [loading, setLoading] = useState<boolean>(true);
+
+  const suiClient = new SuiClient({
+    url: getFullnodeUrl("testnet"),
+  });
 
   useEffect(() => {
     const localKey = localStorage.getItem("WK__LAST_CONNECT_WALLET_NAME");
@@ -32,7 +38,11 @@ const ProtectedRoute: React.FC = () => {
     <div className="min-h-screen relative">
       <TopBar />
       <div className="h-[calc(100vh-96px)] flex flex-col">
-        <Outlet />
+        <WalletProvider autoConnect>
+          <WalletKitProvider>
+            <Outlet context={[suiClient]} />
+          </WalletKitProvider>
+        </WalletProvider>
       </div>
     </div>
   ) : (
