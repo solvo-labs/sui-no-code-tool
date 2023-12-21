@@ -1,49 +1,45 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import Input from "../../components/Input";
 import ImageUpload from "../../components/ImageUpload";
 import Button from "../../components/Button";
 import { TokenForm } from "../../utils/types";
 import { toolBox } from "../../utils";
 import { NFTStorage } from "nft.storage";
+import { useOutletContext } from "react-router-dom";
 
 const TokenMint = () => {
+  const [suiClient] = useOutletContext<[suiClient: any]>();
+  const [file, setFile] = useState<any>();
+  const [fileLoading, setFileLoading] = useState<boolean>(false);
+  const { handleFileClear } = toolBox();
+
   const [tokenFormData, setTokenFormData] = useState<TokenForm>({
     name: "",
     symbol: "",
     asset: "",
   });
 
-  const { handleFileClear } = toolBox();
-
-  const [file, setFile] = useState<any>();
-  const [fileLoading, setFileLoading] = useState<boolean>(false);
-
   useEffect(() => {
     const storeImage = async () => {
       if (file && process.env.REACT_APP_NFT_STORAGE_API_KEY) {
         setFileLoading(true);
         const client = new NFTStorage({ token: process.env.REACT_APP_NFT_STORAGE_API_KEY });
-
         const fileCid = await client.storeBlob(new Blob([file]));
-        console.log(fileCid);
-
-        // console.log("file", fileCid);
-        // const fileUrl = "https://ipfs.io/ipfs/" + fileCid;
-
-        // setNftMetadata({
-        //   ...nftMetadata,
-        //   asset: fileUrl,
-        // });
-        // setNftFormData({
-        //   ...nftFormData,
-        //   asset: fileUrl,
-        // });
+        const fileUrl = "https://ipfs.io/ipfs/" + fileCid;
+        setTokenFormData({
+          ...tokenFormData,
+          asset: fileUrl,
+        });
         setFileLoading(false);
       }
     };
 
     storeImage();
-  }, [file, tokenFormData]);
+  }, [file]);
+
+  const disable = useMemo(() => {
+    return fileLoading || !tokenFormData.name || !tokenFormData.symbol;
+  }, [fileLoading, tokenFormData]);
 
   return (
     <div className="flex flex-col items-center justify-center my-12">
@@ -58,6 +54,7 @@ const TokenMint = () => {
           type="text"
           key={"nftName"}
           isRequired={true}
+          disable={fileLoading}
         ></Input>
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, symbol: event?.target.value })}
@@ -66,11 +63,12 @@ const TokenMint = () => {
           type="text"
           key={"nftSymbol"}
           isRequired={true}
+          disable={fileLoading}
         ></Input>
         <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={() => handleFileClear}></ImageUpload>
         <div className="flex justify-center">
           <div className="w-2/5">
-            <Button onClick={() => console.log(tokenFormData)} title="Create Token"></Button>
+            <Button onClick={() => console.log(tokenFormData)} disabled={disable} title="Create Token"></Button>
           </div>
         </div>
       </div>
