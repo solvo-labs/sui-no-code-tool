@@ -44,7 +44,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, setFile, handleClear }) =
             {file && (
               <div className="flex flex-row items-center">
                 <button
-                  className="relative group bg-transparent flex items-center justify-center w-8 h-8 p-0 rounded-full"
+                  className="relative group bg-transparent flex items-center justify-center p-0 rounded-full"
                   onClick={handleClear}
                   onMouseEnter={() => handleTooltip(setCroosTooltip, 3000)}
                   onMouseLeave={() => handleTooltip(setCroosTooltip)}
@@ -52,7 +52,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, setFile, handleClear }) =
                   <RxCross1></RxCross1>
                   <Tooltip title={"Delete uploaded image"} position="bottom" isOpen={crossTooltip}></Tooltip>
                 </button>
-                <img src={URL.createObjectURL(file)} alt="Selected File Preview" className="w-[100px] rounded-full border-2" />
+                <img src={URL.createObjectURL(file)} alt="Selected File Preview" className="w-[100px] h-[100px] rounded-full border-2" />
               </div>
             )}
           </div>
