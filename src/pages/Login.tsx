@@ -1,19 +1,19 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ConnectButton } from "@suiet/wallet-kit";
-import { useWallet } from "@suiet/wallet-kit";
 import Logo from "../assets/logo.jpeg";
-import ProcessButtton from "../components/ProcessButton";
+import ProcessButton from "../components/ProcessButton";
+import { ConnectButton, useCurrentWallet } from "@mysten/dapp-kit";
 
 const Login: React.FC = () => {
-  const { connected, status } = useWallet();
+  const { isConnected, isConnecting, isDisconnected } = useCurrentWallet();
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (connected) {
+    if (isConnected) {
       navigate("/");
     }
-  }, [connected, navigate]);
+  }, [isConnected, navigate]);
 
   return (
     <div className="login flex flex-col justify-center items-center h-screen">
@@ -22,14 +22,14 @@ const Login: React.FC = () => {
         <div className="p-2">
           <img className="rounded-full h-32 w-32 shadow-xl border-solid border-2 border-sky-300" src={Logo} alt="Sui Logo" />
         </div>
-        {status === "disconnected" && (
+        {isDisconnected && (
           <div className="p-4">
-            <ConnectButton style={{ width: "200px", backgroundColor: "#3898EC", borderRadius: "200px" }} />
+            <ConnectButton style={{ width: "180px", backgroundColor: "#3898EC", borderRadius: "200px", color: "white", fontWeight: "bold", padding: "12px" }} />
           </div>
         )}
-        {status === "connecting" && (
+        {isConnecting && (
           <div className="p-4 w-full flex flex-col items-center">
-            <ProcessButtton title="Connecting"></ProcessButtton>
+            <ProcessButton title="Connecting"></ProcessButton>
           </div>
         )}
       </div>

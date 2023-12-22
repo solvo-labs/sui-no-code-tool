@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import TopBar from "../components/TopBar";
-import Loading from "../assets/loading-spinner.gif";
-import { WalletProvider, useWallet } from "@suiet/wallet-kit";
+// import Loading from "../assets/loading-spinner.gif";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
-import { WalletKitProvider } from "@mysten/wallet-kit";
+import { useCurrentAccount, useCurrentWallet } from "@mysten/dapp-kit";
 
 const ProtectedRoute: React.FC = () => {
-  const { connected, connecting, account } = useWallet();
+  const account = useCurrentAccount();
+
+  const { isConnected, isConnecting, isDisconnected, currentWallet } = useCurrentWallet();
   const [loading, setLoading] = useState<boolean>(true);
 
   const suiClient = new SuiClient({
@@ -16,33 +17,27 @@ const ProtectedRoute: React.FC = () => {
 
   useEffect(() => {
     const localKey = localStorage.getItem("WK__LAST_CONNECT_WALLET_NAME");
-
     if (localKey === null) {
       setLoading(false);
     }
-
-    if (account && localKey && connected) {
+    if (currentWallet && isConnected) {
       setLoading(false);
     }
-  }, [account, connected]);
+  }, [isConnected, currentWallet, isDisconnected, account]);
 
-  if (connecting || loading) {
-    return (
-      <div className="min-h-screen relative flex flex-col justify-center items-center">
-        <img className="w-14 h-14" src={Loading} alt="Loading Spinner" />
-      </div>
-    );
-  }
+  // if (isConnecting || loading) {
+  //   return (
+  //     <div className="min-h-screen relative flex flex-col justify-center items-center">
+  //       <img className="w-14 h-14" src={Loading} alt="Loading Spinner" />
+  //     </div>
+  //   );
+  // }
 
-  return connected ? (
+  return isConnected ? (
     <div className="min-h-screen relative">
       <TopBar />
       <div className="h-[calc(100vh-96px)] flex flex-col">
-        <WalletProvider autoConnect>
-          <WalletKitProvider>
-            <Outlet context={[suiClient]} />
-          </WalletKitProvider>
-        </WalletProvider>
+        <Outlet context={[suiClient]} />
       </div>
     </div>
   ) : (
