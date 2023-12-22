@@ -61,7 +61,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, title, setFile, handleCle
         {loading && (
           <div className="relative flex flex-row gap-8 p-4 justify-center items-center">
             <div className="flex flex-col gap-2 justify-center">
-              <p className="text-gray-400">Upload image for NFT</p>
+              <p className="text-gray-400">{title}</p>
               <input className="hidden" accept="image/*" multiple id="contained-button-file" type="file" onChange={handleFileInputChange} ref={inputRef} />
               <Button onClick={handleButtonClick} title="Uploading image" disabled={true}></Button>
             </div>
