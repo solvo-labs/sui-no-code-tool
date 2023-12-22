@@ -5,10 +5,10 @@ import Button from "../../components/Button";
 import { TokenForm } from "../../utils/types";
 import { toolBox } from "../../utils";
 import { NFTStorage } from "nft.storage";
-import { useOutletContext } from "react-router-dom";
+// import { useOutletContext } from "react-router-dom";
 
 const TokenMint = () => {
-  const [suiClient] = useOutletContext<[suiClient: any]>();
+  // const [suiClient] = useOutletContext<[suiClient: any]>();
   const [file, setFile] = useState<any>();
   const [fileLoading, setFileLoading] = useState<boolean>(false);
   const { handleFileClear } = toolBox();

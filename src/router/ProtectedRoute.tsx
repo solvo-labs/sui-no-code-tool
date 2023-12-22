@@ -8,8 +8,8 @@ import { useCurrentAccount, useCurrentWallet } from "@mysten/dapp-kit";
 const ProtectedRoute: React.FC = () => {
   const account = useCurrentAccount();
 
-  const { isConnected, isConnecting, isDisconnected, currentWallet } = useCurrentWallet();
-  const [loading, setLoading] = useState<boolean>(true);
+  const { isConnected, isDisconnected, currentWallet } = useCurrentWallet();
+  const [, setLoading] = useState<boolean>(true);
 
   const suiClient = new SuiClient({
     url: getFullnodeUrl("testnet"),

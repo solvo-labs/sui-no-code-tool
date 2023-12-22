@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Theme } from "@radix-ui/themes";
+// import { Theme } from "@radix-ui/themes";
 import reportWebVitals from "./reportWebVitals";
 
 import "@mysten/dapp-kit/dist/index.css";
-import "@radix-ui/themes/styles.css";
+// import "@radix-ui/themes/styles.css";
 
 import App from "./App";
 import "./index.css";
@@ -25,17 +25,15 @@ const networks = {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Theme appearance="dark">
-      <QueryClientProvider client={queryClient}>
-        <SuiClientProvider networks={networks} defaultNetwork={"testnet"}>
-          <WalletProvider autoConnect>
-            <WalletKitProvider>
-              <App />
-            </WalletKitProvider>
-          </WalletProvider>
-        </SuiClientProvider>
-      </QueryClientProvider>
-    </Theme>
+    <QueryClientProvider client={queryClient}>
+      <SuiClientProvider networks={networks} defaultNetwork={"testnet"}>
+        <WalletProvider autoConnect>
+          <WalletKitProvider>
+            <App />
+          </WalletKitProvider>
+        </WalletProvider>
+      </SuiClientProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 

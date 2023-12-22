@@ -6,12 +6,11 @@ import { NftForm } from "../../utils/types";
 import { NFTStorage, Blob } from "nft.storage";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { useOutletContext } from "react-router-dom";
-import { useWallet } from "@suiet/wallet-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
 
 const CreateNFT = () => {
-  const app_keypair = process.env.REACT_APP_KEYPAIR;
-  const { account } = useWallet();
+  const account = useCurrentAccount();
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
 
   const [suiClient] = useOutletContext<[suiClient: any]>();
@@ -34,7 +33,7 @@ const CreateNFT = () => {
 
   const createNft = async () => {
     try {
-      if (app_keypair) {
+      if (account) {
         const tx = new TransactionBlock();
         tx.moveCall({
           target: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::mint_to_sender",
