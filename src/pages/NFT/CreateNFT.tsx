@@ -110,7 +110,7 @@ const CreateNFT = () => {
           isRequired={true}
           disable={fileLoading}
         ></Input>
-        <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={handleClear}></ImageUpload>
+        <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={handleClear} title="Upload image for NFT"></ImageUpload>
         <div className="flex justify-center">
           <div className="w-2/5">
             <Button disabled={disable} onClick={createNft} title="Create NFT"></Button>

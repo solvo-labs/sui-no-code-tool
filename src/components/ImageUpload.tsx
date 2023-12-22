@@ -7,12 +7,12 @@ import { toolBox } from "../utils";
 type Props = {
   file: File | undefined;
   loading: boolean;
+  title?: string;
   setFile: (image: File | null) => void;
   handleClear: () => void;
-  text?: string;
 };
 
-const ImageUpload: React.FC<Props> = ({ file, loading, setFile, handleClear }) => {
+const ImageUpload: React.FC<Props> = ({ file, loading, title, setFile, handleClear }) => {
   const [crossTooltip, setCroosTooltip] = useState<boolean>(false);
   const { handleTooltip } = toolBox();
 
@@ -37,7 +37,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, setFile, handleClear }) =
         {!loading && (
           <div className="flex flex-row gap-8 p-4 justify-center items-center">
             <div className="flex flex-col gap-2 justify-center">
-              <p>Upload image for NFT</p>
+              <p>{title}</p>
               <input className="hidden" accept="image/*" multiple id="contained-button-file" type="file" onChange={handleFileInputChange} ref={inputRef} />
               <Button onClick={handleButtonClick} title={file ? "Upload new image" : "Upload"}></Button>
             </div>

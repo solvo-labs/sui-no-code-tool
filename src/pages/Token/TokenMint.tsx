@@ -75,7 +75,7 @@ const TokenMint = () => {
           isRequired={true}
           disable={fileLoading}
         ></Input>
-        <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={() => handleFileClear}></ImageUpload>
+        <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={() => handleFileClear} title="Upload image for Token"></ImageUpload>
         <div className="flex justify-center">
           <div className="w-2/5">
             <Button onClick={() => console.log(tokenFormData)} disabled={disable} title="Create Token"></Button>
