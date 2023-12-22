@@ -21,6 +21,7 @@ import ContractPage from "../pages/ContractPage";
 import Login from "../pages/Login";
 import NotFoundPage from "../pages/NotFoundPage";
 import CreateNFT from "../pages/NFT/CreateNFT";
+import ListNFTs from "../pages/NFT/ListNFTs";
 
 const Router: React.FC = () => {
   return (
@@ -46,6 +47,7 @@ const Router: React.FC = () => {
             <Route path="/airdrop" index element={<Airdrop />} />
 
             <Route path={ROUTES.NFT_CREATE} index element={<CreateNFT />} />
+            <Route path={ROUTES.NFT_LIST} index element={<ListNFTs />} />
           </Route>
           <Route path={ROUTES.LOGIN} index element={<Login />} />
           <Route path="*" index element={<NotFoundPage />} />
