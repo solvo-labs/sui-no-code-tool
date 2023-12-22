@@ -1,20 +1,41 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Theme } from "@radix-ui/themes";
+import reportWebVitals from "./reportWebVitals";
 
-import { WalletProvider } from "@suiet/wallet-kit";
-import "@suiet/wallet-kit/style.css";
+import "@mysten/dapp-kit/dist/index.css";
+import "@radix-ui/themes/styles.css";
 
 import App from "./App";
 import "./index.css";
 
-import reportWebVitals from "./reportWebVitals";
+import { getFullnodeUrl } from "@mysten/sui.js/client";
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
-root.render(
+import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WalletKitProvider } from "@mysten/wallet-kit";
+
+const queryClient = new QueryClient();
+
+const networks = {
+  mainnet: { url: getFullnodeUrl("mainnet") },
+  devnet: { url: getFullnodeUrl("devnet") },
+  testnet: { url: getFullnodeUrl("testnet") },
+};
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <WalletProvider>
-      <App />
-    </WalletProvider>
+    <Theme appearance="dark">
+      <QueryClientProvider client={queryClient}>
+        <SuiClientProvider networks={networks} defaultNetwork={"testnet"}>
+          <WalletProvider autoConnect>
+            <WalletKitProvider>
+              <App />
+            </WalletKitProvider>
+          </WalletProvider>
+        </SuiClientProvider>
+      </QueryClientProvider>
+    </Theme>
   </React.StrictMode>
 );
 
