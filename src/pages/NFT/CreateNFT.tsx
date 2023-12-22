@@ -6,11 +6,13 @@ import { NftForm } from "../../utils/types";
 import { NFTStorage, Blob } from "nft.storage";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { useOutletContext } from "react-router-dom";
-import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
-import { fromHEX } from "@mysten/bcs";
+import { useWallet } from "@suiet/wallet-kit";
+import { useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
 
 const CreateNFT = () => {
   const app_keypair = process.env.REACT_APP_KEYPAIR;
+  const { account } = useWallet();
+  const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
 
   const [suiClient] = useOutletContext<[suiClient: any]>();
   const [file, setFile] = useState<any>();
@@ -34,22 +36,27 @@ const CreateNFT = () => {
     try {
       if (app_keypair) {
         const tx = new TransactionBlock();
-        const keypair = Ed25519Keypair.fromSecretKey(fromHEX(app_keypair));
-        console.log(tx);
-
         tx.moveCall({
           target: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::mint_to_sender",
           arguments: [tx.pure.string(nftFormData.name), tx.pure.string(nftFormData.symbol), tx.pure.string(nftFormData.asset)],
           typeArguments: [],
         });
-        console.log("nerdeyim");
 
-        const result = await suiClient.signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          signer: keypair,
-          options: { showBalanceChanges: true, showEffects: true, showEvents: true, showInput: true, showObjectChanges: true, showRawInput: true },
-        });
-
+        const result = signAndExecute(
+          {
+            transactionBlock: tx,
+            account: account,
+          },
+          {
+            onSuccess: (tx) => {
+              suiClient
+                .waitForTransactionBlock({
+                  digest: tx.digest,
+                })
+                .then(() => {});
+            },
+          }
+        );
         console.log(result);
       }
     } catch (error) {
@@ -96,10 +103,10 @@ const CreateNFT = () => {
         ></Input>
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setNftFormData({ ...nftFormData, symbol: event?.target.value })}
-          placeholder="Symbol"
-          title="Symbol"
+          placeholder="Description"
+          title="Description"
           type="text"
-          key={"nftSymbol"}
+          key={"nftDescription"}
           isRequired={true}
           disable={fileLoading}
         ></Input>
