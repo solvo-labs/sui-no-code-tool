@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ConnectButton } from "@suiet/wallet-kit";
+import { ConnectButton } from "@mysten/dapp-kit";
 import { NFT_PAGE, ROUTES, TOKENOMICS_PAGE, TOKEN_PAGES, TOPBAR_PAGES } from "../utils/enum";
 import MobileMenu from "./MobileMenu";
 
