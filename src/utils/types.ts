@@ -1,6 +1,7 @@
 export type TokenForm = {
   name: string;
   symbol: string;
+  decimal: number;
   asset: string;
 };
 

@@ -16,6 +16,7 @@ const TokenMint = () => {
   const [tokenFormData, setTokenFormData] = useState<TokenForm>({
     name: "",
     symbol: "",
+    decimal: 8,
     asset: "",
   });
 
@@ -62,6 +63,15 @@ const TokenMint = () => {
           title="Symbol"
           type="text"
           key={"nftSymbol"}
+          isRequired={true}
+          disable={fileLoading}
+        ></Input>
+        <Input
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, decimal: Number(event?.target.value) })}
+          placeholder="Decimal"
+          title="Decimal"
+          type="number"
+          key={"tokenDecimal"}
           isRequired={true}
           disable={fileLoading}
         ></Input>
