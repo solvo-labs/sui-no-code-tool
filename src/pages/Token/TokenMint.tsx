@@ -36,7 +36,7 @@ const TokenMint = () => {
     };
 
     storeImage();
-  }, [file]);
+  }, [file, tokenFormData]);
 
   const disable = useMemo(() => {
     return fileLoading || !tokenFormData.name || !tokenFormData.symbol;
