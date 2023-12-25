@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
+import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
+import useGetObjects from "../../hooks/useGetObjects";
 
 const data = [
   { id: 1, name: "Öğe 1", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
@@ -21,33 +23,51 @@ const data = [
   { id: 151231, name: "Öğe 11231235", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
 ];
 
-const itemsPerPage = 5; // Her sayfa için gösterilecek öğe sayısı
+const itemsPerPage = 5;
+const paginationVariants = {
+  hidden: {
+    opacity: 0,
+    y: 200,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 20,
+      duration: 1,
+    },
+  },
+};
 
 const MyTokens = () => {
-  const paginationVariants = {
-    hidden: {
-      opacity: 0,
-      y: 200,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-        duration: 1,
-      }
-    }
-  }
   const [currentPage, setCurrentPage] = useState(0);
+
+  const wallet = useCurrentAccount();
+  const [coinData, setCoinData] = useState([]);
+  const { data } = useSuiClientQuery("getAllCoins", {
+    owner: wallet?.address || "",
+  });
 
   const handlePageClick = (selectedPage: { selected: number }) => {
     setCurrentPage(selectedPage.selected);
   };
 
-  const offset = currentPage * itemsPerPage;
-  const currentPageData = data.slice(offset, offset + itemsPerPage);
+  const { coins } = useGetObjects(wallet!);
+
+  console.log("coins", coins);
+  console.log("data", data);
+
+  // useEffect(() => {
+  //   // console.log(coins);
+  //   // const offset = currentPage * itemsPerPage;
+  //   // const coinParsedData = coins.map((c) => {
+  //   //   return { id: c.data.objectId };
+  //   // });
+  //   // console.log(coinParsedData);
+  //   // const currentPageData = data.slice(offset, offset + itemsPerPage);
+  // }, [currentPage]);
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -74,51 +94,46 @@ const MyTokens = () => {
                   </tr>
                 </thead>
                 <tbody className="text-black text-left">
-                    {currentPageData.map((item) => (
-                      <tr key={item.id} className="bg-white hover:bg-blue hover:text-white">
-                        <td className="px-6 py-3 text-md">{item.id}</td>
-                        <td className="px-6 py-3 text-md">{item.name}</td>
-                        <td className="px-6 py-3 text-md">{item.column1}</td>
-                        <td className="px-6 py-3 text-md">{item.column2}</td>
-                        <td className="px-6 py-3 text-md">{item.column3}</td>
-                        <td className="px-6 py-3 text-md">{item.column4}</td>
-                        <td className="px-6 py-3 text-md">{item.column5}</td>
-                      </tr>
-                    ))}
+                  {coinData.map((item: any) => (
+                    <tr key={item.id} className="bg-white hover:bg-blue hover:text-white">
+                      <td className="px-6 py-3 text-md">{item.id}</td>
+                      <td className="px-6 py-3 text-md">{item.name}</td>
+                      <td className="px-6 py-3 text-md">{item.column1}</td>
+                      <td className="px-6 py-3 text-md">{item.column2}</td>
+                      <td className="px-6 py-3 text-md">{item.column3}</td>
+                      <td className="px-6 py-3 text-md">{item.column4}</td>
+                      <td className="px-6 py-3 text-md">{item.column5}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-        <motion.div
-            variants={paginationVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <ReactPaginate
-              breakLabel={<span className="mr-4">...</span>}
-              nextLabel={
-                <span className="w-10 h-10 flex justify-center items-center bg-lightGray rounded-md">
-                  <BsChevronRight />
-                </span>
-              }
-              previousLabel={
-                <span className="w-10 h-10 flex justify-center items-center bg-lightGray rounded-md mr-4">
-                  <BsChevronLeft />
-                </span>
-              }
-              containerClassName="flex justify-center items-center mt-8 mb-4"
-              pageClassName="block border-solid w-10 h-10 flex justify-center items-center rounded-md mr-4"
-              pageRangeDisplayed={3}
-              pageCount={Math.ceil(data.length / itemsPerPage)}
-              activeClassName="bg-navy-blue text-white"
-              onPageChange={handlePageClick}
-            />
-          </motion.div>
+        <motion.div variants={paginationVariants} initial="hidden" animate="visible">
+          <ReactPaginate
+            breakLabel={<span className="mr-4">...</span>}
+            nextLabel={
+              <span className="w-10 h-10 flex justify-center items-center bg-lightGray rounded-md">
+                <BsChevronRight />
+              </span>
+            }
+            previousLabel={
+              <span className="w-10 h-10 flex justify-center items-center bg-lightGray rounded-md mr-4">
+                <BsChevronLeft />
+              </span>
+            }
+            containerClassName="flex justify-center items-center mt-8 mb-4"
+            pageClassName="block border-solid w-10 h-10 flex justify-center items-center rounded-md mr-4"
+            pageRangeDisplayed={3}
+            pageCount={Math.ceil(coinData.length / itemsPerPage)}
+            activeClassName="bg-navy-blue text-white"
+            onPageChange={handlePageClick}
+          />
+        </motion.div>
       </div>
-
-  </div>
-  )
+    </div>
+  );
 };
 
 export default MyTokens;
