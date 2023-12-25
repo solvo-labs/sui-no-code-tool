@@ -7,7 +7,7 @@ import { toolBox } from "../../utils";
 import { NFTStorage } from "nft.storage";
 import { useOutletContext } from "react-router-dom";
 import { CompiledModule, witnessByteCode } from "../../lib/utils";
-import wasm from "../../move-binary-format-wasm";
+import init, * as wasm from "@mysten/move-binary-format-wasm";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { fromHEX, normalizeSuiObjectId } from "@mysten/sui.js/utils";
 import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
@@ -58,6 +58,7 @@ const TokenMint = () => {
       const bytesToPublish = wasm.serialize(JSON.stringify(compiledModule));
 
       const tx = new TransactionBlock();
+
       tx.setGasBudget(100000000);
 
       const [upgradeCap] = tx.publish({
