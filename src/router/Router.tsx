@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { ROUTES } from "../utils/enum";
 import ProtectedRoute from "./ProtectedRoute";
 import Main from "../pages/Main";
 import MyTokens from "../pages/Token/MyTokens";
@@ -19,6 +20,8 @@ import Vesting from "../pages/Tokenomics/Vesting";
 import ContractPage from "../pages/ContractPage";
 import Login from "../pages/Login";
 import NotFoundPage from "../pages/NotFoundPage";
+import CreateNFT from "../pages/NFT/CreateNFT";
+import ListNFTs from "../pages/NFT/ListNFTs";
 
 const Router: React.FC = () => {
   return (
@@ -26,11 +29,11 @@ const Router: React.FC = () => {
       <BrowserRouter basename={"/"}>
         <Routes>
           <Route element={<ProtectedRoute />}>
-            <Route path="/" index element={<Main />} />
-            <Route path="/my-tokens" index element={<MyTokens />} />
-            <Route path="/token-create" index element={<TokenMint />} />
-            <Route path="/token-transfer" index element={<TokenTransfer />} />
-            <Route path="/burn-mint-token" index element={<TokenMintAndBurn />} />
+            <Route path={ROUTES.MAIN} index element={<Main />} />
+            <Route path={ROUTES.MY_TOKENS} index element={<MyTokens />} />
+            <Route path={ROUTES.TOKEN_MINT} index element={<TokenMint />} />
+            <Route path={ROUTES.TOKEN_TRANSFER} index element={<TokenTransfer />} />
+            <Route path={ROUTES.TOKEN_MINT_BURN} index element={<TokenMintAndBurn />} />
             <Route path="/freeze-account" index element={<FreezeAccount />} />
             <Route path="/close-account" index element={<CloseAccount />} />
             <Route path="/multisignature" index element={<Multisignature />} />
@@ -42,8 +45,11 @@ const Router: React.FC = () => {
             <Route path="/create-vesting/:tokenid/:name/:amount" index element={<Vesting />} />
             <Route path="/contract" index element={<ContractPage />} />
             <Route path="/airdrop" index element={<Airdrop />} />
+
+            <Route path={ROUTES.NFT_CREATE} index element={<CreateNFT />} />
+            <Route path={ROUTES.NFT_LIST} index element={<ListNFTs />} />
           </Route>
-          <Route path="/login" index element={<Login />} />
+          <Route path={ROUTES.LOGIN} index element={<Login />} />
           <Route path="*" index element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>

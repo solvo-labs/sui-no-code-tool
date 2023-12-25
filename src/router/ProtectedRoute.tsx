@@ -2,25 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import TopBar from "../components/TopBar";
 import Loading from "../assets/loading-spinner.gif";
-import { useWallet } from "@suiet/wallet-kit";
+import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
+import { useCurrentAccount, useCurrentWallet } from "@mysten/dapp-kit";
 
 const ProtectedRoute: React.FC = () => {
-  const { connected, connecting, account } = useWallet();
+  const account = useCurrentAccount();
+
+  const { isConnected, isDisconnected, currentWallet, isConnecting } = useCurrentWallet();
   const [loading, setLoading] = useState<boolean>(true);
+
+  const suiClient = new SuiClient({
+    url: getFullnodeUrl("testnet"),
+  });
 
   useEffect(() => {
     const localKey = localStorage.getItem("WK__LAST_CONNECT_WALLET_NAME");
-
     if (localKey === null) {
       setLoading(false);
     }
-
-    if (account && localKey && connected) {
+    if (currentWallet && isConnected) {
       setLoading(false);
     }
-  }, [account, connected]);
+  }, [isConnected, currentWallet, isDisconnected, account]);
 
-  if (connecting || loading) {
+  if (isConnecting || loading) {
     return (
       <div className="min-h-screen relative flex flex-col justify-center items-center">
         <img className="w-14 h-14" src={Loading} alt="Loading Spinner" />
@@ -28,11 +33,11 @@ const ProtectedRoute: React.FC = () => {
     );
   }
 
-  return connected ? (
+  return isConnected ? (
     <div className="min-h-screen relative">
       <TopBar />
-      <div className="h-[calc(100vh-96px)]">
-        <Outlet />
+      <div className="h-[calc(100vh-96px)] flex flex-col">
+        <Outlet context={[suiClient]} />
       </div>
     </div>
   ) : (
