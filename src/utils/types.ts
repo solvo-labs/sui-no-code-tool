@@ -3,6 +3,7 @@ export type TokenForm = {
   symbol: string;
   decimal: number;
   asset: string;
+  description: string;
 };
 
 export type NftForm = {
