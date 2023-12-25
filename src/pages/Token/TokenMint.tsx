@@ -5,9 +5,9 @@ import Button from "../../components/Button";
 import { TokenForm } from "../../utils/types";
 import { toolBox } from "../../utils";
 import { NFTStorage } from "nft.storage";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { CompiledModule, witnessByteCode } from "../../lib/utils";
-import init, * as wasm from "@mysten/move-binary-format-wasm";
+import init, * as wasm from "../../move-binary-format-wasm";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { fromHEX, normalizeSuiObjectId } from "@mysten/sui.js/utils";
 import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
@@ -19,6 +19,7 @@ const TokenMint = () => {
   const [fileLoading, setFileLoading] = useState<boolean>(false);
   const { handleFileClear } = toolBox();
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
+  const navigate = useNavigate();
 
   const [tokenFormData, setTokenFormData] = useState<TokenForm>({
     name: "",
@@ -30,9 +31,9 @@ const TokenMint = () => {
 
   useEffect(() => {
     const storeImage = async () => {
-      if (file && process.env.REACT_APP_NFT_STORAGE_API_KEY) {
+      if (file) {
         setFileLoading(true);
-        const client = new NFTStorage({ token: process.env.REACT_APP_NFT_STORAGE_API_KEY });
+        const client = new NFTStorage({ token: import.meta.env.VITE_NFT_STORAGE_API_KEY });
         const fileCid = await client.storeBlob(new Blob([file]));
         const fileUrl = "https://ipfs.io/ipfs/" + fileCid;
         setTokenFormData({
@@ -44,10 +45,13 @@ const TokenMint = () => {
     };
 
     storeImage();
-  }, [file, tokenFormData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file]);
 
   const mintToken = async () => {
     if (account) {
+      await init();
+
       const compiledModule = new CompiledModule(JSON.parse(wasm.deserialize(witnessByteCode)))
         .updateConstant(0, tokenFormData.decimal.toString(), "9", "u8")
         .updateConstant(1, tokenFormData.symbol, "Symbol", "string")
@@ -84,6 +88,7 @@ const TokenMint = () => {
         }
       );
       console.log(result);
+      navigate("my-tokens");
     }
   };
 

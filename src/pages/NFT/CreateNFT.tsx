@@ -65,9 +65,9 @@ const CreateNFT = () => {
 
   useEffect(() => {
     const storeImage = async () => {
-      if (file && process.env.REACT_APP_NFT_STORAGE_API_KEY) {
+      if (file) {
         setFileLoading(true);
-        const client = new NFTStorage({ token: process.env.REACT_APP_NFT_STORAGE_API_KEY });
+        const client = new NFTStorage({ token: import.meta.env.VITE_NFT_STORAGE_API_KEY });
 
         const fileCid = await client.storeBlob(new Blob([file]));
         setTimeout(() => {

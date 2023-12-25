@@ -20,6 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "move-binary-format-wasm"],
+  "include": ["src", "src/move-binary-format-wasm"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
