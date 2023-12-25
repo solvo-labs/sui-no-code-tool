@@ -47,7 +47,7 @@ const CreateNFT = () => {
             account: account,
           },
           {
-            onSuccess: (tx) => {
+            onSuccess: (tx: any) => {
               suiClient
                 .waitForTransactionBlock({
                   digest: tx.digest,
