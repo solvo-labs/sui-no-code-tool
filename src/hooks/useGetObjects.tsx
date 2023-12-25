@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { WalletAccount } from "@wallet-standard/core";
 
-export default function useGetNFTs(wallet: WalletAccount) {
+export default function useGetObjects(wallet: WalletAccount) {
   const [suiClient] = useOutletContext<[suiClient: any]>();
-  const [nfts, setNFTs] = useState<any[]>([]);
+  const [objects, setObjects] = useState<any[]>([]);
+  const [nfts, setNfts] = useState<any[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -20,11 +21,14 @@ export default function useGetNFTs(wallet: WalletAccount) {
         })
       );
       const finalResult = await Promise.all(promiseData);
-      setNFTs(finalResult);
+      setObjects(finalResult);
+
+      const nftObjects = finalResult.filter((fr) => fr.data.content.type === "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::DevNetNFT");
+      setNfts(nftObjects);
     };
 
     init();
   }, [suiClient, wallet]);
 
-  return { nfts };
+  return { objects, nfts };
 }
