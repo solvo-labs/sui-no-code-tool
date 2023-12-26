@@ -34,11 +34,15 @@ export default function useGetObjects(wallet: WalletAccount) {
           const type = fr.data.content?.type;
 
           if (type === "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::DevNetNFT") {
-            nftObjects.push(fr);
+            const isExist = nftObjects.findIndex((cb) => cb.data.content?.type === type);
+
+            if (isExist < 0) nftObjects.push(fr);
           }
 
           if (type.startsWith("0x2::coin::") && type !== "0x2::coin::Coin<0x2::sui::SUI>") {
-            coinObjects.push(fr);
+            const isExist = coinObjects.findIndex((cb) => cb.data.content?.type === type);
+
+            if (isExist > 0) coinObjects.push(fr);
           }
         }
       });
