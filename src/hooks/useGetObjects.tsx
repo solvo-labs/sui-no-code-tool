@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { WalletAccount } from "@wallet-standard/core";
+import { type SuiClient } from "@mysten/sui.js/client";
 
 export default function useGetObjects(wallet: WalletAccount) {
-  const [suiClient] = useOutletContext<[suiClient: any]>();
+  const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
   const [objects, setObjects] = useState<any[]>([]);
   const [nfts, setNfts] = useState<any[]>([]);
   const [coins, setCoins] = useState<any[]>([]);
@@ -11,8 +12,8 @@ export default function useGetObjects(wallet: WalletAccount) {
 
   useEffect(() => {
     const init = async () => {
-      const result = await suiClient.getOwnedObjects({ owner: wallet.address });
-      const resultAllObjects = result.data;
+      const objects = await suiClient.getOwnedObjects({ owner: wallet.address });
+      const resultAllObjects = objects.data;
 
       const promiseData = resultAllObjects.map((obj: any) =>
         suiClient.getObject({
@@ -25,10 +26,24 @@ export default function useGetObjects(wallet: WalletAccount) {
       const allObjects = await Promise.all(promiseData);
       setObjects(allObjects);
 
-      const nftObjects = allObjects.filter((fr) => fr.data.content.type === "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::DevNetNFT");
-      setNfts(nftObjects);
+      const nftObjects: any[] = [];
+      const coinObjects: any[] = [];
 
-      const coinObjects = allObjects.filter((fr) => (fr.data.content.type as string).startsWith("0x2::coin::"));
+      allObjects.forEach((fr: any) => {
+        if (fr.data) {
+          const type = fr.data.content?.type;
+
+          if (type === "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::DevNetNFT") {
+            nftObjects.push(fr);
+          }
+
+          if (type.startsWith("0x2::coin::") && type !== "0x2::coin::Coin<0x2::sui::SUI>") {
+            coinObjects.push(fr);
+          }
+        }
+      });
+
+      setNfts(nftObjects);
       setCoins(coinObjects);
 
       setLoading(false);
@@ -37,5 +52,5 @@ export default function useGetObjects(wallet: WalletAccount) {
     init();
   }, [suiClient, wallet]);
 
-  return { objects, nfts, coins, loading };
+  return { objects, nfts, coins, objectLoading: loading };
 }

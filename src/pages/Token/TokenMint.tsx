@@ -11,6 +11,7 @@ import init, * as wasm from "../../move-binary-format-wasm";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { fromHEX, normalizeSuiObjectId } from "@mysten/sui.js/utils";
 import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
+import { Loader } from "../../components/Loader";
 
 const TokenMint = () => {
   const account = useCurrentAccount();
@@ -20,6 +21,7 @@ const TokenMint = () => {
   const { handleFileClear } = toolBox();
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [tokenFormData, setTokenFormData] = useState<TokenForm>({
     name: "",
@@ -50,6 +52,7 @@ const TokenMint = () => {
 
   const mintToken = async () => {
     if (account) {
+      setLoading(true);
       await init();
 
       const compiledModule = new CompiledModule(JSON.parse(wasm.deserialize(witnessByteCode)))
@@ -72,7 +75,7 @@ const TokenMint = () => {
 
       tx.transferObjects([upgradeCap], tx.pure(account.address, "address"));
 
-      const result = signAndExecute(
+      signAndExecute(
         {
           transactionBlock: tx,
           account: account,
@@ -83,18 +86,26 @@ const TokenMint = () => {
               .waitForTransactionBlock({
                 digest: tx.digest,
               })
-              .then(() => {});
+              .then(() => {
+                navigate("/my-tokens");
+                setLoading(false);
+              });
+          },
+          onError: () => {
+            setLoading(false);
           },
         }
       );
-      console.log(result);
-      navigate("my-tokens");
     }
   };
 
   const disable = useMemo(() => {
     return fileLoading || !tokenFormData.name || !tokenFormData.symbol;
   }, [fileLoading, tokenFormData]);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center my-12">

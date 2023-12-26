@@ -14,3 +14,10 @@ export const toolBox = () => {
 
   return { handleFileClear, handleTooltip };
 };
+
+export const hexFormatter = (hex: string) => {
+  const first = hex.slice(0, 15);
+  const end = hex.slice(-3);
+
+  return first + "..." + end;
+};

@@ -2,26 +2,12 @@ import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { motion } from "framer-motion";
-import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 import useGetObjects from "../../hooks/useGetObjects";
-
-const data = [
-  { id: 1, name: "Öğe 1", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 2, name: "Öğe 2", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 3, name: "Öğe 3", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 4, name: "Öğe 4", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 5, name: "Öğe 5", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 6, name: "Öğe 6", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 7, name: "Öğe 7", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 8, name: "Öğe 8", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 9, name: "Öğe 9", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 10, name: "Öğe 10", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 11, name: "Öğe 11", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 12, name: "Öğe 12", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 13, name: "Öğe 13", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 14, name: "Öğe 14", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-  { id: 151231, name: "Öğe 11231235", column1: "Değer 1", column2: "Değer 2", column3: "Değer 3", column4: "Değer 4", column5: "Değer 5" },
-];
+import { Loader } from "../../components/Loader";
+import { CoinMetadata, SuiClient } from "@mysten/sui.js/client";
+import { useOutletContext } from "react-router-dom";
+import { hexFormatter } from "../../utils";
 
 const itemsPerPage = 5;
 const paginationVariants = {
@@ -42,32 +28,51 @@ const paginationVariants = {
 };
 
 const MyTokens = () => {
-  const [currentPage, setCurrentPage] = useState(0);
-
   const wallet = useCurrentAccount();
-  const [coinData, setCoinData] = useState([]);
-  const { data } = useSuiClientQuery("getAllCoins", {
-    owner: wallet?.address || "",
-  });
+
+  const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [coinData, setCoinData] = useState<(CoinMetadata | null)[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const { coins, objectLoading } = useGetObjects(wallet!);
+
+  // in my wallets balance > 0
+  // const { data, status } = useSuiClientQuery("getAllCoins", {
+  //   owner: wallet?.address || "",
+  //   limit: 0,
+  // });
+
+  // console.log("data", data);
+
+  useEffect(() => {
+    const init = async () => {
+      const offset = currentPage * itemsPerPage;
+
+      const regex = /<([^>]*)>/;
+      const coinTypes = coins.map((c) => {
+        return c.data?.content.type.match(regex)[1];
+      });
+
+      const coinTypePromises = coinTypes.map((ct: string) => suiClient.getCoinMetadata({ coinType: ct }));
+      const coinList = await Promise.all(coinTypePromises);
+
+      setCoinData(coinList.slice(offset, offset + itemsPerPage));
+
+      setLoading(false);
+    };
+
+    init();
+  }, [coins, currentPage, suiClient]);
 
   const handlePageClick = (selectedPage: { selected: number }) => {
     setCurrentPage(selectedPage.selected);
   };
 
-  const { coins } = useGetObjects(wallet!);
-
-  console.log("coins", coins);
-  console.log("data", data);
-
-  // useEffect(() => {
-  //   // console.log(coins);
-  //   // const offset = currentPage * itemsPerPage;
-  //   // const coinParsedData = coins.map((c) => {
-  //   //   return { id: c.data.objectId };
-  //   // });
-  //   // console.log(coinParsedData);
-  //   // const currentPageData = data.slice(offset, offset + itemsPerPage);
-  // }, [currentPage]);
+  if (objectLoading || loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -84,25 +89,31 @@ const MyTokens = () => {
               <table className="w-full">
                 <thead className="text-white text-left bg-navy-blue">
                   <tr>
+                    <th className="px-6 py-3 text-md"></th>
                     <th className="px-6 py-3 text-md">ID</th>
                     <th className="px-6 py-3 text-md">Name</th>
-                    <th className="px-6 py-3 text-md">Column 1</th>
-                    <th className="px-6 py-3 text-md">Column 2</th>
-                    <th className="px-6 py-3 text-md">Column 3</th>
-                    <th className="px-6 py-3 text-md">Column 4</th>
-                    <th className="px-6 py-3 text-md">Column 5</th>
+                    <th className="px-6 py-3 text-md">Symbol</th>
+                    <th className="px-6 py-3 text-md">Decimals</th>
+                    <th className="px-6 py-3 text-md">Description</th>
                   </tr>
                 </thead>
                 <tbody className="text-black text-left">
                   {coinData.map((item: any) => (
                     <tr key={item.id} className="bg-white hover:bg-blue hover:text-white">
-                      <td className="px-6 py-3 text-md">{item.id}</td>
+                      <td className="px-6 py-3 text-md">
+                        {
+                          <div className="flex items-center">
+                            <div className="rounded-full overflow-hidden h-10 w-10">
+                              <img className="w-full h-full object-cover" src={item.iconUrl} alt="Avatar" />
+                            </div>
+                          </div>
+                        }
+                      </td>
+                      <td className="px-6 py-3 text-md">{hexFormatter(item.id)}</td>
                       <td className="px-6 py-3 text-md">{item.name}</td>
-                      <td className="px-6 py-3 text-md">{item.column1}</td>
-                      <td className="px-6 py-3 text-md">{item.column2}</td>
-                      <td className="px-6 py-3 text-md">{item.column3}</td>
-                      <td className="px-6 py-3 text-md">{item.column4}</td>
-                      <td className="px-6 py-3 text-md">{item.column5}</td>
+                      <td className="px-6 py-3 text-md">{item.symbol}</td>
+                      <td className="px-6 py-3 text-md">{item.decimals}</td>
+                      <td className="px-6 py-3 text-md">{item.description}</td>
                     </tr>
                   ))}
                 </tbody>
