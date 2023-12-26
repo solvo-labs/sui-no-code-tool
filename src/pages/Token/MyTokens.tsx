@@ -94,7 +94,7 @@ const MyTokens = () => {
                 </thead>
                 <tbody className="text-black text-left">
                   {coinData.map((item: any, index: number) => (
-                    <tr key={item.id} className="bg-white hover:bg-blue hover:text-white">
+                    <tr key={item.id} className="bg-white hover:bg-blue hover:text-sui-blue-h cursor-pointer">
                       <td className="px-6 py-3 text-md">
                         {
                           <div className="flex items-center">
