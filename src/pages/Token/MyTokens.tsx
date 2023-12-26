@@ -109,7 +109,7 @@ const MyTokens = () => {
                       <td className="px-6 py-3 text-md">{item.symbol}</td>
                       <td className="px-6 py-3 text-md">{item.decimals}</td>
                       <td className="px-6 py-3 text-md">{item.description}</td>
-                      <td className="px-6 py-3 text-md">{coinSupply[index].value}</td>
+                      <td className="px-6 py-3 text-md">{Number(coinSupply[index].value) / Math.pow(10, item.decimals)}</td>
                     </tr>
                   ))}
                 </tbody>
