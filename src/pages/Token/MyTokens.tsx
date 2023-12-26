@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import useGetObjects from "../../hooks/useGetObjects";
 import { Loader } from "../../components/Loader";
-import { CoinMetadata, SuiClient } from "@mysten/sui.js/client";
+import { CoinMetadata, CoinSupply, SuiClient } from "@mysten/sui.js/client";
 import { useOutletContext } from "react-router-dom";
-import { hexFormatter } from "../../utils";
+import { getCoins, hexFormatter } from "../../utils";
 
 const itemsPerPage = 5;
 const paginationVariants = {
@@ -35,6 +35,7 @@ const MyTokens = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [coinData, setCoinData] = useState<(CoinMetadata | null)[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [coinSupply, setCoinSupply] = useState<CoinSupply[]>([]);
 
   const { coins, objectLoading } = useGetObjects(wallet!);
 
@@ -44,20 +45,13 @@ const MyTokens = () => {
   //   limit: 0,
   // });
 
-  // console.log("data", data);
-
   useEffect(() => {
     const init = async () => {
       const offset = currentPage * itemsPerPage;
 
-      const regex = /<([^>]*)>/;
-      const coinTypes = coins.map((c) => {
-        return c.data?.content.type.match(regex)[1];
-      });
+      const { coinSupplies, coinList } = await getCoins(suiClient, coins);
 
-      const coinTypePromises = coinTypes.map((ct: string) => suiClient.getCoinMetadata({ coinType: ct }));
-      const coinList = await Promise.all(coinTypePromises);
-
+      setCoinSupply(coinSupplies);
       setCoinData(coinList.slice(offset, offset + itemsPerPage));
 
       setLoading(false);
@@ -95,10 +89,11 @@ const MyTokens = () => {
                     <th className="px-6 py-3 text-md">Symbol</th>
                     <th className="px-6 py-3 text-md">Decimals</th>
                     <th className="px-6 py-3 text-md">Description</th>
+                    <th className="px-6 py-3 text-md">Supply</th>
                   </tr>
                 </thead>
                 <tbody className="text-black text-left">
-                  {coinData.map((item: any) => (
+                  {coinData.map((item: any, index: number) => (
                     <tr key={item.id} className="bg-white hover:bg-blue hover:text-white">
                       <td className="px-6 py-3 text-md">
                         {
@@ -114,6 +109,7 @@ const MyTokens = () => {
                       <td className="px-6 py-3 text-md">{item.symbol}</td>
                       <td className="px-6 py-3 text-md">{item.decimals}</td>
                       <td className="px-6 py-3 text-md">{item.description}</td>
+                      <td className="px-6 py-3 text-md">{coinSupply[index].value}</td>
                     </tr>
                   ))}
                 </tbody>
