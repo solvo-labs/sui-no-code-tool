@@ -42,7 +42,7 @@ export default function useGetObjects(wallet: WalletAccount) {
           if (type.startsWith("0x2::coin::") && type !== "0x2::coin::Coin<0x2::sui::SUI>") {
             const isExist = coinObjects.findIndex((cb) => cb.data.content?.type === type);
 
-            if (isExist > 0) coinObjects.push(fr);
+            if (isExist < 0) coinObjects.push(fr);
           }
         }
       });
