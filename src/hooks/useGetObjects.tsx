@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { WalletAccount } from "@wallet-standard/core";
 import { type SuiClient } from "@mysten/sui.js/client";
+import { NftObject } from "../utils/types";
 
 export default function useGetObjects(wallet: WalletAccount) {
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
   const [objects, setObjects] = useState<any[]>([]);
-  const [nfts, setNfts] = useState<any[]>([]);
+  const [nfts, setNfts] = useState<NftObject[]>([]);
   const [coins, setCoins] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -34,9 +35,7 @@ export default function useGetObjects(wallet: WalletAccount) {
           const type = fr.data.content?.type;
 
           if (type === "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::DevNetNFT") {
-            const isExist = nftObjects.findIndex((cb) => cb.data.content?.type === type);
-
-            if (isExist < 0) nftObjects.push(fr);
+            nftObjects.push(fr);
           }
 
           if (type.startsWith("0x2::coin::") && type !== "0x2::coin::Coin<0x2::sui::SUI>") {

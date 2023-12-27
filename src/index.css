@@ -67,3 +67,15 @@ button:focus-visible {
   max-width: 360px;
   white-space: nowrap;
 }
+
+.nft-card {
+  cursor: pointer;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: rgba(245, 245, 245, 0.5);
+  /* background-color: rgba(240, 249, 255, 0.5); */
+}
+
+.nft-card:hover {
+  background-color: rgb(233, 233, 233);
+}

@@ -11,3 +11,19 @@ export type NftForm = {
   symbol: string;
   asset: string;
 };
+
+export type NftObject = {
+  data: {
+    objectId: string;
+    content: {
+      dataType: string;
+      hasPublicTransfer: string;
+      type: string;
+      fields: {
+        description: string;
+        name: string;
+        url: string;
+      };
+    };
+  };
+};
