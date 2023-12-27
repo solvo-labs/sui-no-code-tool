@@ -41,7 +41,7 @@ const CreateNFT = () => {
           typeArguments: [],
         });
 
-        const result = signAndExecute(
+        signAndExecute(
           {
             transactionBlock: tx,
             account: account,
@@ -54,9 +54,11 @@ const CreateNFT = () => {
                 })
                 .then(() => {});
             },
+            onError: (error: any) => {
+              console.log(error);
+            },
           }
         );
-        console.log(result);
       }
     } catch (error) {
       console.log(error);
