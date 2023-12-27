@@ -9,7 +9,7 @@ import { CoinMetadata, CoinSupply, SuiClient } from "@mysten/sui.js/client";
 import { useOutletContext } from "react-router-dom";
 import { getCoins, hexFormatter } from "../../utils";
 
-const itemsPerPage = 5;
+const itemsPerPage = 10;
 const paginationVariants = {
   hidden: {
     opacity: 0,

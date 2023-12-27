@@ -27,7 +27,7 @@ export const hexFormatter = (hex: string) => {
 export const getCoins = async (suiClient: SuiClient, coins: any) => {
   const regex = /<([^>]*)>/;
   const coinTypes = coins.map((c: any) => {
-    return c.data?.content.type.match(regex)[1];
+    return c.data?.type.match(regex)[1];
   });
 
   const coinTypePromises = coinTypes.map((ct: string) => suiClient.getCoinMetadata({ coinType: ct }));
