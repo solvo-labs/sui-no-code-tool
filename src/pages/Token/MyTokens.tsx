@@ -9,7 +9,7 @@ import { CoinMetadata, CoinSupply, SuiClient } from "@mysten/sui.js/client";
 import { useOutletContext } from "react-router-dom";
 import { getCoins, hexFormatter } from "../../utils";
 
-const itemsPerPage = 10;
+const rowsPerPage = 5;
 const paginationVariants = {
   hidden: {
     opacity: 0,
@@ -32,7 +32,7 @@ const MyTokens = () => {
 
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [page, setPage] = useState(0);
   const [coinData, setCoinData] = useState<(CoinMetadata | null)[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [coinSupply, setCoinSupply] = useState<CoinSupply[]>([]);
@@ -47,21 +47,18 @@ const MyTokens = () => {
 
   useEffect(() => {
     const init = async () => {
-      const offset = currentPage * itemsPerPage;
-
-      const { coinSupplies, coinList } = await getCoins(suiClient, coins);
-
+      const { coinSupplies, coinList } = await getCoins(suiClient, coins?.data);
       setCoinSupply(coinSupplies);
-      setCoinData(coinList.slice(offset, offset + itemsPerPage));
+      setCoinData(coinList);
 
       setLoading(false);
     };
 
     init();
-  }, [coins, currentPage, suiClient]);
+  }, [coins, suiClient]);
 
   const handlePageClick = (selectedPage: { selected: number }) => {
-    setCurrentPage(selectedPage.selected);
+    setPage(selectedPage.selected);
   };
 
   if (objectLoading || loading) {
@@ -93,8 +90,8 @@ const MyTokens = () => {
                   </tr>
                 </thead>
                 <tbody className="text-black text-left">
-                  {coinData.map((item: any, index: number) => (
-                    <tr key={item.id} className="bg-white hover:bg-blue hover:text-sui-blue-h cursor-pointer">
+                  {coinData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item: any, index: number) => (
+                    <tr key={Math.random()} className="bg-white hover:bg-blue hover:text-sui-blue-h cursor-pointer">
                       <td className="px-6 py-3 text-md">
                         {
                           <div className="flex items-center">
@@ -132,8 +129,8 @@ const MyTokens = () => {
             }
             containerClassName="flex justify-center items-center mt-8 mb-4"
             pageClassName="block border-solid w-10 h-10 flex justify-center items-center rounded-md mr-4"
-            pageRangeDisplayed={3}
-            pageCount={Math.ceil(coinData.length / itemsPerPage)}
+            pageRangeDisplayed={2}
+            pageCount={Math.ceil(coinData.length / rowsPerPage)}
             activeClassName="bg-navy-blue text-white"
             onPageChange={handlePageClick}
           />

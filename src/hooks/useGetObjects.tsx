@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { WalletAccount } from "@wallet-standard/core";
-import { type SuiClient } from "@mysten/sui.js/client";
+import { PaginatedObjectsResponse, type SuiClient } from "@mysten/sui.js/client";
 import { NftObject } from "../utils/types";
 
 export default function useGetObjects(wallet: WalletAccount) {
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
   const [nfts, setNfts] = useState<NftObject[]>([]);
-  const [coins, setCoins] = useState<any[]>([]);
+  const [coins, setCoins] = useState<PaginatedObjectsResponse>();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export default function useGetObjects(wallet: WalletAccount) {
 
       const coinObjects = await suiClient.getOwnedObjects({
         owner: wallet.address,
+        limit: 50,
         filter: {
           MatchAll: [
             {
@@ -43,12 +44,32 @@ export default function useGetObjects(wallet: WalletAccount) {
         },
       });
 
-      setCoins(coinObjects.data);
+      setCoins(coinObjects);
       setLoading(false);
     };
 
     init();
   }, [suiClient, wallet]);
 
-  return { nfts, coins, objectLoading: loading };
+  const fetchCoinObjects = async (cursor?: string | null | undefined, limit: number = 10) => {
+    const coinObjects = await suiClient.getOwnedObjects({
+      owner: wallet.address,
+      cursor,
+      limit,
+      filter: {
+        MatchAll: [
+          {
+            MoveModule: { package: "0x02", module: "coin" },
+          },
+        ],
+      },
+      options: {
+        showType: true,
+      },
+    });
+
+    setCoins(coinObjects);
+  };
+
+  return { nfts, coins, objectLoading: loading, fetchCoinObjects };
 }
