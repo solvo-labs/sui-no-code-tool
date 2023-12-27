@@ -6,7 +6,6 @@ import { NftObject } from "../utils/types";
 
 export default function useGetObjects(wallet: WalletAccount) {
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
-  const [objects, setObjects] = useState<any[]>([]);
   const [nfts, setNfts] = useState<NftObject[]>([]);
   const [coins, setCoins] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -85,5 +84,5 @@ export default function useGetObjects(wallet: WalletAccount) {
     init();
   }, [suiClient, wallet]);
 
-  return { objects, nfts, coins, objectLoading: loading };
+  return { nfts, coins, objectLoading: loading };
 }
