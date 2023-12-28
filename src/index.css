@@ -16,24 +16,28 @@ body {
 }
 
 button {
+  color: #3898ec;
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  /* background-color: #1a1a1a; */
   cursor: pointer;
   transition: border-color 0.25s;
+  transition: background-color 0.25s ease-out;
   color: #3898ec;
 }
 button:hover {
-  border-color: #388bff;
+  /* border-color: #3898ec; */
+  background-color: rgb(243 244 246);
+  animation: focusOut 5s forwards;
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
 }
 
 .login {
@@ -50,8 +54,8 @@ button:focus-visible {
 .page-title {
   font-size: 2rem;
   font-weight: bold;
-  margin-top: 3rem;
-  margin-bottom: 3rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .pages-modal {
