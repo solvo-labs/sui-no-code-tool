@@ -88,7 +88,7 @@ const CreateNFT = () => {
   }, [file]);
 
   return (
-    <div className="flex flex-col items-center justify-center my-12">
+    <div className="flex flex-col items-center my-12">
       <div>
         <p className="page-title">Create your NFT</p>
       </div>

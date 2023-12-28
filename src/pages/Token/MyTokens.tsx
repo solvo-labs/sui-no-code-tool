@@ -66,7 +66,7 @@ const MyTokens = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col items-center">
       <div className="text-center text-3xl py-16">
         <div className="inline relative">
           <span className="text-navy-blue">List Of My Tokens</span>
