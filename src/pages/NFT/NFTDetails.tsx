@@ -6,6 +6,8 @@ import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/da
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { useState } from "react";
 import { ROUTES } from "../../utils/enum";
+import TransferNftModal from "../../components/TransferNftModal";
+import DeleteNftModal from "../../components/DeleteNftModal";
 
 const NFTDetails = () => {
   const [suiClient] = useOutletContext<[suiClient: any]>();
@@ -16,6 +18,16 @@ const NFTDetails = () => {
   const nftObjectID = params.id;
   const { nftDetail } = useGetNftDetails(nftObjectID!);
   const [recipient, setRecipient] = useState<string>("");
+
+  const [transferOpen, setTransferOpen] = useState<boolean>(false);
+  const [burnOpen, setBurnOpen] = useState<boolean>(false);
+
+  const handleOpen = (setState: any) => {
+    setState(true);
+  };
+  const handleClose = (setState: any) => {
+    setState(false);
+  };
 
   const transferNft = async () => {
     try {
@@ -37,7 +49,10 @@ const NFTDetails = () => {
                 .waitForTransactionBlock({
                   digest: tx.digest,
                 })
-                .then(() => {});
+                .then(() => {
+                  navigate(ROUTES.NFT_LIST);
+                  setTransferOpen(false);
+                });
             },
             onError: (error: any) => {
               console.log(error);
@@ -69,7 +84,10 @@ const NFTDetails = () => {
                 .waitForTransactionBlock({
                   digest: tx.digest,
                 })
-                .then(() => navigate(ROUTES.NFT_LIST));
+                .then(() => {
+                  navigate(ROUTES.NFT_LIST);
+                  setBurnOpen(false);
+                });
             },
             onError: (error: any) => {
               console.log(error);
@@ -85,8 +103,8 @@ const NFTDetails = () => {
       <div className="flex flex-row justify-between items-baseline">
         <h4 className="page-title">NFT: {nftDetail?.data.content.fields.name}</h4>
         <div>
-          <button>Transer NFT</button>
-          <button onClick={burnNFT}>Burn NFT</button>
+          <button onClick={() => handleOpen(setTransferOpen)}>Transer NFT</button>
+          <button onClick={() => handleOpen(setBurnOpen)}>Burn NFT</button>
         </div>
       </div>
 
@@ -142,6 +160,15 @@ const NFTDetails = () => {
           <p>{nftDetail?.data.content.fields.description}</p>
         </div>
       </div>
+      <TransferNftModal
+        open={transferOpen}
+        handleOpen={() => transferOpen}
+        handleClose={() => handleClose(setTransferOpen)}
+        handleRecipient={setRecipient}
+        disable={!recipient}
+        transferNft={transferNft}
+      ></TransferNftModal>
+      <DeleteNftModal open={burnOpen} handleOpen={() => handleOpen(setBurnOpen)} handleClose={() => handleClose(setBurnOpen)} burnNft={burnNFT}></DeleteNftModal>
     </div>
   );
 };
