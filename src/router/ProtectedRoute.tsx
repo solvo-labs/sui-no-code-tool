@@ -33,7 +33,7 @@ const ProtectedRoute: React.FC = () => {
   return isConnected ? (
     <div className="min-h-screen relative">
       <TopBar />
-      <div className="h-[calc(100vh-96px)] flex flex-col">
+      <div className="h-[calc(100vh-96px)] flex justify-center w-full mb-12">
         <Outlet context={[suiClient]} />
       </div>
     </div>
