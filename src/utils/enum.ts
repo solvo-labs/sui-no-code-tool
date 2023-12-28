@@ -9,6 +9,7 @@ export enum ROUTES {
   TOKENOMICS_MANAGE = "",
   NFT_CREATE = "/create-nfts",
   NFT_LIST = "/list-nft",
+  NFT_DETAILS = "/list-nft/:id",
 }
 
 export enum TOPBAR_PAGES {
