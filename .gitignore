@@ -24,3 +24,6 @@ yarn-error.log*
 
 # dotenv environment variable files
 .env
+
+**/build
+bintest

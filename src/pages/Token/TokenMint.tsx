@@ -5,26 +5,37 @@ import Button from "../../components/Button";
 import { TokenForm } from "../../utils/types";
 import { toolBox } from "../../utils";
 import { NFTStorage } from "nft.storage";
-// import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { CompiledModule, witnessByteCode } from "../../lib/utils";
+import init, * as wasm from "../../move-binary-format-wasm";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { fromHEX, normalizeSuiObjectId } from "@mysten/sui.js/utils";
+import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
+import { Loader } from "../../components/Loader";
 
 const TokenMint = () => {
-  // const [suiClient] = useOutletContext<[suiClient: any]>();
+  const account = useCurrentAccount();
+  const [suiClient] = useOutletContext<[suiClient: any]>();
   const [file, setFile] = useState<any>();
   const [fileLoading, setFileLoading] = useState<boolean>(false);
   const { handleFileClear } = toolBox();
+  const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [tokenFormData, setTokenFormData] = useState<TokenForm>({
     name: "",
     symbol: "",
     decimal: 8,
     asset: "",
+    description: "",
   });
 
   useEffect(() => {
     const storeImage = async () => {
-      if (file && process.env.REACT_APP_NFT_STORAGE_API_KEY) {
+      if (file) {
         setFileLoading(true);
-        const client = new NFTStorage({ token: process.env.REACT_APP_NFT_STORAGE_API_KEY });
+        const client = new NFTStorage({ token: import.meta.env.VITE_NFT_STORAGE_API_KEY });
         const fileCid = await client.storeBlob(new Blob([file]));
         const fileUrl = "https://ipfs.io/ipfs/" + fileCid;
         setTokenFormData({
@@ -36,14 +47,68 @@ const TokenMint = () => {
     };
 
     storeImage();
-  }, [file, tokenFormData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file]);
+
+  const mintToken = async () => {
+    if (account) {
+      setLoading(true);
+      await init();
+
+      const compiledModule = new CompiledModule(JSON.parse(wasm.deserialize(witnessByteCode)))
+        .updateConstant(0, tokenFormData.decimal.toString(), "9", "u8")
+        .updateConstant(1, tokenFormData.symbol, "Symbol", "string")
+        .updateConstant(2, tokenFormData.name, "Name", "string")
+        .updateConstant(3, tokenFormData.description, "Description", "string")
+        .updateConstant(4, tokenFormData.asset, "Icon_Url", "string");
+
+      const bytesToPublish = wasm.serialize(JSON.stringify(compiledModule));
+
+      const tx = new TransactionBlock();
+
+      tx.setGasBudget(100000000);
+
+      const [upgradeCap] = tx.publish({
+        modules: [[...fromHEX(bytesToPublish)]],
+        dependencies: [normalizeSuiObjectId("0x1"), normalizeSuiObjectId("0x2")],
+      });
+
+      tx.transferObjects([upgradeCap], tx.pure(account.address, "address"));
+
+      signAndExecute(
+        {
+          transactionBlock: tx,
+          account: account,
+        },
+        {
+          onSuccess: (tx: any) => {
+            suiClient
+              .waitForTransactionBlock({
+                digest: tx.digest,
+              })
+              .then(() => {
+                navigate("/my-tokens");
+                setLoading(false);
+              });
+          },
+          onError: () => {
+            setLoading(false);
+          },
+        }
+      );
+    }
+  };
 
   const disable = useMemo(() => {
     return fileLoading || !tokenFormData.name || !tokenFormData.symbol;
   }, [fileLoading, tokenFormData]);
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center my-12">
+    <div className="flex flex-col items-center my-12">
       <div>
         <p className="page-title">Create your Token</p>
       </div>
@@ -56,7 +121,7 @@ const TokenMint = () => {
           key={"nftName"}
           isRequired={true}
           disable={fileLoading}
-        ></Input>
+        />
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, symbol: event?.target.value })}
           placeholder="Symbol"
@@ -65,7 +130,16 @@ const TokenMint = () => {
           key={"nftSymbol"}
           isRequired={true}
           disable={fileLoading}
-        ></Input>
+        />
+        <Input
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, description: event?.target.value })}
+          placeholder="Description"
+          title="Description"
+          type="text"
+          key={"description"}
+          isRequired={true}
+          disable={fileLoading}
+        />
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, decimal: Number(event?.target.value) })}
           placeholder="Decimal"
@@ -74,11 +148,11 @@ const TokenMint = () => {
           key={"tokenDecimal"}
           isRequired={true}
           disable={fileLoading}
-        ></Input>
+        />
         <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={() => handleFileClear} title="Upload image for Token"></ImageUpload>
         <div className="flex justify-center">
           <div className="w-2/5">
-            <Button onClick={() => console.log(tokenFormData)} disabled={disable} title="Create Token"></Button>
+            <Button onClick={mintToken} disabled={disable} title="Create Token"></Button>
           </div>
         </div>
       </div>

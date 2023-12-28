@@ -67,7 +67,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, title, setFile, handleCle
             </div>
             {file && (
               <div className="flex flex-row">
-                <img src={URL.createObjectURL(file)} alt="Selected File Preview" className="w-[100px] rounded-full border-2" />
+                <img src={URL.createObjectURL(file)} alt="Selected File Preview" className="w-[100px] h-[100px] rounded-full border-2" />
               </div>
             )}
             <div

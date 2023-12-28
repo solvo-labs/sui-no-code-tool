@@ -1,17 +1,18 @@
 import React from "react";
 
 type Props = {
-  title: string;
+  title?: string;
   placeholder: string;
   type: string;
   isRequired?: boolean;
   disable?: boolean;
+  className?: string;
   onChange: (event: any) => void;
 };
 
-const Input: React.FC<Props> = ({ title, type, placeholder, isRequired, disable, onChange }) => {
+const Input: React.FC<Props> = ({ title, type, placeholder, isRequired, disable, className, onChange }) => {
   return (
-    <div>
+    <div className={className}>
       <label className="block mb-2 text-sm font-medium text-gray-900">{title}</label>
       <input
         onChange={onChange}
