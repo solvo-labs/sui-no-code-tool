@@ -1,12 +1,84 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import useGetNftDetails from "../../hooks/useGetNftDetails";
 import { hexFormatter } from "../../utils";
-import { MdHeight, MdInsertPhoto, MdWidthNormal } from "react-icons/md";
+import { MdInsertPhoto } from "react-icons/md";
+import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { useState } from "react";
+import { ROUTES } from "../../utils/enum";
 
 const NFTDetails = () => {
+  const [suiClient] = useOutletContext<[suiClient: any]>();
+  const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
   const params = useParams();
+  const account = useCurrentAccount();
+  const navigate = useNavigate();
   const nftObjectID = params.id;
   const { nftDetail } = useGetNftDetails(nftObjectID!);
+  const [recipient, setRecipient] = useState<string>("");
+
+  const transferNft = async () => {
+    try {
+      if (account && nftObjectID && recipient) {
+        const tx = new TransactionBlock();
+        tx.moveCall({
+          target: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::transfer",
+          arguments: [tx.object(nftObjectID), tx.pure(recipient)],
+        });
+
+        signAndExecute(
+          {
+            transactionBlock: tx,
+            account: account,
+          },
+          {
+            onSuccess: (tx: any) => {
+              suiClient
+                .waitForTransactionBlock({
+                  digest: tx.digest,
+                })
+                .then(() => {});
+            },
+            onError: (error: any) => {
+              console.log(error);
+            },
+          }
+        );
+      }
+    } catch (error) {}
+  };
+
+  const burnNFT = async () => {
+    try {
+      if (account && nftObjectID) {
+        const tx = new TransactionBlock();
+
+        tx.moveCall({
+          target: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::burn",
+          arguments: [tx.object(nftObjectID)],
+        });
+
+        signAndExecute(
+          {
+            transactionBlock: tx,
+            account: account,
+          },
+          {
+            onSuccess: (tx: any) => {
+              suiClient
+                .waitForTransactionBlock({
+                  digest: tx.digest,
+                })
+                .then(() => navigate(ROUTES.NFT_LIST));
+            },
+            onError: (error: any) => {
+              console.log(error);
+            },
+          }
+        );
+      }
+    } catch (error) {}
+  };
 
   return (
     <div className="p-8 mb-12 flex flex-col 2xl:w-4/5 xl:w-4/5 lg:w-11/12">
@@ -14,7 +86,7 @@ const NFTDetails = () => {
         <h4 className="page-title">NFT: {nftDetail?.data.content.fields.name}</h4>
         <div>
           <button>Transer NFT</button>
-          <button>Burn NFT</button>
+          <button onClick={burnNFT}>Burn NFT</button>
         </div>
       </div>
 
