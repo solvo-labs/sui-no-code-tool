@@ -1,3 +1,5 @@
+import { MoveStruct, MoveValue, ObjectOwner } from "@mysten/sui.js/client";
+
 export type TokenForm = {
   name: string;
   symbol: string;
@@ -14,16 +16,20 @@ export type NftForm = {
 
 export type NftObject = {
   data: {
-    objectId: string;
     content: {
       dataType: string;
-      hasPublicTransfer: string;
-      type: string;
       fields: {
-        description: string;
         name: string;
         url: string;
+        description: string;
       };
+      hasPublicTransfer: boolean;
     };
+    objectId: string;
+    owner: string;
+    previousTransaction: string;
+    storageRebate: string;
+    type: string;
+    version: string;
   };
 };
