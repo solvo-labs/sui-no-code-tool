@@ -5,13 +5,15 @@ import ImageUpload from "../../components/ImageUpload";
 import { NftForm } from "../../utils/types";
 import { NFTStorage, Blob } from "nft.storage";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
+import { ROUTES } from "../../utils/enum";
 
 const CreateNFT = () => {
   const account = useCurrentAccount();
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
+  const navigate = useNavigate();
 
   const [suiClient] = useOutletContext<[suiClient: any]>();
   const [file, setFile] = useState<any>();
@@ -33,7 +35,7 @@ const CreateNFT = () => {
 
   const createNft = async () => {
     try {
-      if (account) {
+      if (account && nftFormData.asset) {
         const tx = new TransactionBlock();
         tx.moveCall({
           target: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::mint_to_sender",
@@ -52,7 +54,9 @@ const CreateNFT = () => {
                 .waitForTransactionBlock({
                   digest: tx.digest,
                 })
-                .then(() => {});
+                .then(() => {
+                  navigate(ROUTES.NFT_LIST);
+                });
             },
             onError: (error: any) => {
               console.log(error);

@@ -113,7 +113,7 @@ const NFTDetails = () => {
           <img className="w-4/12 rounded-lg" src={nftDetail?.data.content.fields.url} alt={nftDetail?.data.content.fields.name}></img>
         ) : (
           <div className="w-4/12 h-full rounded-lg bg-gray-100 flex items-center justify-center">
-            <MdInsertPhoto></MdInsertPhoto>
+            <MdInsertPhoto size={50}></MdInsertPhoto>
           </div>
         )}
         <div className="flex flex-col justify-center bg-gray-100 rounded-lg p-8 ml-4 w-8/12 h-full">
@@ -155,9 +155,13 @@ const NFTDetails = () => {
           <p className="font-bold text-lg">Name</p>
           <p>{nftDetail?.data.content.fields.name}</p>
         </div>
-        <div className="ml-8">
+        <div className="ml-8 overflow-hidden">
           <p className="font-bold text-lg">Description</p>
           <p>{nftDetail?.data.content.fields.description}</p>
+        </div>
+        <div className="ml-8">
+          <p className="font-bold text-lg">Url</p>
+          <p>{nftDetail?.data.content.fields.url}</p>
         </div>
       </div>
       <TransferNftModal
