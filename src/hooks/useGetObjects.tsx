@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { WalletAccount } from "@wallet-standard/core";
-import { PaginatedObjectsResponse, type SuiClient } from "@mysten/sui.js/client";
+import { SuiObjectResponse, type SuiClient } from "@mysten/sui.js/client";
 import { NftObject } from "../utils/types";
 
 export default function useGetObjects(wallet: WalletAccount) {
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
   const [nfts, setNfts] = useState<NftObject[]>([]);
-  const [coins, setCoins] = useState<PaginatedObjectsResponse>();
+  const [coins, setCoins] = useState<SuiObjectResponse[]>();
+  const [zeroCoins, setZeroCoins] = useState<SuiObjectResponse[]>();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -35,16 +36,31 @@ export default function useGetObjects(wallet: WalletAccount) {
         filter: {
           MatchAll: [
             {
-              MoveModule: { package: "0x02", module: "coin" },
+              MoveModule: { package: "0x2", module: "coin" },
             },
           ],
         },
         options: {
           showType: true,
+          showContent: true,
         },
       });
 
-      setCoins(coinObjects);
+      let zero: SuiObjectResponse[] = [];
+      let coinList: SuiObjectResponse[] = [];
+
+      coinObjects.data.forEach((cb: SuiObjectResponse) => {
+        const type = cb.data?.type;
+
+        if (type && type.startsWith("0x2::coin::Coin")) {
+          coinList.push(cb);
+        } else if (type?.startsWith("0x2::coin::TreasuryCap")) {
+          zero.push(cb);
+        }
+      });
+
+      setCoins(coinList);
+      setZeroCoins(zero);
       setLoading(false);
     };
 
@@ -68,8 +84,8 @@ export default function useGetObjects(wallet: WalletAccount) {
       },
     });
 
-    setCoins(coinObjects);
+    return coinObjects;
   };
 
-  return { nfts, coins, objectLoading: loading, fetchCoinObjects };
+  return { nfts, coins, zeroCoins, objectLoading: loading, fetchCoinObjects };
 }

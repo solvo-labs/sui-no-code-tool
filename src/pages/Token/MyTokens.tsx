@@ -37,25 +37,21 @@ const MyTokens = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [coinSupply, setCoinSupply] = useState<CoinSupply[]>([]);
 
-  const { coins, objectLoading } = useGetObjects(wallet!);
-
-  // in my wallets balance > 0
-  // const { data, status } = useSuiClientQuery("getAllCoins", {
-  //   owner: wallet?.address || "",
-  //   limit: 0,
-  // });
+  const { coins, zeroCoins, objectLoading } = useGetObjects(wallet!);
 
   useEffect(() => {
     const init = async () => {
-      const { coinSupplies, coinList } = await getCoins(suiClient, coins?.data);
+      const { coinSupplies, coinList } = await getCoins(suiClient, [...(coins || []), ...(zeroCoins || [])]);
+
       setCoinSupply(coinSupplies);
+
       setCoinData(coinList);
 
       setLoading(false);
     };
 
     init();
-  }, [coins, suiClient]);
+  }, [coins, suiClient, zeroCoins]);
 
   const handlePageClick = (selectedPage: { selected: number }) => {
     setPage(selectedPage.selected);
@@ -76,7 +72,7 @@ const MyTokens = () => {
       <div className="relative w-full flex flex-col justify-center items-center mb-6">
         <div className="block bg-transparent w-full">
           <div className="flex justify-center items-center">
-            <div className="w-1/2 sm:w-3/4 xs:w-full overflow-x-auto">
+            <div className="w-1/2 xs:w-full overflow-x-auto">
               <table className="w-full">
                 <thead className="text-white text-left bg-navy-blue">
                   <tr>

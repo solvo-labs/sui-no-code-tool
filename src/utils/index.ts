@@ -17,6 +17,12 @@ export const toolBox = () => {
   return { handleFileClear, handleTooltip };
 };
 
+export const uniqueArray = <T>(arr: T[]) => {
+  return arr.filter((value, index, self) => {
+    return self.indexOf(value) === index;
+  });
+};
+
 export const hexFormatter = (hex: string): string => {
   const first = hex.slice(0, 10);
   const end = hex.slice(-5);
@@ -26,12 +32,14 @@ export const hexFormatter = (hex: string): string => {
 
 export const getCoins = async (suiClient: SuiClient, coins: any) => {
   const regex = /<([^>]*)>/;
-  const coinTypes = coins.map((c: any) => {
+  const coinTypes: string[] = coins.map((c: any) => {
     return c.data?.type.match(regex)[1];
   });
 
-  const coinTypePromises = coinTypes.map((ct: string) => suiClient.getCoinMetadata({ coinType: ct }));
-  const coinSupplyPromises = coinTypes.map((ct: string) => suiClient.getTotalSupply({ coinType: ct }));
+  const uniqureCoinTypes = uniqueArray(coinTypes);
+
+  const coinTypePromises = uniqureCoinTypes.map((ct: string) => suiClient.getCoinMetadata({ coinType: ct }));
+  const coinSupplyPromises = uniqureCoinTypes.map((ct: string) => suiClient.getTotalSupply({ coinType: ct }));
   const coinList = await Promise.all(coinTypePromises);
   const coinSupplies = await Promise.all(coinSupplyPromises);
 
