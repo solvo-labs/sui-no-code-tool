@@ -1,4 +1,4 @@
-import { MoveStruct, MoveValue, ObjectOwner, SuiClient, SuiObjectData, SuiObjectResponse, SuiParsedData } from "@mysten/sui.js/client";
+import { SuiClient, SuiObjectResponse } from "@mysten/sui.js/client";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { NftObject } from "../utils/types";
@@ -27,12 +27,13 @@ export default function useGetNftDetails(objectID: string) {
           if (isMoveObject(data.content!)) {
             const fieldData = data.content.fields;
             let ownerAddress: string = "";
-            let mainField = { ["name"]: "", ["description"]: "", ["url"]: "" };
+            let mainField = { name: "", description: "", url: "" };
 
             if (!isMoveStructArray(fieldData) && !isMoveStructObject(fieldData)) {
-              mainField = { ["name"]: `${fieldData.name}`, ["description"]: `${fieldData.description}`, ["url"]: `${fieldData.url}` };
+              mainField = { name: `${fieldData.name}`, description: `${fieldData.description}`, url: `${fieldData.url}` };
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             isAddressOwner(data.owner!)
               ? (ownerAddress = data.owner.AddressOwner)
               : isObjectOwner(data.owner!)
@@ -71,7 +72,7 @@ export default function useGetNftDetails(objectID: string) {
     };
 
     init();
-  }, [objectID]);
+  }, [nftDetail, objectID, suiClient]);
 
   return { nftDetail };
 }
