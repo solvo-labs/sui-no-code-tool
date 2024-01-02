@@ -92,56 +92,22 @@ const TokenDetail = () => {
     } catch (error) {}
   };
 
-  const mergeCoins = () => {
-    try {
-      if (account && treasury && id && coinObjects) {
-        const tx = new TransactionBlock();
-
-        const primaryObject = coinObjects[0].coinObjectId;
-        if (coinObjects.length > 1) {
-          tx.mergeCoins(
-            tx.object(primaryObject),
-            coinObjects.slice(1)?.map((co) => tx.object(co.coinObjectId))
-          );
-        }
-
-        signAndExecute(
-          {
-            transactionBlock: tx,
-            account: account,
-          },
-          {
-            onSuccess: (tx: any) => {
-              suiClient
-                .waitForTransactionBlock({
-                  digest: tx.digest,
-                })
-                .then((data: any) => {
-                  console.log(data);
-                });
-            },
-            onError: (error: any) => {
-              console.log(error);
-            },
-          }
-        );
-      }
-    } catch (error) {}
-  };
-
   const burn = async () => {
     try {
       if (account && treasury && id && coinObjects && coinData) {
         const tx = new TransactionBlock();
 
         const primaryObject = coinObjects[0].coinObjectId;
-        const sampleTargetAmount = 20;
+        const sampleTargetAmount = 2900;
         const tokenDecimal = coinData.metadata?.decimals || 0;
+        const primaryBalance = coinObjects[0].balance;
 
-        tx.mergeCoins(
-          tx.object(primaryObject),
-          coinObjects.slice(1)?.map((co) => tx.object(co.coinObjectId))
-        );
+        if (Number(primaryBalance) < sampleTargetAmount) {
+          tx.mergeCoins(
+            tx.object(primaryObject),
+            coinObjects.slice(1)?.map((co) => tx.object(co.coinObjectId))
+          );
+        }
 
         const coin = tx.splitCoins(primaryObject, [tx.pure(sampleTargetAmount * Math.pow(10, tokenDecimal))]);
 
