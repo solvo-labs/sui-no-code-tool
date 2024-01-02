@@ -131,17 +131,25 @@ const TokenDetail = () => {
 
   const burn = async () => {
     try {
-      if (account && treasury && id && coinObjects) {
+      if (account && treasury && id && coinObjects && coinData) {
         const tx = new TransactionBlock();
 
         const primaryObject = coinObjects[0].coinObjectId;
-        if (coinObjects.length === 1) {
-          tx.moveCall({
-            typeArguments: [id],
-            target: `0x2::coin::burn`,
-            arguments: [tx.pure(treasury.data?.objectId), tx.pure(primaryObject)],
-          });
-        }
+        const sampleTargetAmount = 20;
+        const tokenDecimal = coinData.metadata?.decimals || 0;
+
+        tx.mergeCoins(
+          tx.object(primaryObject),
+          coinObjects.slice(1)?.map((co) => tx.object(co.coinObjectId))
+        );
+
+        const coin = tx.splitCoins(primaryObject, [tx.pure(sampleTargetAmount * Math.pow(10, tokenDecimal))]);
+
+        tx.moveCall({
+          typeArguments: [id],
+          target: `0x2::coin::burn`,
+          arguments: [tx.pure(treasury.data?.objectId), coin],
+        });
 
         signAndExecute(
           {
