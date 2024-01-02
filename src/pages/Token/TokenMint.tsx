@@ -60,7 +60,11 @@ const TokenMint = () => {
         .updateConstant(1, tokenFormData.symbol, "Symbol", "string")
         .updateConstant(2, tokenFormData.name, "Name", "string")
         .updateConstant(3, tokenFormData.description, "Description", "string")
-        .updateConstant(4, tokenFormData.asset, "Icon_Url", "string");
+        .updateConstant(4, tokenFormData.asset, "Icon_Url", "string")
+        .changeIdentifiers({
+          witness: tokenFormData.symbol,
+          WITNESS: tokenFormData.symbol.toUpperCase(),
+        });
 
       const bytesToPublish = wasm.serialize(JSON.stringify(compiledModule));
 
