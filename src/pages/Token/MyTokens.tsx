@@ -6,7 +6,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import useGetObjects from "../../hooks/useGetObjects";
 import { Loader } from "../../components/Loader";
 import { CoinMetadata, CoinSupply, SuiClient } from "@mysten/sui.js/client";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { getCoins, hexFormatter } from "../../utils";
 
 const rowsPerPage = 5;
@@ -33,11 +33,13 @@ const MyTokens = () => {
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
 
   const [page, setPage] = useState(0);
-  const [coinData, setCoinData] = useState<(CoinMetadata | null)[]>([]);
+  const [coinData, setCoinData] = useState<((CoinMetadata & { hex: string }) | null)[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [coinSupply, setCoinSupply] = useState<CoinSupply[]>([]);
 
   const { coins, zeroCoins, objectLoading } = useGetObjects(wallet!);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
@@ -45,7 +47,7 @@ const MyTokens = () => {
 
       setCoinSupply(coinSupplies);
 
-      setCoinData(coinList);
+      setCoinData(coinList as any);
 
       setLoading(false);
     };
@@ -87,7 +89,13 @@ const MyTokens = () => {
                 </thead>
                 <tbody className="text-black text-left">
                   {coinData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item: any, index: number) => (
-                    <tr key={Math.random()} className="bg-white hover:bg-blue hover:text-sui-blue-h cursor-pointer">
+                    <tr
+                      key={Math.random()}
+                      className="bg-white hover:bg-blue hover:text-sui-blue-h cursor-pointer"
+                      onClick={() => {
+                        navigate("/coin/" + item.hex);
+                      }}
+                    >
                       <td className="px-6 py-3 text-md">
                         {
                           <div className="flex items-center">

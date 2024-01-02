@@ -1,4 +1,4 @@
-import { MoveStruct, MoveValue, ObjectOwner, SuiClient, SuiParsedData } from "@mysten/sui.js/client";
+import { CoinMetadata, MoveStruct, MoveValue, ObjectOwner, SuiClient, SuiParsedData } from "@mysten/sui.js/client";
 
 export const toolBox = () => {
   const handleFileClear = (setFile: any) => {
@@ -40,7 +40,10 @@ export const getCoins = async (suiClient: SuiClient, coins: any) => {
 
   const coinTypePromises = uniqureCoinTypes.map((ct: string) => suiClient.getCoinMetadata({ coinType: ct }));
   const coinSupplyPromises = uniqureCoinTypes.map((ct: string) => suiClient.getTotalSupply({ coinType: ct }));
-  const coinList = await Promise.all(coinTypePromises);
+  const coinListP = await Promise.all(coinTypePromises);
+  const coinList = coinListP.map((cl: CoinMetadata | null, index: number) => {
+    return { ...cl, hex: uniqureCoinTypes[index] };
+  });
   const coinSupplies = await Promise.all(coinSupplyPromises);
 
   return { coinList, coinSupplies };

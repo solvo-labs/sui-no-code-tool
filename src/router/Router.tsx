@@ -38,7 +38,7 @@ const Router: React.FC = () => {
             <Route path="/freeze-account" index element={<FreezeAccount />} />
             <Route path="/close-account" index element={<CloseAccount />} />
             <Route path="/multisignature" index element={<Multisignature />} />
-            <Route path="/token/:id" index element={<TokenDetail />} />
+            <Route path={ROUTES.TOKEN_DETAILS} index element={<TokenDetail />} />
             <Route path="/stake" index element={<Stake />} />
             <Route path="/raffle" index element={<Raffle />} />
             <Route path="/tokenomics" index element={<Tokenomics />} />
