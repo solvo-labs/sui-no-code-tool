@@ -3,12 +3,14 @@ import { useOutletContext } from "react-router-dom";
 import { WalletAccount } from "@wallet-standard/core";
 import { SuiObjectResponse, type SuiClient } from "@mysten/sui.js/client";
 import { NftObject } from "../utils/types";
+import { existPush } from "../utils";
 
 export default function useGetObjects(wallet: WalletAccount) {
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
   const [nfts, setNfts] = useState<NftObject[]>([]);
-  const [coins, setCoins] = useState<SuiObjectResponse[]>();
-  const [zeroCoins, setZeroCoins] = useState<SuiObjectResponse[]>();
+  const [coins, setCoins] = useState<string[]>();
+  const [treasuryCaps, setTreasuryCaps] = useState<SuiObjectResponse[]>();
+  const [coinObjects, setCoinObjects] = useState<SuiObjectResponse[]>();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -46,21 +48,36 @@ export default function useGetObjects(wallet: WalletAccount) {
         },
       });
 
-      let zero: SuiObjectResponse[] = [];
-      let coinList: SuiObjectResponse[] = [];
+      let tcaps: SuiObjectResponse[] = [];
+      let coinObjs: SuiObjectResponse[] = [];
+      let coinList: string[] = [];
+
+      const regex = /<([^>]*)>/;
 
       coinObjects.data.forEach((cb: SuiObjectResponse) => {
         const type = cb.data?.type;
 
+        if (type === "0x2::coin::Coin<0x2::sui::SUI>") {
+          return;
+        }
+
+        if (type !== null && type !== undefined) {
+          const val = (type?.match(regex) || [])[1] || "";
+
+          existPush(coinList, val);
+        }
+
         if (type && type.startsWith("0x2::coin::Coin")) {
-          coinList.push(cb);
+          coinObjs.push(cb);
         } else if (type?.startsWith("0x2::coin::TreasuryCap")) {
-          zero.push(cb);
+          tcaps.push(cb);
         }
       });
 
+      console.log(coinList);
       setCoins(coinList);
-      setZeroCoins(zero);
+      setCoinObjects(coinObjs);
+      setTreasuryCaps(tcaps);
       setLoading(false);
     };
 
@@ -87,5 +104,5 @@ export default function useGetObjects(wallet: WalletAccount) {
     return coinObjects;
   };
 
-  return { nfts, coins, zeroCoins, objectLoading: loading, fetchCoinObjects };
+  return { nfts, coins, coinObjects, treasuryCaps, objectLoading: loading, fetchCoinObjects };
 }

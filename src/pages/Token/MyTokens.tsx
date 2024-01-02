@@ -37,13 +37,13 @@ const MyTokens = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [coinSupply, setCoinSupply] = useState<CoinSupply[]>([]);
 
-  const { coins, zeroCoins, objectLoading } = useGetObjects(wallet!);
+  const { coins, objectLoading } = useGetObjects(wallet!);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
-      const { coinSupplies, coinList } = await getCoins(suiClient, [...(coins || []), ...(zeroCoins || [])]);
+      const { coinSupplies, coinList } = await getCoins(suiClient, coins || []);
 
       setCoinSupply(coinSupplies);
 
@@ -53,7 +53,7 @@ const MyTokens = () => {
     };
 
     init();
-  }, [coins, suiClient, zeroCoins]);
+  }, [coins, suiClient]);
 
   const handlePageClick = (selectedPage: { selected: number }) => {
     setPage(selectedPage.selected);
