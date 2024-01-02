@@ -74,7 +74,6 @@ export default function useGetObjects(wallet: WalletAccount) {
         }
       });
 
-      console.log(coinList);
       setCoins(coinList);
       setCoinObjects(coinObjs);
       setTreasuryCaps(tcaps);

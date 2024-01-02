@@ -38,6 +38,13 @@ export const hexFormatter = (hex: string): string => {
   return first + "..." + end;
 };
 
+export const getCoin = async (suiClient: SuiClient, coinType: string) => {
+  const metadata = await suiClient.getCoinMetadata({ coinType });
+  const supply = await suiClient.getTotalSupply({ coinType });
+
+  return { metadata, supply };
+};
+
 export const getCoins = async (suiClient: SuiClient, coinTypes: string[]) => {
   const coinTypePromises = coinTypes.map((ct: string) => suiClient.getCoinMetadata({ coinType: ct }));
   const coinSupplyPromises = coinTypes.map((ct: string) => suiClient.getTotalSupply({ coinType: ct }));
