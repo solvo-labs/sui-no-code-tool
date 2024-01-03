@@ -5,12 +5,13 @@ export enum ROUTES {
   TOKEN_MINT = "/create-token",
   TOKEN_TRANSFER = "/token-transfer",
   TOKEN_MINT_BURN = "/mint-burn-token",
+  TOKEN_DETAILS = "/coin/:id",
   TOKENOMICS_CREATE = "",
   TOKENOMICS_MANAGE = "",
   NFT_CREATE = "/create-nfts",
   NFT_LIST = "/list-nft",
   NFT_DETAILS = "/list-nft/:id",
-  TOKEN_DETAILS = "/coin/:id",
+  CREATE_COLLECTION = "/create-collection",
 }
 
 export enum TOPBAR_PAGES {
