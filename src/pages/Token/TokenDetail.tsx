@@ -62,10 +62,14 @@ const TokenDetail = () => {
       if (account && treasury && id) {
         const tx = new TransactionBlock();
 
+        // @to-do
+        const targetAmountDummy = 1000;
+        const targetAddress = account.address;
+
         tx.moveCall({
           typeArguments: [id],
           target: `0x2::coin::mint_and_transfer`,
-          arguments: [tx.pure(treasury.data?.objectId), tx.pure(1000 * Math.pow(10, coinData?.metadata?.decimals || 0)), tx.pure(account.address)],
+          arguments: [tx.pure(treasury.data?.objectId), tx.pure(targetAmountDummy * Math.pow(10, coinData?.metadata?.decimals || 0)), tx.pure(targetAddress)],
         });
 
         signAndExecute(
@@ -97,8 +101,11 @@ const TokenDetail = () => {
       if (account && treasury && id && coinObjects && coinData) {
         const tx = new TransactionBlock();
 
-        const primaryObject = coinObjects[0].coinObjectId;
+        // @to-do
         const sampleTargetAmount = 2900;
+
+        const primaryObject = coinObjects[0].coinObjectId;
+
         const tokenDecimal = coinData.metadata?.decimals || 0;
         const primaryBalance = coinObjects[0].balance;
 
