@@ -84,3 +84,17 @@ export function isMoveStructObject(obj: MoveStruct): obj is { fields: { [key: st
 export function isCoinMetadata(obj: any): obj is { metadata: CoinMetadata; supply: CoinSupply } {
   return typeof obj === "object" && "metadata" in obj && "supply" in obj;
 }
+
+export function ownerChecker(obj: ObjectOwner): string {
+  let ownerAddress: string = "";
+
+  isAddressOwner(obj)
+    ? (ownerAddress = obj.AddressOwner)
+    : isObjectOwner(obj)
+    ? (ownerAddress = obj.ObjectOwner)
+    : isSharedOwner(obj)
+    ? (ownerAddress = obj.Shared.initial_shared_version)
+    : "Immutable";
+
+  return ownerAddress;
+}
