@@ -1,4 +1,4 @@
-import { CoinMetadata, MoveStruct, MoveValue, ObjectOwner, SuiClient, SuiParsedData } from "@mysten/sui.js/client";
+import { CoinMetadata, CoinSupply, MoveStruct, MoveValue, ObjectOwner, SuiClient, SuiParsedData } from "@mysten/sui.js/client";
 
 export const toolBox = () => {
   const handleFileClear = (setFile: any) => {
@@ -79,4 +79,8 @@ export function isMoveStructArray(obj: MoveStruct): obj is MoveValue[] {
 
 export function isMoveStructObject(obj: MoveStruct): obj is { fields: { [key: string]: MoveValue }; type: string } {
   return typeof obj === "object" && "fields" in obj && "type" in obj;
+}
+
+export function isCoinMetadata(obj: any): obj is { metadata: CoinMetadata; supply: CoinSupply } {
+  return typeof obj === "object" && "metadata" in obj && "supply" in obj;
 }

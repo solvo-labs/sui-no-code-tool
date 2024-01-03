@@ -1,9 +1,25 @@
+import { CoinMetadata, CoinSupply } from "@mysten/sui.js/client";
+
 export type TokenForm = {
   name: string;
   symbol: string;
   decimal: number;
   asset: string;
   description: string;
+};
+
+export type CoinDetail = {
+  metadata: CoinMetadata;
+  supply: CoinSupply;
+  content: {
+    dataType: string;
+    hasPublicTransfer: boolean;
+  };
+  digest: string;
+  objectId: string;
+  type: string;
+  version: string;
+  owmer: string;
 };
 
 export type NftForm = {
@@ -30,4 +46,9 @@ export type NftObject = {
     type: string;
     version: string;
   };
+};
+
+export type TransferForm = {
+  recipient: string;
+  balance: number;
 };
