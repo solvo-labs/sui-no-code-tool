@@ -53,7 +53,7 @@ const BurnCoinModal: React.FC<Props> = ({ open, disable, burnCoin, handleBurnBal
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">If you confirm this operation, the tokens you burn will be permanently destroyed, never to be recovered.</p>
-                        <Input className="mt-8 mb-4" onChange={(e: any) => handleBurnBalance(e.target.value)} placeholder="Burn balance" type="text" disable={false}></Input>
+                        <Input className="mt-8 mb-4" onChange={(e: any) => handleBurnBalance(e.target.value)} placeholder="Burn amount" type="text" disable={false}></Input>
                       </div>
                     </div>
                   </div>

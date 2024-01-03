@@ -2,18 +2,19 @@ import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { TiWarningOutline } from "react-icons/ti";
 import Input from "./Input";
+import { TransferForm } from "../utils/types";
 
 type Props = {
   open: boolean;
   disable: boolean;
   transferCoin: () => void;
-  handleRecipient: (recipient: string) => void;
-  handleBalance: (balance: number) => void;
+  form: TransferForm;
+  handleForm: (form: TransferForm) => void;
   handleOpen: () => void;
   handleClose: () => void;
 };
 
-const TransferCoinModal: React.FC<Props> = ({ open, disable, transferCoin, handleRecipient, handleBalance, handleOpen, handleClose }) => {
+const TransferCoinModal: React.FC<Props> = ({ open, disable, transferCoin, form, handleForm, handleOpen, handleClose }) => {
   const cancelButtonRef = useRef(null);
 
   return (
@@ -56,8 +57,20 @@ const TransferCoinModal: React.FC<Props> = ({ open, disable, transferCoin, handl
                         <p className="text-sm text-gray-500">
                           To transfer the coins, please enter the recipient's address below. If you enter the wrong recipient address, you may lose the coins permanently.
                         </p>
-                        <Input className="mt-8 mb-4" onChange={handleBalance} placeholder="Burn balance" type="text" disable={false}></Input>
-                        <Input className="mt-8 mb-4" onChange={handleRecipient} placeholder="Recipient address" type="text" disable={false}></Input>
+                        <Input
+                          className="mt-8 mb-4"
+                          onChange={(e: any) => handleForm({ ...form, balance: Number(e.target.value) })}
+                          placeholder="Transfer amount"
+                          type="text"
+                          disable={false}
+                        ></Input>
+                        <Input
+                          className="mt-8 mb-4"
+                          onChange={(e: any) => handleForm({ ...form, recipient: e.target.value })}
+                          placeholder="Recipient address"
+                          type="text"
+                          disable={false}
+                        ></Input>
                       </div>
                     </div>
                   </div>
