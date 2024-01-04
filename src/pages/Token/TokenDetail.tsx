@@ -10,6 +10,7 @@ import TransferCoinModal from "../../components/TransferCoinModal";
 import BurnCoinModal from "../../components/BurnCoinModal";
 import { TransferForm } from "../../utils/types";
 import { useGetTotalSupply } from "../../hooks/useGetTotalSupply";
+import MintAndTransferModal from "../../components/MintAndTransferModal";
 
 const TokenDetail = () => {
   const account = useCurrentAccount();
@@ -22,6 +23,11 @@ const TokenDetail = () => {
   const { currentBalance } = useGetTotalSupply(suiClient, account!, id!);
 
   const [burnBalance, setBurnBalance] = useState<number>(0);
+  const [mintAndTransferForm, setMintAndTransferForm] = useState<TransferForm & { checkbox: boolean }>({
+    recipient: "",
+    balance: 0,
+    checkbox: false,
+  });
   const [transferForm, setTransferForm] = useState<TransferForm>({
     recipient: "",
     balance: 0,
@@ -46,6 +52,15 @@ const TokenDetail = () => {
       [modal]: false,
     });
   };
+
+  useEffect(() => {
+    const init = async () => {
+      mintAndTransferForm.checkbox
+        ? setMintAndTransferForm({ ...mintAndTransferForm, recipient: account?.address! })
+        : setMintAndTransferForm({ ...mintAndTransferForm, recipient: "" });
+    };
+    init();
+  }, [mintAndTransferForm.checkbox]);
 
   useEffect(() => {
     const init = async () => {
@@ -100,7 +115,7 @@ const TokenDetail = () => {
         tx.moveCall({
           typeArguments: [id],
           target: `0x2::coin::mint_and_transfer`,
-          arguments: [tx.pure(coin.objectId), tx.pure(1000 * Math.pow(10, tokenDecimal)), tx.pure(account.address)],
+          arguments: [tx.pure(coin.objectId), tx.pure(mintAndTransferForm.balance * Math.pow(10, tokenDecimal)), tx.pure(mintAndTransferForm.recipient)],
         });
 
         signAndExecute(
@@ -116,6 +131,7 @@ const TokenDetail = () => {
                 })
                 .then((data: any) => {
                   console.log(data);
+                  location.reload();
                 });
             },
             onError: (error: any) => {
@@ -149,7 +165,7 @@ const TokenDetail = () => {
         tx.moveCall({
           typeArguments: [id],
           target: `0x2::coin::burn`,
-          arguments: [tx.pure("0x50d5958e596fca838badd3a686fe2e8e4d02640d408a97e5d205e263d606ab72"), splitCoin],
+          arguments: [tx.pure(coin.objectId), splitCoin],
         });
 
         signAndExecute(
@@ -165,6 +181,7 @@ const TokenDetail = () => {
                 })
                 .then((data: any) => {
                   console.log(data);
+                  location.reload();
                 });
             },
             onError: (error: any) => {
@@ -280,10 +297,10 @@ const TokenDetail = () => {
                 <BurnCoinModal
                   open={modals.burnModal}
                   burnCoin={burn}
-                  disable={false}
                   handleBurnBalance={setBurnBalance}
                   handleClose={() => handleClose(setModals, "burnModal")}
                   handleOpen={() => {}}
+                  disable={false}
                 ></BurnCoinModal>
                 <button className="bg-sky-400 text-white font-bold hover:bg-sky-500" onClick={() => handleOpen(setModals, "transferModal")}>
                   Transfer
@@ -291,15 +308,26 @@ const TokenDetail = () => {
                 <TransferCoinModal
                   open={modals.transferModal}
                   transferCoin={transfer}
-                  disable={false}
-                  handleClose={() => handleClose(setModals, "transferModal")}
-                  handleOpen={() => modals.transferModal}
                   form={transferForm}
                   handleForm={setTransferForm}
+                  handleClose={() => handleClose(setModals, "transferModal")}
+                  handleOpen={() => {}}
+                  disable={false}
                 ></TransferCoinModal>
               </>
             )}
-            <button className="bg-green-400 text-white font-bold hover:bg-green-500"> Mint and Transfer</button>
+            <button className="bg-green-400 text-white font-bold hover:bg-green-500" onClick={() => handleOpen(setModals, "mintAndTransferModal")}>
+              Mint and Transfer
+            </button>
+            <MintAndTransferModal
+              open={modals.mintAndTransferModal}
+              mintAndTransferCoin={mintAndTransfer}
+              form={mintAndTransferForm}
+              handleForm={setMintAndTransferForm}
+              handleClose={() => handleClose(setModals, "mintAndTransferModal")}
+              handleOpen={() => {}}
+              disable={false}
+            ></MintAndTransferModal>
           </div>
         </div>
       </div>
