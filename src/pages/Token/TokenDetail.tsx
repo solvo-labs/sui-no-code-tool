@@ -1,6 +1,6 @@
 import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
-import { SuiClient, SuiObjectResponse } from "@mysten/sui.js/client";
-import { useState } from "react";
+import { SuiClient } from "@mysten/sui.js/client";
+import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { Loader } from "../../components/Loader";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
@@ -9,30 +9,30 @@ import { MdInsertPhoto } from "react-icons/md";
 import TransferCoinModal from "../../components/TransferCoinModal";
 import BurnCoinModal from "../../components/BurnCoinModal";
 import { TransferForm } from "../../utils/types";
+import { useGetTotalSupply } from "../../hooks/useGetTotalSupply";
+import MintTransferCoinModal from "../../components/MintTransferCoinModal";
 
 const TokenDetail = () => {
   const account = useCurrentAccount();
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
   const { id } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
-  const [treasury, setTreasury] = useState<SuiObjectResponse>();
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
-  // const [coinData, setCoinData] = useState<{ metadata: CoinMetadata | null; supply: CoinSupply }>();
-  // const [coinObjects, setCoinObjects] = useState<CoinStruct[]>();
 
   const { coin, coinObjects } = useGetCoinDetails(account!, suiClient, id!, setLoading);
+  const { currentBalance } = useGetTotalSupply(suiClient, account!, id!);
 
-  const [modals, setModals] = useState<{ transferModal: boolean; burnModal: boolean }>({
-    transferModal: false,
-    burnModal: false,
-  });
-
+  const [burnBalance, setBurnBalance] = useState<number>(0);
   const [transferForm, setTransferForm] = useState<TransferForm>({
     recipient: "",
     balance: 0,
   });
 
-  const [burnBalance, setBurnBalance] = useState<number>(0);
+  const [modals, setModals] = useState<{ transferModal: boolean; burnModal: boolean; mintAndTransferModal: false }>({
+    transferModal: false,
+    burnModal: false,
+    mintAndTransferModal: false,
+  });
 
   const handleOpen = (setState: any, modal: any) => {
     setState({
@@ -48,60 +48,60 @@ const TokenDetail = () => {
     });
   };
 
-  // useEffect(() => {
-  //   const init = async () => {
-  //     if (id && account) {
-  //       const co = await suiClient.getCoins({ owner: account.address, coinType: id });
+  useEffect(() => {
+    const init = async () => {
+      if (id && account) {
+        const co = await suiClient.getCoins({ owner: account.address, coinType: id });
 
-  //       if (co.data.length > 0) {
-  //         setCoinObjects(co.data);
-  //       }
+        // if (co.data.length > 0) {
+        //   setCoinObjects(co.data);
+        // }
 
-  //       console.log(co.data);
+        // const coinDetails = await getCoin(suiClient, id);
 
-  //       const coinDetails = await getCoin(suiClient, id);
+        // setCoinData(coinDetails);
 
-  //       setCoinData(coinDetails);
+        const treasuryObject = await suiClient.getOwnedObjects({
+          owner: account.address,
+          filter: {
+            MatchAll: [
+              {
+                StructType: "0x2::coin::TreasuryCap<" + id + ">",
+              },
+            ],
+          },
+          options: {
+            showContent: true,
+            showType: true,
+          },
+        });
 
-  //       const treasuryObject = await suiClient.getOwnedObjects({
-  //         owner: account.address,
-  //         filter: {
-  //           MatchAll: [
-  //             {
-  //               StructType: "0x2::coin::TreasuryCap<" + id + ">",
-  //             },
-  //           ],
-  //         },
-  //         options: {
-  //           showContent: true,
-  //           showType: true,
-  //         },
-  //       });
+        const to = treasuryObject.data[0];
 
-  //       const to = treasuryObject.data[0];
+        console.log("main", to.data?.objectId);
 
-  //       // console.log(to);
+        // setTreasury(to);
+        setLoading(false);
+      } else {
+        // @to-do add toastr
+        console.log("ERROR", "Something went wrong");
+      }
+    };
 
-  //       setTreasury(to);
-  //       setLoading(false);
-  //     } else {
-  //       // @to-do add toastr
-  //       console.log("ERROR", "Something went wrong");
-  //     }
-  //   };
-
-  //   init();
-  // }, [account, id, suiClient]);
+    init();
+  }, [account, id, suiClient]);
 
   const mintAndTransfer = async () => {
     try {
-      if (account && treasury && id) {
+      if (account && id && coin) {
         const tx = new TransactionBlock();
+
+        const tokenDecimal = coin.metadata?.decimals || 0;
 
         tx.moveCall({
           typeArguments: [id],
           target: `0x2::coin::mint_and_transfer`,
-          arguments: [tx.pure(treasury.data?.objectId), tx.pure(1000 * Math.pow(10, coin?.metadata?.decimals || 0)), tx.pure(account.address)],
+          arguments: [tx.pure(coin.objectId), tx.pure(1000 * Math.pow(10, tokenDecimal)), tx.pure(account.address)],
         });
 
         signAndExecute(
@@ -133,24 +133,27 @@ const TokenDetail = () => {
       if (account && id && coinObjects && coin) {
         const tx = new TransactionBlock();
 
-        const primaryObject = coinObjects[0].coinObjectId;
+        const tokenDecimal = coin?.metadata.decimals || 0;
 
-        const tokenDecimal = coin.metadata?.decimals || 0;
+        // @to-do
+        const sampleTargetAmount = 10;
+
+        const primaryObject = coinObjects[0].coinObjectId;
         const primaryBalance = coinObjects[0].balance;
 
-        if (Number(primaryBalance) < burnBalance) {
+        if (Number(primaryBalance) < sampleTargetAmount) {
           tx.mergeCoins(
             tx.object(primaryObject),
             coinObjects.slice(1)?.map((co) => tx.object(co.coinObjectId))
           );
         }
 
-        const splitCoin = tx.splitCoins(primaryObject, [tx.pure(burnBalance * Math.pow(10, tokenDecimal))]);
+        const splitCoin = tx.splitCoins(primaryObject, [tx.pure(sampleTargetAmount * Math.pow(10, tokenDecimal))]);
 
         tx.moveCall({
           typeArguments: [id],
           target: `0x2::coin::burn`,
-          arguments: [tx.pure(coin?.objectId), splitCoin],
+          arguments: [tx.pure("0x50d5958e596fca838badd3a686fe2e8e4d02640d408a97e5d205e263d606ab72"), splitCoin],
         });
 
         signAndExecute(
@@ -166,7 +169,6 @@ const TokenDetail = () => {
                 })
                 .then((data: any) => {
                   console.log(data);
-                  location.reload();
                 });
             },
             onError: (error: any) => {
@@ -269,7 +271,7 @@ const TokenDetail = () => {
             </div>
             <div className="flex flex-row items-baseline justify-between">
               <h4 className="text-xl font-bold">{coin?.metadata.name} Balance</h4>
-              <h1 className="text-xl font-bold">{Number(coin?.supply.value) / Math.pow(10, coin?.metadata.decimals!)}</h1>
+              <h1 className="text-xl font-bold">{Number(currentBalance) / Math.pow(10, coin?.metadata.decimals!)}</h1>
             </div>
           </div>
 
@@ -285,23 +287,28 @@ const TokenDetail = () => {
                   disable={false}
                   handleBurnBalance={setBurnBalance}
                   handleClose={() => handleClose(setModals, "burnModal")}
-                  handleOpen={() => modals.burnModal}
+                  handleOpen={() => {}}
                 ></BurnCoinModal>
                 <button className="bg-sky-400 text-white font-bold hover:bg-sky-500" onClick={() => handleOpen(setModals, "transferModal")}>
                   Transfer
                 </button>
                 <TransferCoinModal
                   open={modals.transferModal}
-                  handleClose={() => handleClose(setModals, "transferModal")}
-                  handleOpen={() => modals.transferModal}
-                  handleRecipient={(e: any) => setTransferForm({ ...transferForm, recipient: e.target.value })}
-                  handleBalance={(e: any) => setTransferForm({ ...transferForm, balance: Number(e.target.value) })}
                   transferCoin={transfer}
                   disable={false}
+                  handleClose={() => handleClose(setModals, "transferModal")}
+                  handleOpen={() => modals.transferModal}
+                  form={transferForm}
+                  handleForm={setTransferForm}
                 ></TransferCoinModal>
               </>
             )}
-            <button className="bg-green-300 text-white font-bold hover:bg-green-500"> Mint and Transfer</button>
+            <button className="bg-green-400 text-white font-bold hover:bg-green-500"> Mint and Transfer</button>
+            {/* <MintTransferCoinModal disable={false} 
+            handleBalance={()=>{}}
+            handleClose={()=>{}}
+            handleOpen={()=>{}}
+            handleRecipient={}></MintTransferCoinModal> */}
           </div>
         </div>
       </div>

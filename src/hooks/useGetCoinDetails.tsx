@@ -19,16 +19,6 @@ export default function useGetCoinDetails(account: WalletAccount, suiClient: Sui
         }
 
         try {
-          const treasuryObject = await suiClient.getObject({
-            id: co.data[0].coinObjectId,
-            options: {
-              showContent: true,
-              showType: true,
-              showOwner: true,
-            },
-          });
-          treasury = treasuryObject;
-        } catch {
           const treasuryObject = await suiClient.getOwnedObjects({
             owner: account.address,
             filter: {
@@ -44,8 +34,24 @@ export default function useGetCoinDetails(account: WalletAccount, suiClient: Sui
               showOwner: true,
             },
           });
-          treasury = treasuryObject.data[0];
+
+          if (treasuryObject.data.length <= 0) {
+            throw new Error();
+          } else {
+            treasury = treasuryObject.data[0];
+          }
+        } catch {
+          const treasuryObject = await suiClient.getObject({
+            id: co.data[0].coinObjectId,
+            options: {
+              showContent: true,
+              showType: true,
+              showOwner: true,
+            },
+          });
+          treasury = treasuryObject;
         }
+        console.log(treasury);
 
         if (treasury.data) {
           const data = treasury.data;
