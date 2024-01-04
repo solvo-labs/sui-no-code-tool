@@ -10,7 +10,6 @@ import TransferCoinModal from "../../components/TransferCoinModal";
 import BurnCoinModal from "../../components/BurnCoinModal";
 import { TransferForm } from "../../utils/types";
 import { useGetTotalSupply } from "../../hooks/useGetTotalSupply";
-import MintTransferCoinModal from "../../components/MintTransferCoinModal";
 
 const TokenDetail = () => {
   const account = useCurrentAccount();
@@ -135,20 +134,17 @@ const TokenDetail = () => {
 
         const tokenDecimal = coin?.metadata.decimals || 0;
 
-        // @to-do
-        const sampleTargetAmount = 10;
-
         const primaryObject = coinObjects[0].coinObjectId;
         const primaryBalance = coinObjects[0].balance;
 
-        if (Number(primaryBalance) < sampleTargetAmount) {
+        if (Number(primaryBalance) < burnBalance) {
           tx.mergeCoins(
             tx.object(primaryObject),
             coinObjects.slice(1)?.map((co) => tx.object(co.coinObjectId))
           );
         }
 
-        const splitCoin = tx.splitCoins(primaryObject, [tx.pure(sampleTargetAmount * Math.pow(10, tokenDecimal))]);
+        const splitCoin = tx.splitCoins(primaryObject, [tx.pure(burnBalance * Math.pow(10, tokenDecimal))]);
 
         tx.moveCall({
           typeArguments: [id],
@@ -304,11 +300,6 @@ const TokenDetail = () => {
               </>
             )}
             <button className="bg-green-400 text-white font-bold hover:bg-green-500"> Mint and Transfer</button>
-            {/* <MintTransferCoinModal disable={false} 
-            handleBalance={()=>{}}
-            handleClose={()=>{}}
-            handleOpen={()=>{}}
-            handleRecipient={}></MintTransferCoinModal> */}
           </div>
         </div>
       </div>
