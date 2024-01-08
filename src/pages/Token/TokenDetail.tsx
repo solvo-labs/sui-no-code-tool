@@ -60,7 +60,7 @@ const TokenDetail = () => {
         : setMintAndTransferForm({ ...mintAndTransferForm, recipient: "" });
     };
     init();
-  }, [mintAndTransferForm.checkbox]);
+  }, [account?.address, mintAndTransferForm, mintAndTransferForm.checkbox]);
 
   useEffect(() => {
     const init = async () => {
@@ -131,7 +131,7 @@ const TokenDetail = () => {
                 })
                 .then((data: any) => {
                   console.log(data);
-                  location.reload();
+                  window.location.reload();
                 });
             },
             onError: (error: any) => {
@@ -181,7 +181,7 @@ const TokenDetail = () => {
                 })
                 .then((data: any) => {
                   console.log(data);
-                  location.reload();
+                  window.location.reload();
                 });
             },
             onError: (error: any) => {
@@ -226,7 +226,7 @@ const TokenDetail = () => {
                 })
                 .then((data: any) => {
                   console.log(data);
-                  location.reload();
+                  window.location.reload();
                 });
             },
             onError: (error: any) => {
@@ -246,9 +246,10 @@ const TokenDetail = () => {
     <div className="p-8 flex flex-col 2xl:w-10/12 xl:w-10/12 lg:w-11/12 gap-4 h-max">
       <div className="bg-gray-100 p-4 flex flex-row items-center rounded-lg">
         {coin?.metadata.iconUrl ? (
+          // eslint-disable-next-line jsx-a11y/alt-text
           <img className="w-24 rounded-full" src={coin?.metadata.iconUrl}></img>
         ) : (
-          <div className="w-24 flex items-center justify-center border-2 border-gray-300 w-[100px] h-[100px] rounded-full bg-gray-100">
+          <div className="w-24 flex items-center justify-center border-2 border-gray-300 h-[100px] rounded-full bg-gray-100">
             <MdInsertPhoto style={{ color: "gray" }}></MdInsertPhoto>
           </div>
         )}

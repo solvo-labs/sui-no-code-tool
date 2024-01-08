@@ -23,6 +23,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import CreateNFT from "../pages/NFT/CreateNFT";
 import ListNFTs from "../pages/NFT/ListNFTs";
 import NFTDetails from "../pages/NFT/NFTDetails";
+import CreateCollection from "../pages/NFT/CreateCollection";
 
 const Router: React.FC = () => {
   return (
@@ -50,6 +51,7 @@ const Router: React.FC = () => {
             <Route path={ROUTES.NFT_CREATE} index element={<CreateNFT />} />
             <Route path={ROUTES.NFT_LIST} index element={<ListNFTs />} />
             <Route path={ROUTES.NFT_DETAILS} index element={<NFTDetails />} />
+            <Route path={ROUTES.CREATE_COLLECTION} index element={<CreateCollection />} />
           </Route>
           <Route path={ROUTES.LOGIN} index element={<Login />} />
           <Route path="*" index element={<NotFoundPage />} />
