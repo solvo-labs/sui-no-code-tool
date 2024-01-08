@@ -38,7 +38,7 @@ const CreateNFT = () => {
       if (account && nftFormData.asset) {
         const tx = new TransactionBlock();
         tx.moveCall({
-          target: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::mint_to_sender",
+          target: "0x602e6803362eedbc520c0b3ad9f480e86cb8a37d465d0eacd47adefe85e5692c::test::mint_to_sender",
           arguments: [tx.pure.string(nftFormData.name), tx.pure.string(nftFormData.symbol), tx.pure.string(nftFormData.asset)],
           typeArguments: [],
         });
@@ -103,6 +103,7 @@ const CreateNFT = () => {
           title="Name"
           type="text"
           key={"nftName"}
+          value={nftFormData.name}
           isRequired={true}
           disable={fileLoading}
         ></Input>
@@ -113,6 +114,7 @@ const CreateNFT = () => {
           type="text"
           key={"nftDescription"}
           isRequired={true}
+          value={nftFormData.symbol}
           disable={fileLoading}
         ></Input>
         <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={handleClear} title="Upload image for NFT"></ImageUpload>

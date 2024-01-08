@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { WalletAccount } from "@wallet-standard/core";
 import { SuiObjectResponse, type SuiClient } from "@mysten/sui.js/client";
-import { NftObject } from "../utils/types";
 import { existPush } from "../utils";
+import { NftCollection, NftObject } from "../utils/types";
 
 export default function useGetObjects(wallet: WalletAccount) {
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
@@ -12,26 +12,10 @@ export default function useGetObjects(wallet: WalletAccount) {
   const [treasuryCaps, setTreasuryCaps] = useState<SuiObjectResponse[]>();
   const [coinObjects, setCoinObjects] = useState<SuiObjectResponse[]>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [collections, setCollections] = useState<NftCollection[]>([]);
 
   useEffect(() => {
     const init = async () => {
-      const nftObjects = await suiClient.getOwnedObjects({
-        owner: wallet.address,
-        filter: {
-          MatchAll: [
-            {
-              StructType: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::DevNetNFT",
-            },
-          ],
-        },
-        options: {
-          showContent: true,
-          showType: true,
-        },
-      });
-
-      setNfts(nftObjects.data as any);
-
       const coinObjects = await suiClient.getOwnedObjects({
         owner: wallet.address,
         limit: 50,
@@ -74,10 +58,70 @@ export default function useGetObjects(wallet: WalletAccount) {
         }
       });
 
+      const packages: any = await suiClient.getOwnedObjects({
+        owner: wallet.address,
+        filter: {
+          MatchAll: [
+            {
+              StructType: "0x2::package::UpgradeCap",
+            },
+          ],
+        },
+        options: {
+          showContent: true,
+          showType: true,
+        },
+      });
+
+      const packageDetailsPromises = packages.data.map((pm: any) => {
+        return suiClient.getObject({
+          id: pm.data?.content.fields.package,
+          options: {
+            showBcs: true,
+          },
+        });
+      });
+
+      const packageDetails = await Promise.all(packageDetailsPromises);
+      const collectionList: NftCollection[] = [];
+
+      packageDetails.forEach((pm) => {
+        if (pm.data.bcs.typeOriginTable && pm.data.bcs.typeOriginTable.length > 1) {
+          if (pm.data.bcs.typeOriginTable[1].struct_name === "NFTMinted") {
+            const collection_name: string = pm.data.bcs.typeOriginTable[0].struct_name;
+            collectionList.push({ packageId: pm.data.objectId + "::" + collection_name.toLowerCase(), collectionName: collection_name });
+          }
+        }
+      });
+
+      console.log(collectionList);
+
+      const nftObjectPromises = collectionList.map((cl) => {
+        return suiClient.getOwnedObjects({
+          owner: wallet.address,
+          filter: {
+            MatchAll: [
+              {
+                StructType: cl.packageId + "::" + cl.collectionName.toUpperCase(),
+              },
+            ],
+          },
+          options: {
+            showContent: true,
+            showType: true,
+          },
+        });
+      });
+
+      const nftObjects = await Promise.all(nftObjectPromises);
+
+      // setNfts([nftObjects[0].data] as any);
+
       setCoins(coinList);
       setCoinObjects(coinObjs);
       setTreasuryCaps(tcaps);
       setLoading(false);
+      setCollections(collectionList);
     };
 
     init();
@@ -103,5 +147,5 @@ export default function useGetObjects(wallet: WalletAccount) {
     return coinObjects;
   };
 
-  return { nfts, coins, coinObjects, treasuryCaps, objectLoading: loading, fetchCoinObjects };
+  return { coins, coinObjects, treasuryCaps, collections, objectLoading: loading, fetchCoinObjects };
 }

@@ -52,3 +52,8 @@ export type TransferForm = {
   recipient: string;
   balance: number;
 };
+
+export type NftCollection = {
+  packageId: string;
+  collectionName: string;
+};
