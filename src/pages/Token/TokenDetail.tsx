@@ -65,16 +65,6 @@ const TokenDetail = () => {
   useEffect(() => {
     const init = async () => {
       if (id && account) {
-        const co = await suiClient.getCoins({ owner: account.address, coinType: id });
-
-        // if (co.data.length > 0) {
-        //   setCoinObjects(co.data);
-        // }
-
-        // const coinDetails = await getCoin(suiClient, id);
-
-        // setCoinData(coinDetails);
-
         const treasuryObject = await suiClient.getOwnedObjects({
           owner: account.address,
           filter: {
