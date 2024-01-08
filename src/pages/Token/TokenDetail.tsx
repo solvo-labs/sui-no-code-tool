@@ -55,15 +55,6 @@ const TokenDetail = () => {
 
   useEffect(() => {
     const init = async () => {
-      mintAndTransferForm.checkbox
-        ? setMintAndTransferForm({ ...mintAndTransferForm, recipient: account?.address! })
-        : setMintAndTransferForm({ ...mintAndTransferForm, recipient: "" });
-    };
-    init();
-  }, [account?.address, mintAndTransferForm, mintAndTransferForm.checkbox]);
-
-  useEffect(() => {
-    const init = async () => {
       if (id && account) {
         const treasuryObject = await suiClient.getOwnedObjects({
           owner: account.address,
@@ -292,7 +283,7 @@ const TokenDetail = () => {
                   handleClose={() => handleClose(setModals, "burnModal")}
                   handleOpen={() => {}}
                   disable={false}
-                ></BurnCoinModal>
+                />
                 <button className="bg-sky-400 text-white font-bold hover:bg-sky-500" onClick={() => handleOpen(setModals, "transferModal")}>
                   Transfer
                 </button>
@@ -304,7 +295,7 @@ const TokenDetail = () => {
                   handleClose={() => handleClose(setModals, "transferModal")}
                   handleOpen={() => {}}
                   disable={false}
-                ></TransferCoinModal>
+                />
               </>
             )}
             <button className="bg-green-400 text-white font-bold hover:bg-green-500" onClick={() => handleOpen(setModals, "mintAndTransferModal")}>
@@ -317,8 +308,9 @@ const TokenDetail = () => {
               handleForm={setMintAndTransferForm}
               handleClose={() => handleClose(setModals, "mintAndTransferModal")}
               handleOpen={() => {}}
+              address={account?.address || ""}
               disable={false}
-            ></MintAndTransferModal>
+            />
           </div>
         </div>
       </div>

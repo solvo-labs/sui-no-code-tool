@@ -10,12 +10,13 @@ type Props = {
   disable: boolean;
   mintAndTransferCoin: () => void;
   form: TransferForm & { checkbox: boolean };
+  address: string;
   handleForm: (form: TransferForm & { checkbox: boolean }) => void;
   handleOpen: () => void;
   handleClose: () => void;
 };
 
-const MintAndTransferModal: React.FC<Props> = ({ open, disable, mintAndTransferCoin, form, handleForm, handleOpen, handleClose }) => {
+const MintAndTransferModal: React.FC<Props> = ({ open, disable, mintAndTransferCoin, form, address, handleForm, handleOpen, handleClose }) => {
   const cancelButtonRef = useRef(null);
 
   return (
@@ -77,7 +78,7 @@ const MintAndTransferModal: React.FC<Props> = ({ open, disable, mintAndTransferC
                         <Checkbox
                           checked={form.checkbox}
                           text="I want to send it to my own wallet"
-                          onChange={(e: any) => handleForm({ ...form, checkbox: e.target.checked })}
+                          onChange={(e: any) => handleForm({ ...form, checkbox: e.target.checked, recipient: e.target.checked ? address : "" })}
                         ></Checkbox>
                       </div>
                     </div>
