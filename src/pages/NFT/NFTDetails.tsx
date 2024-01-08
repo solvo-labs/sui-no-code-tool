@@ -99,12 +99,16 @@ const NFTDetails = () => {
   };
 
   return (
-    <div className="p-8 mb-12 flex flex-col 2xl:w-4/5 xl:w-4/5 lg:w-11/12">
+    <div className="p-8 flex flex-col 2xl:w-4/5 xl:w-4/5 lg:w-11/12">
       <div className="flex flex-row justify-between items-baseline">
         <h4 className="page-title">NFT: {nftDetail?.data.content.fields.name}</h4>
         <div>
-          <button onClick={() => handleOpen(setTransferOpen)}>Transer NFT</button>
-          <button onClick={() => handleOpen(setBurnOpen)}>Burn NFT</button>
+          <button className="hover:bg-h-gray" onClick={() => handleOpen(setTransferOpen)}>
+            Transer NFT
+          </button>
+          <button className="hover:bg-h-gray" onClick={() => handleOpen(setBurnOpen)}>
+            Burn NFT
+          </button>
         </div>
       </div>
 

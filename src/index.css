@@ -31,7 +31,7 @@ button {
 }
 button:hover {
   /* border-color: #3898ec; */
-  background-color: rgb(243 244 246);
+  /* background-color: #f3f4f6; */
   animation: focusOut 5s forwards;
 }
 
