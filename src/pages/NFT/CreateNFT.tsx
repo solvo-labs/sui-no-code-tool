@@ -38,7 +38,7 @@ const CreateNFT = () => {
       if (account && nftFormData.asset) {
         const tx = new TransactionBlock();
         tx.moveCall({
-          target: "0x602e6803362eedbc520c0b3ad9f480e86cb8a37d465d0eacd47adefe85e5692c::test::mint_to_sender",
+          target: "0xa5fc600afc6f79ddb371372243575a875c2f14af64da39054167cfaf2dc112ac::col::mint_to_sender",
           arguments: [tx.pure.string(nftFormData.name), tx.pure.string(nftFormData.symbol), tx.pure.string(nftFormData.asset)],
           typeArguments: [],
         });

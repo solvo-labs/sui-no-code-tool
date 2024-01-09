@@ -94,8 +94,6 @@ export default function useGetObjects(wallet: WalletAccount) {
         }
       });
 
-      console.log(collectionList);
-
       const nftObjectPromises = collectionList.map((cl) => {
         return suiClient.getOwnedObjects({
           owner: wallet.address,
@@ -113,9 +111,16 @@ export default function useGetObjects(wallet: WalletAccount) {
         });
       });
 
+      const allNfts: any = [];
       const nftObjects = await Promise.all(nftObjectPromises);
 
-      // setNfts([nftObjects[0].data] as any);
+      nftObjects.forEach((nftObj) => {
+        if (nftObj.data.length > 0) {
+          allNfts.push(...nftObj.data);
+        }
+      });
+
+      setNfts(allNfts);
 
       setCoins(coinList);
       setCoinObjects(coinObjs);
@@ -147,5 +152,5 @@ export default function useGetObjects(wallet: WalletAccount) {
     return coinObjects;
   };
 
-  return { coins, coinObjects, treasuryCaps, collections, objectLoading: loading, fetchCoinObjects };
+  return { coins, coinObjects, treasuryCaps, collections, nfts, objectLoading: loading, fetchCoinObjects };
 }
