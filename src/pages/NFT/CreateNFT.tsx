@@ -9,6 +9,9 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
 import { ROUTES } from "../../utils/enum";
+import { Select } from "../../components/Select";
+import useGetObjects from "../../hooks/useGetObjects";
+import { Loader } from "../../components/Loader";
 
 const CreateNFT = () => {
   const account = useCurrentAccount();
@@ -23,6 +26,8 @@ const CreateNFT = () => {
     symbol: "",
     asset: "",
   });
+  const { collections, objectLoading } = useGetObjects(account!);
+  const [selectedOption, setSelectedOption] = useState<string>("");
 
   const handleClear = () => {
     setFile(null);
@@ -35,10 +40,13 @@ const CreateNFT = () => {
 
   const createNft = async () => {
     try {
+      console.log(account, nftFormData.asset);
       if (account && nftFormData.asset) {
         const tx = new TransactionBlock();
+        const target: any = selectedOption + "::mint_to_sender";
+
         tx.moveCall({
-          target: "0xa5fc600afc6f79ddb371372243575a875c2f14af64da39054167cfaf2dc112ac::col::mint_to_sender",
+          target,
           arguments: [tx.pure.string(nftFormData.name), tx.pure.string(nftFormData.symbol), tx.pure.string(nftFormData.asset)],
           typeArguments: [],
         });
@@ -91,12 +99,24 @@ const CreateNFT = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
+  if (objectLoading) {
+    return <Loader />;
+  }
+
   return (
     <div className="flex flex-col items-center my-12">
       <div>
         <p className="page-title">Create your NFT</p>
       </div>
       <div className="flex flex-col w-96 gap-8">
+        <Select
+          title="Collection"
+          options={collections.map((co) => {
+            return { key: co.collectionName, value: co.packageId };
+          })}
+          onSelect={(value) => setSelectedOption(value)}
+          selectedOption={selectedOption}
+        />
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setNftFormData({ ...nftFormData, name: event?.target.value })}
           placeholder="Name"
