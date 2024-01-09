@@ -3,13 +3,12 @@ import { Navigate, Outlet } from "react-router-dom";
 import TopBar from "../components/TopBar";
 
 import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
-import { useCurrentAccount, useCurrentWallet } from "@mysten/dapp-kit";
+import { useCurrentWallet } from "@mysten/dapp-kit";
 import { Loader } from "../components/Loader";
+import { sleep } from "../utils";
 
 const ProtectedRoute: React.FC = () => {
-  const account = useCurrentAccount();
-
-  const { isConnected, isDisconnected, currentWallet, isConnecting } = useCurrentWallet();
+  const { isConnected, isConnecting } = useCurrentWallet();
   const [loading, setLoading] = useState<boolean>(true);
 
   const suiClient = new SuiClient({
@@ -17,14 +16,10 @@ const ProtectedRoute: React.FC = () => {
   });
 
   useEffect(() => {
-    const localKey = localStorage.getItem("WK__LAST_CONNECT_WALLET_NAME");
-    if (localKey === null) {
+    sleep(100).then(() => {
       setLoading(false);
-    }
-    if (currentWallet && isConnected) {
-      setLoading(false);
-    }
-  }, [isConnected, currentWallet, isDisconnected, account]);
+    });
+  }, []);
 
   if (isConnecting || loading) {
     return <Loader />;
