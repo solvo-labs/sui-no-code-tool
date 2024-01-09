@@ -3,11 +3,16 @@ import useGetObjects from "../../hooks/useGetObjects";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { NftObject } from "../../utils/types";
 import { useNavigate } from "react-router-dom";
+import { Loader } from "../../components/Loader";
 
 const ListNFTs = () => {
   const wallet = useCurrentAccount();
   const navigate = useNavigate();
   const { nfts, objectLoading } = useGetObjects(wallet!);
+
+  if (objectLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className="p-8 2xl:w-11/12 xl:w-11/12 md:w-11/12 sm:w-full xs:w-full 2xs:w-full">

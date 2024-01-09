@@ -22,7 +22,8 @@ const NFTCard: React.FC<Props> = ({ nft, onClick }) => {
           <p className="font-bold text-xl">{nft.data.content.fields.name}</p>
           <p className="">{nft.data.content.fields.description.length > 30 ? nft.data.content.fields.description.slice(0, 20) + " ..." : nft.data.content.fields.description}</p>
           {/* <Tooltip isOpen={true} position="bottom" title={nft.data.content.fields.description}></Tooltip> */}
-          <p>{nft.data.objectId.slice(0, 5) + "..." + nft.data.objectId.slice(-5)} </p>
+          <p>Object: {nft.data.objectId.slice(0, 5) + "..." + nft.data.objectId.slice(-5)} </p>
+          <p>Collection: {nft.data.type.slice(0, 5) + "..." + nft.data.type.slice(-5)} </p>
         </div>
       </div>
     </div>
