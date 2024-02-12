@@ -24,7 +24,7 @@ export type CoinDetail = {
 
 export type NftForm = {
   name: string;
-  symbol: string;
+  description: string;
   asset: string;
 };
 

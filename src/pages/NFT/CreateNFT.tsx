@@ -23,7 +23,7 @@ const CreateNFT = () => {
   const [fileLoading, setFileLoading] = useState<boolean>(false);
   const [nftFormData, setNftFormData] = useState<NftForm>({
     name: "",
-    symbol: "",
+    description: "",
     asset: "",
   });
   const { collections, objectLoading } = useGetObjects(account!);
@@ -35,7 +35,7 @@ const CreateNFT = () => {
   };
 
   const disable = useMemo(() => {
-    return fileLoading || !nftFormData.name || !nftFormData.symbol;
+    return fileLoading || !nftFormData.name || !nftFormData.description;
   }, [fileLoading, nftFormData]);
 
   const createNft = async () => {
@@ -47,7 +47,7 @@ const CreateNFT = () => {
 
         tx.moveCall({
           target,
-          arguments: [tx.pure.string(nftFormData.name), tx.pure.string(nftFormData.symbol), tx.pure.string(nftFormData.asset)],
+          arguments: [tx.pure.string(nftFormData.name), tx.pure(nftFormData.description), tx.pure.string(nftFormData.asset)],
           typeArguments: [],
         });
 
@@ -128,13 +128,13 @@ const CreateNFT = () => {
           disable={fileLoading}
         ></Input>
         <Input
-          onChange={(event: ChangeEvent<HTMLInputElement>) => setNftFormData({ ...nftFormData, symbol: event?.target.value })}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setNftFormData({ ...nftFormData, description: event?.target.value })}
           placeholder="Description"
           title="Description"
           type="text"
           key={"nftDescription"}
           isRequired={true}
-          value={nftFormData.symbol}
+          value={nftFormData.description}
           disable={fileLoading}
         ></Input>
         <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={handleClear} title="Upload image for NFT"></ImageUpload>
