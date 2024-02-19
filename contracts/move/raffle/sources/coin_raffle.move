@@ -129,4 +129,19 @@ module raffle::coin_raffle {
         object::delete(id);
         raffle.claimed = true;
   }
+
+  public entry fun get_raffles(custom_raffles : &CustomRaffles) : vector<address> {
+    let table_length = table::length(&custom_raffles.raffles);
+    let index = 0;
+    let results = vector::empty<address>();
+
+    while ( index <= table_length ) {
+            if ( table::contains(&custom_raffles.raffles, index) ) {
+                let raffle_address = *table::borrow(&custom_raffles.raffles, index);
+                vector::push_back(&mut results, raffle_address);
+            };
+            index = index + 1
+        };
+    return results
+  }
 }
