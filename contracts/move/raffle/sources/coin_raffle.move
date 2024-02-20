@@ -10,6 +10,8 @@ module raffle::coin_raffle {
    use std::option::{Self, Option};
    use sui::clock::{Self, Clock};
    use sui::sui::{SUI};
+   use sui::hmac::hmac_sha3_256;
+   use raffle::counter_nft::{Self, Counter};
 
      /// For when Coin balance is too low.
   const ENotEnough: u64 = 0;
@@ -17,6 +19,8 @@ module raffle::coin_raffle {
   const EWinnerAlreadyExist: u64 = 2;
   const EWrongTicket: u64 = 3;
   const EWaitingClaim: u64 = 4;
+  const EEndTimeExpire: u64 = 5;
+  const EEndTimeDoesntExpire: u64 = 6;
 
   struct CustomRaffles has key , store {
         id: UID,
@@ -35,6 +39,7 @@ module raffle::coin_raffle {
         winner : Option<u64>,
         owner : address,
         claimed : bool,
+        vrf_input: vector<u8>,
   }
 
   struct Ticket has key ,store {
@@ -52,15 +57,17 @@ module raffle::coin_raffle {
       transfer::share_object(raffle_table);
   }
 
-  public entry fun create_raffle<T>(custom_raffles : &mut CustomRaffles ,name : vector<u8>, ticket_price : u64 , balance : Coin<T> ,end_time: &Clock, ctx: &mut TxContext) {
+  public entry fun create_raffle<T>(custom_raffles : &mut CustomRaffles ,name : vector<u8>, ticket_price : u64 , balance : Coin<T> , period: u64 ,counter: &mut Counter, clock: &Clock ,ctx: &mut TxContext) {
     let table_uid = object::new(ctx);
     let table_address = object::uid_to_address(&table_uid);
+
+    let vrf_input = counter_nft::get_vrf_input_and_increment(counter);
 
     let raffle = Raffle<T> {
             id: table_uid,
             name : string::utf8(name),
             participants : vector::empty<address>(),
-            end_time : clock::timestamp_ms(end_time),
+            end_time : clock::timestamp_ms(clock) + period,
             ticket_count : 0,
             ticket_price,
             reward : coin::into_balance<T>(balance),
@@ -68,6 +75,7 @@ module raffle::coin_raffle {
             owner : tx_context::sender(ctx),
             balance : balance::zero(),
             claimed : false,
+            vrf_input,  
     };
 
    transfer::share_object(raffle);
@@ -77,8 +85,9 @@ module raffle::coin_raffle {
    table::add(&mut custom_raffles.raffles, index + 1, table_address);
   }
   
-  public entry fun buy_ticket<T>(raffle: &mut Raffle<T>,payment: &mut Coin<SUI>, ctx: &mut TxContext){
+  public entry fun buy_ticket<T>(raffle: &mut Raffle<T>, payment: &mut Coin<SUI>, clock: &Clock , ctx: &mut TxContext){
     assert!(coin::value(payment) >= raffle.ticket_price, ENotEnough);
+    assert!(raffle.end_time >= clock::timestamp_ms(clock), EEndTimeExpire);
 
     let buyer = tx_context::sender(ctx);
     let participant_index = vector::length(&raffle.participants);
@@ -100,15 +109,21 @@ module raffle::coin_raffle {
     transfer::public_transfer(ticket, buyer);
   } 
 
-  public entry fun draw <T>(raffle : &mut Raffle<T> ,ctx: &mut TxContext ) {
+  public entry fun draw<T>(raffle : &mut Raffle<T>, bls_sig : vector<u8>,clock: &Clock, ctx: &mut TxContext ) {
     assert!(tx_context::sender(ctx) == raffle.owner, ENotAdmin);
+    assert!(option::is_none(&raffle.winner), EWinnerAlreadyExist);
+    assert!(raffle.end_time < clock::timestamp_ms(clock), EEndTimeDoesntExpire);
 
-    raffle.winner = option::some(0);
+    let random = hmac_sha3_256(&bls_sig, &object::id_to_bytes(&object::id(raffle)));
+    let winner = safe_selection(raffle.ticket_count, &random);
+    
+    raffle.winner = option::some(winner);
   }
 
-  public entry fun complete<T>(raffle: &mut Raffle<T> , ctx: &mut TxContext){
+  public entry fun complete<T>(raffle: &mut Raffle<T> ,clock: &Clock, ctx: &mut TxContext){
       assert!(raffle.claimed == true, EWaitingClaim);
       assert!(tx_context::sender(ctx) == raffle.owner, ENotAdmin);
+      assert!(raffle.end_time < clock::timestamp_ms(clock), EEndTimeDoesntExpire);
 
       let balance = balance::value(&raffle.balance);
       let coin = coin::from_balance(balance::split(&mut raffle.balance, balance), ctx);
@@ -130,6 +145,8 @@ module raffle::coin_raffle {
         raffle.claimed = true;
   }
 
+
+  // getters
   public entry fun get_raffles(custom_raffles : &CustomRaffles) : vector<address> {
     let table_length = table::length(&custom_raffles.raffles);
     let index = 0;
@@ -144,4 +161,32 @@ module raffle::coin_raffle {
         };
     return results
   }
+
+  public fun get_vrf_input<T>(raffle: &Raffle<T>): vector<u8> {
+        raffle.vrf_input
+  }
+
+  // ref -> https://github.com/MystenLabs/sui/blob/main/sui_programmability/examples/games/sources/drand_lib.move#L67
+  // Converts the first 16 bytes of rnd to a u128 number and outputs its modulo with input n.
+  // Since n is u64, the output is at most 2^{-64} biased assuming rnd is uniformly random.
+  public fun safe_selection(n: u64, rnd: &vector<u8>): u64 {
+        let m: u128 = 0;
+        let i = 0;
+        while (i < 16) {
+            m = m << 8;
+            let curr_byte = *vector::borrow(rnd, i);
+            m = m + (curr_byte as u128);
+            i = i + 1;
+        };
+        let n_128 = (n as u128);
+        let module_128  = m % n_128;
+        let res = (module_128 as u64);
+        res
+  }
+
+  // public entry fun get_winner<T>(raffle : &Raffle<T>) : address {
+  //   let data = *vector::borrow(&raffle.participants ,option::some(&raffle.winner));
+
+  //   return data
+  // }
 }
