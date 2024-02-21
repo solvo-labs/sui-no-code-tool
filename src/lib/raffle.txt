@@ -1,0 +1,143 @@
+const { SuiClient, getFullnodeUrl } = require("@mysten/sui.js/client");
+const { Ed25519Keypair } = require("@mysten/sui.js/keypairs/ed25519");
+const { TransactionBlock } = require("@mysten/sui.js/transactions");
+const { SUI_TYPE_ARG } = require("@mysten/sui.js/utils");
+const { fromHEX } = require("@mysten/sui.js/utils");
+const yargs = require("yargs");
+const { bcs } = require("@mysten/sui.js/bcs");
+const { normalizeSuiObjectId, MIST_PER_SUI } = require("@mysten/sui.js/utils");
+const dotenv = require("dotenv");
+const { BCS, getSuiMoveConfig } = require("@mysten/bcs");
+const bls = require("@noble/bls12-381");
+dotenv.config();
+
+const keypair = Ed25519Keypair.fromSecretKey(fromHEX(process.env.SECRET_KEY));
+
+const getVrf = async (packageId, raffle, token, suiClient) => {
+  const tx = new TransactionBlock();
+
+  tx.moveCall({
+    target: `${packageId}::coin_raffle::get_vrf_input`,
+    typeArguments: [token],
+    arguments: [tx.object(raffle)],
+  });
+
+  return suiClient
+    .devInspectTransactionBlock({
+      transactionBlock: tx,
+      sender: "0x7777777777777777777777777777777777777777777777777777777777777777",
+    })
+    .then((resp) => {
+      if (resp.effects.status.status == "success") {
+        // Deserialize the returned value into an array of LookupResult objects
+
+        const returnValue = resp.results[0].returnValues[0]; // grab the 1st and only tuple
+
+        const valueType = returnValue[1];
+        const valueData = Uint8Array.from(returnValue[0]);
+
+        const bcs = new BCS(getSuiMoveConfig());
+        const lookupResults = bcs.de(valueType, valueData, "hex");
+
+        return lookupResults;
+      } else {
+        throw new Error(resp.effects.status.error);
+      }
+    });
+};
+
+const init = async () => {
+  // Set up provider.
+  const suiClient = new SuiClient({
+    url: getFullnodeUrl("testnet"),
+  });
+
+  // Create state.
+
+  const tx = new TransactionBlock();
+  const token = "0xc5b7ebdece3db6b37354a7c569cef76009ef0b2cd7bc93d2ee0b5b86b6ec4733::a::A";
+  const raffles = "0x46ee4afa87509bdd3703dcfddf30e7ee88efc1c02e33d2fff535f15b5fb87246";
+  const packageId = "0xc4461a6e4814d6e07a6a962058c3b8293b033f6c1470c495880ab4540599c252";
+
+  const raffle = "0x352300e7a711dc9d5e5d2ecb3ce69f5076fd70a533e27af76c8f1f213559123c";
+
+  const ticketPrice = (MIST_PER_SUI * BigInt(1)) / BigInt(10);
+
+  // --- STEP 1 ---- CREATE COUNTER
+
+  // const [counterNft] = tx.moveCall({
+  //   target: `${packageId}::counter_nft::mint`,
+  // });
+
+  // tx.moveCall({
+  //   target: `${packageId}::counter_nft::transfer_to_sender`,
+  //   arguments: [counterNft],
+  // });
+
+  // ---STEP 2 ---- CREATE RAFFLE
+
+  // const splitCoin = tx.splitCoins(tx.object("0x8d46313851b6936d9ba84345393667b2014d99ecd91aaa8c43830d0f845edf50"), [tx.pure(10 * Math.pow(10, 8))]);
+  // // (custom_raffles : &mut CustomRaffles ,name : vector<u8>, ticket_price : u64 , period: u64 ,balance : Coin<T> ,counter: &mut Counter, clock: &Clock ,ctx: &mut TxContext)
+  // tx.moveCall({
+  //   typeArguments: [token],
+  //   target: `${packageId}::coin_raffle::create_raffle`,
+  //   arguments: [
+  //     tx.pure(raffles),
+  //     tx.pure("Last"),
+  //     tx.pure(ticketPrice),
+  //     tx.pure(600000),
+  //     splitCoin,
+  //     tx.object("0x21fb3b0a003fe953cad2a6e0f12d5de2d1ee3092b89c55329232970387b51790"),
+  //     tx.pure("0x6"),
+  //   ],
+  // });
+
+  // ---STEP 3 ---- BUY TICKET
+  // tx.setGasBudget(ticketPrice);
+
+  // tx.moveCall({
+  //   target: `${packageId}::coin_raffle::buy_ticket`,
+  //   typeArguments: [token],
+  //   arguments: [tx.object(raffle), tx.pure("0x8b75bbdfd2102465122f8b591697ad0f2690b5f98957bd11ea7760c5dd0b9cb5"), tx.pure("0x6")],
+  // });
+
+  // ---STEP 4 ---- DRAW (ADMIN)
+
+  // const vrfInput = await getVrf(packageId, raffle, token, suiClient);
+
+  // const sign = await bls.sign(new Uint8Array(vrfInput), bls.utils.hexToBytes(process.env.SECRET_KEY));
+
+  // tx.moveCall({
+  //   target: `${packageId}::coin_raffle::draw`,
+  //   typeArguments: [token],
+  //   arguments: [tx.object(raffle), tx.pure(bcs.vector(bcs.U8).serialize(sign)), tx.pure("0x6")],
+  // });
+
+  // ---STEP 5 ---- CLAIM (ADMIN)
+  // winner -> 0xd3d8947ce23ec8a4c3091bde2d5021c3a81b8212f091847b9f9c78c16a64c49b
+  // tx.moveCall({
+  //   target: `${packageId}::coin_raffle::claim_prize`,
+  //   typeArguments: [token],
+  //   arguments: [tx.object(raffle), tx.object("0xf3a462ad1de937dd2cbf21395c93666f36d14ba0ce1fdb913062d1306fc37d05")],
+  // });
+
+  // ---STEP 5 ---- COMPLETE (ADMIN)
+  // tx.moveCall({
+  //   target: `${packageId}::coin_raffle::complete`,
+  //   typeArguments: [token],
+  //   arguments: [tx.object(raffle), tx.pure("0x6")],
+  // });
+
+  try {
+    const result = await suiClient.signAndExecuteTransactionBlock({
+      transactionBlock: tx,
+      signer: keypair,
+    });
+
+    console.log(result);
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+init();
