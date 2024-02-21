@@ -105,3 +105,6 @@ export const nftByteCode =
 export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+export const RAFFLES = "0x46ee4afa87509bdd3703dcfddf30e7ee88efc1c02e33d2fff535f15b5fb87246";
+export const PACKAGE_ID = "0xc4461a6e4814d6e07a6a962058c3b8293b033f6c1470c495880ab4540599c252";
