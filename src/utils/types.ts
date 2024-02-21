@@ -57,3 +57,11 @@ export type NftCollection = {
   packageId: string;
   collectionName: string;
 };
+
+export type RaffleFormData = {
+  token: string;
+  name: string;
+  ticketPrice: number;
+  period: number;
+  balance: number;
+};
