@@ -184,7 +184,7 @@ module raffle::coin_raffle {
         res
   }
 
-  public entry fun get_winner<T>(raffle : &Raffle<T>) : address {
+  public entry fun get_winner<T>(raffle : &Raffle<T>) : Option<u64> {
     raffle.winner
   }
 }
