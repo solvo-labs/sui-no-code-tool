@@ -57,7 +57,7 @@ module raffle::coin_raffle {
       transfer::share_object(raffle_table);
   }
 
-  public entry fun create_raffle<T>(custom_raffles : &mut CustomRaffles ,name : vector<u8>, ticket_price : u64 , balance : Coin<T> , period: u64 ,counter: &mut Counter, clock: &Clock ,ctx: &mut TxContext) {
+  public entry fun create_raffle<T>(custom_raffles : &mut CustomRaffles ,name : vector<u8>, ticket_price : u64 ,period : u64 , balance : Coin<T> ,counter: &mut Counter, clock: &Clock ,ctx: &mut TxContext) {
     let table_uid = object::new(ctx);
     let table_address = object::uid_to_address(&table_uid);
 
@@ -184,9 +184,7 @@ module raffle::coin_raffle {
         res
   }
 
-  // public entry fun get_winner<T>(raffle : &Raffle<T>) : address {
-  //   let data = *vector::borrow(&raffle.participants ,option::some(&raffle.winner));
-
-  //   return data
-  // }
+  public entry fun get_winner<T>(raffle : &Raffle<T>) : address {
+    raffle.winner
+  }
 }
