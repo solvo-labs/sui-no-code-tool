@@ -18,7 +18,7 @@ export const Select: React.FC<Props> = ({ title, options, selectedOption, onSele
     <div className="relative inline-flex w-full  flex-col">
       <label className="mb-2 text-sm font-medium text-gray-900">{title}</label>
       <select
-        className="border border-gray-300 rounded-full cursor-pointer text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none"
+        className="border border-gray-300 rounded-lg cursor-pointer text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none"
         value={selectedOption}
         onChange={(event: React.ChangeEvent<HTMLSelectElement>) => onSelect(event.target.value)}
       >
