@@ -24,6 +24,7 @@ import ListNFTs from "../pages/NFT/ListNFTs";
 import NFTDetails from "../pages/NFT/NFTDetails";
 import CreateCollection from "../pages/NFT/CreateCollection";
 import CreateRaffle from "../pages/Raffle/CreateRaffle";
+import JoinRaffle from "../pages/Raffle/JoinRaffle";
 
 const Router: React.FC = () => {
   return (
@@ -42,6 +43,7 @@ const Router: React.FC = () => {
             <Route path={ROUTES.TOKEN_DETAILS} index element={<TokenDetail />} />
             <Route path="/stake" index element={<Stake />} />
             <Route path={ROUTES.CREATE_RAFFLE} index element={<CreateRaffle />} />
+            <Route path={ROUTES.JOIN_RAFFLE} index element={<JoinRaffle />} />
             <Route path="/tokenomics" index element={<Tokenomics />} />
             <Route path="/vesting-list" index element={<VestingList />} />
             <Route path="/create-vesting/:tokenid/:name/:amount" index element={<Vesting />} />
