@@ -68,7 +68,7 @@ const JoinRaffle = () => {
                 </thead>
                 <tbody className="text-black text-left">
                   {multiObjects.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item: any) => (
-                    <tr key={Math.random()} className="bg-white hover:bg-blue hover:text-sui-blue-h">
+                    <tr key={Math.random()} className="bg-white text-black hover:text-sui-blue hover:bg-gray-100">
                       <td
                         className="px-6 py-3 text-md cursor-pointer"
                         onClick={() => {
@@ -82,7 +82,7 @@ const JoinRaffle = () => {
                       <td className="px-6 py-3 text-md">{item.data.content.fields.reward}</td>
                       <td className="px-6 py-3 text-md">{item.data.content.fields.ticket_price}</td>
                       <td className="px-6 py-3 text-md ">
-                        <div className="flex justify-center gap-2 cursor-pointer">
+                        <div className="group flex justify-center gap-2 cursor-pointer">
                           {item.data.content.fields.ticket_count}
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                             <path
@@ -94,14 +94,26 @@ const JoinRaffle = () => {
                         </div>
                       </td>
                       <td className="px-6 py-3 text-md cursor-pointer">
-                        <div className="flex justify-center gap-2 w-full h-full">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
-                            />
-                          </svg>
+                        <div className="group">
+                          <button className="text-black">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+                              />
+                            </svg>
+                          </button>
+                          <div className="opacity-0 invisible absolute rounded-lg w-max mt-2 bg-white border border-black shadow-xl px-2 py-2 -ml-20 z-50 group-focus-within:opacity-100 group-focus-within:visible transition-all">
+                            <ul>
+                              <li className="hover:bg-sky-100 p-2 rounded-lg text-black" onClick={() => console.log("buy")}>
+                                Buy Ticket
+                              </li>
+                              <li className="hover:bg-sky-100 p-2 rounded-lg text-black">Another Action</li>
+                              <li className="hover:bg-sky-100 p-2 rounded-lg text-black">Bla Bla Bla</li>
+                            </ul>
+                          </div>
+                          <div className="invisible fixed group-focus-within:visible inset-0 bg-black opacity-5"></div>
                         </div>
                       </td>
                     </tr>

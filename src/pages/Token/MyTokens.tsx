@@ -78,7 +78,7 @@ const MyTokens = () => {
               <table className="w-full">
                 <thead className="text-white text-left bg-navy-blue">
                   <tr>
-                    <th className="px-6 py-3 text-md"></th>
+                    <th className="px-6 py-3 text-md">IMG</th>
                     <th className="px-6 py-3 text-md">ID</th>
                     <th className="px-6 py-3 text-md">Name</th>
                     <th className="px-6 py-3 text-md">Symbol</th>
