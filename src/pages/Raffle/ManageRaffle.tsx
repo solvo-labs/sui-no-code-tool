@@ -8,8 +8,10 @@ import ReactPaginate from "react-paginate";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { useState } from "react";
 import moment from "moment";
+import { PACKAGE_ID, getVrf } from "../../utils";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { PACKAGE_ID } from "../../utils";
+import { bcs } from "@mysten/sui.js/bcs";
+import { bls12_381 } from "@noble/curves/bls12-381";
 
 const rowsPerPage = 5;
 const paginationVariants = {
@@ -39,6 +41,50 @@ const ManageRaffle = () => {
 
   const handlePageClick = (selectedPage: { selected: number }) => {
     setPage(selectedPage.selected);
+  };
+
+  const draw = async (raffle: any) => {
+    try {
+      const tx = new TransactionBlock();
+      const token = raffle.data.content.type.slice(88, -1);
+      const raffleId = raffle.data.objectId;
+
+      const vrfInput = await getVrf(PACKAGE_ID, raffleId, token, suiClient);
+      console.log(vrfInput);
+
+      const sign = bls12_381.sign(new Uint8Array(vrfInput), bls12_381.utils.randomPrivateKey());
+      // utils.hexToBytes(import.meta.env.VITE_SECRET_KEY)
+
+      tx.moveCall({
+        target: `${PACKAGE_ID}::coin_raffle::draw`,
+        typeArguments: [token],
+        arguments: [tx.object(raffleId), tx.pure(bcs.vector(bcs.U8).serialize(sign)), tx.pure("0x6")],
+      });
+
+      signAndExecute(
+        {
+          transactionBlock: tx,
+          account: account!,
+        },
+        {
+          onSuccess: (tx: any) => {
+            suiClient
+              .waitForTransactionBlock({
+                digest: tx.digest,
+              })
+              .then((data: any) => {
+                console.log(data);
+                window.location.reload();
+              });
+          },
+          onError: (error: any) => {
+            console.log(error);
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (loading) {
@@ -112,7 +158,7 @@ const ManageRaffle = () => {
                             </button>
                             <div className="opacity-0 invisible absolute rounded-lg w-max mt-2 bg-white border border-black shadow-xl px-2 py-2 -ml-20 z-50 group-focus-within:opacity-100 group-focus-within:visible transition-all">
                               <ul>
-                                <li className="hover:bg-sky-100 p-2 rounded-lg text-black" onClick={() => console.log("draw")}>
+                                <li className="hover:bg-sky-100 p-2 rounded-lg text-black" onClick={() => draw(item)}>
                                   Draw
                                 </li>
                                 <li className="hover:bg-sky-100 p-2 rounded-lg text-black">Complate</li>
