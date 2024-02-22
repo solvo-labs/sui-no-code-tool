@@ -9,7 +9,7 @@ import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { useState } from "react";
 import moment from "moment";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { PACKAGE_ID } from "../../utils";
+import { PACKAGE_ID, RAFFLES } from "../../utils";
 
 const rowsPerPage = 5;
 const paginationVariants = {
@@ -47,7 +47,6 @@ const JoinRaffle = () => {
       const token = raffle.data.content.type.slice(88, -1);
       const ticket_price = raffle.data.content.fields.ticket_price;
       const raffleId = raffle.data.objectId;
-
       const [coin] = tx.splitCoins(tx.gas, [tx.pure(ticket_price)]);
 
       tx.moveCall({
@@ -56,7 +55,7 @@ const JoinRaffle = () => {
         arguments: [tx.object(raffleId), coin, tx.pure("0x6")],
       });
 
-      tx.transferObjects([coin], tx.pure(account));
+      tx.transferObjects([coin], tx.pure(account?.address));
 
       signAndExecute(
         {
