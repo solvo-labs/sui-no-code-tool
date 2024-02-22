@@ -10,10 +10,30 @@ import { Select } from "../../components/Select";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { RaffleFormData } from "../../utils/types";
 import { Loader } from "../../components/Loader";
+import { PERIOD } from "../../utils/enum";
 
 const CreateRaffle = () => {
   const account = useCurrentAccount();
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
+
+  const unitOfTime: { key: string; value: number }[] = Array.from({ length: 60 }, (_, value: number) => {
+    return {
+      key: (value + 1).toString(),
+      value: value + 1,
+    };
+  });
+  const [durationList, setDurationList] = useState<{ key: string; value: number }[]>([]);
+
+  useEffect(() => {
+    const durationArray: string[] = Object.keys(PERIOD).filter((key) => isNaN(Number(key)));
+    const duration: { key: string; value: number }[] = durationArray.map((period: any) => {
+      return {
+        key: period,
+        value: Number(PERIOD[period]),
+      };
+    });
+    setDurationList(duration);
+  }, []);
 
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
 
@@ -22,9 +42,12 @@ const CreateRaffle = () => {
   const [raffleFormData, setRaffleFormData] = useState<RaffleFormData>({
     token: "",
     name: "",
-    period: 30000,
+    lockPeriod: {
+      period: PERIOD["Minute"],
+      unit: 1,
+    },
     ticketPrice: 0,
-    balance: 10000,
+    balance: 0,
   });
 
   const [selectedToken, setSelectedToken] = useState<{
@@ -63,7 +86,7 @@ const CreateRaffle = () => {
         const finalResult = result.filter((coin: any) => coin.total_balance > 0);
         setCoinsData(finalResult);
 
-        console.log(finalResult);
+        // console.log(finalResult);
       }
     };
 
@@ -132,7 +155,7 @@ const CreateRaffle = () => {
             tx.pure(RAFFLES),
             tx.pure(raffleFormData.name),
             tx.pure(raffleFormData.ticketPrice),
-            tx.pure(raffleFormData.period),
+            tx.pure(raffleFormData.lockPeriod.period * raffleFormData.lockPeriod.unit),
             splitCoin,
             tx.object("0x29ecc0963dd1a28d796dbbe0db627d3190fef9fee70ad0fac93e63f789263347"),
             tx.pure("0x6"),
@@ -179,7 +202,9 @@ const CreateRaffle = () => {
       return true;
     } else {
       const totalBalance = Number(selectedToken?.detail.supply.value) / Math.pow(10, Number(selectedToken?.detail.metadata?.decimals));
-      return raffleFormData.balance > totalBalance || !raffleFormData.name || !raffleFormData.period || !raffleFormData.ticketPrice;
+      return (
+        raffleFormData.balance > totalBalance || !raffleFormData.name || raffleFormData.lockPeriod.period <= 0 || raffleFormData.lockPeriod.unit <= 0 || !raffleFormData.ticketPrice
+      );
     }
   }, [raffleFormData, selectedToken]);
 
@@ -200,7 +225,6 @@ const CreateRaffle = () => {
           })}
           onSelect={(value) => {
             setRaffleFormData({ ...raffleFormData, token: value });
-            console.log(value);
           }}
           selectedOption={raffleFormData.token}
           placeholder="Select token for Raffle"
@@ -235,6 +259,42 @@ const CreateRaffle = () => {
           value={raffleFormData.balance}
           disable={false}
         ></Input>
+        <div className="flex justify-center">
+          <div className="w-1/2 mr-1">
+            <Select
+              placeholder="Select unit time"
+              onSelect={(value: any) => {
+                setRaffleFormData({
+                  ...raffleFormData,
+                  lockPeriod: {
+                    ...raffleFormData.lockPeriod,
+                    unit: value,
+                  },
+                });
+              }}
+              options={unitOfTime}
+              selectedOption={raffleFormData.lockPeriod.unit}
+              title="Unit"
+            ></Select>
+          </div>
+          <div className="w-1/2 ml-1">
+            <Select
+              placeholder="Select period"
+              onSelect={(value: any) => {
+                setRaffleFormData({
+                  ...raffleFormData,
+                  lockPeriod: {
+                    ...raffleFormData.lockPeriod,
+                    period: Number(value),
+                  },
+                });
+              }}
+              options={durationList}
+              selectedOption={raffleFormData.lockPeriod.period}
+              title="Period"
+            ></Select>
+          </div>
+        </div>
         <div className="flex justify-center">
           <div className="w-2/5">
             <Button disabled={disable} onClick={create_raffle} title="Create Raffle"></Button>
