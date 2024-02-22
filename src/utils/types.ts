@@ -62,6 +62,9 @@ export type RaffleFormData = {
   token: string;
   name: string;
   ticketPrice: number;
-  period: number;
+  lockPeriod: {
+    unit: number;
+    period: number;
+  };
   balance: number;
 };
