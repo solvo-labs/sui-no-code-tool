@@ -147,6 +147,7 @@ const CreateRaffle = () => {
         }
 
         const splitCoin = tx.splitCoins(primaryObject, [tx.pure(raffleFormData.balance * Math.pow(10, selectedToken?.detail.metadata?.decimals!))]);
+        const period = raffleFormData.lockPeriod.period * raffleFormData.lockPeriod.unit;
 
         tx.moveCall({
           typeArguments: [raffleFormData.token],
@@ -155,9 +156,9 @@ const CreateRaffle = () => {
             tx.pure(RAFFLES),
             tx.pure(raffleFormData.name),
             tx.pure(raffleFormData.ticketPrice),
-            tx.pure(raffleFormData.lockPeriod.period * raffleFormData.lockPeriod.unit),
+            tx.pure(period),
             splitCoin,
-            tx.object("0x29ecc0963dd1a28d796dbbe0db627d3190fef9fee70ad0fac93e63f789263347"),
+            tx.object("0x807b486efe5a7cc2004df150824ea3492ce23014e253ea7496083b1dbb386da3"),
             tx.pure("0x6"),
           ],
         });
@@ -268,7 +269,7 @@ const CreateRaffle = () => {
                   ...raffleFormData,
                   lockPeriod: {
                     ...raffleFormData.lockPeriod,
-                    unit: value,
+                    unit: Number(value),
                   },
                 });
               }}
