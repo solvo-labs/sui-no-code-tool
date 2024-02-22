@@ -46,3 +46,12 @@ export enum RAFFLE_PAGES {
   CREATE_RAFFLE = "CREATE RAFFLE",
   JOIN_RAFFLE = "JOIN RAFFLE",
 }
+
+export enum PERIOD {
+  "Minute" = 60000,
+  "Hour" = 3600000,
+  "Day" = 86400000,
+  "Week" = 604800000,
+  "Month" = 2629800000,
+  "Year" = 31557600000,
+}
