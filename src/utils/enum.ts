@@ -14,6 +14,7 @@ export enum ROUTES {
   CREATE_COLLECTION = "/create-collection",
   CREATE_RAFFLE = "/create-raffle",
   JOIN_RAFFLE = "/join-raffle",
+  MANAGE_RAFFLE = "/manage-raffle",
 }
 
 export enum TOPBAR_PAGES {
@@ -45,6 +46,7 @@ export enum NFT_PAGES {
 export enum RAFFLE_PAGES {
   CREATE_RAFFLE = "CREATE RAFFLE",
   JOIN_RAFFLE = "JOIN RAFFLE",
+  MANAGE_RAFFLE = "MANAGE RAFFLE",
 }
 
 export enum PERIOD {
