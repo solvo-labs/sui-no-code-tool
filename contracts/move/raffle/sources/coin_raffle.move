@@ -21,6 +21,7 @@ module raffle::coin_raffle {
   const EWaitingClaim: u64 = 4;
   const EEndTimeExpire: u64 = 5;
   const EEndTimeDoesntExpire: u64 = 6;
+  const ERaffleAlreadyStart: u64 = 7;
 
   struct CustomRaffles has key , store {
         id: UID,
@@ -146,6 +147,9 @@ module raffle::coin_raffle {
   }
 
    public entry fun cancel<T>(raffle : Raffle<T> , ctx: &mut TxContext){
+    assert!(tx_context::sender(ctx) == raffle.owner, ENotAdmin);
+    assert!(raffle.ticket_count > 0, ERaffleAlreadyStart);
+
    let Raffle { id, name: _, participants: _, end_time: _, ticket_count: _, ticket_price: _, reward ,  balance, winner: _, owner: _, claimed: _, vrf_input: _ } = raffle;
    let total_reward = balance::value(&reward);
   
