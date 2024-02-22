@@ -27,7 +27,7 @@ module raffle::coin_raffle {
         raffles : Table<u64 , address>,
   }
 
-  struct Raffle <phantom T>  has key {
+  struct Raffle <phantom T> has key , store {
         id: UID,
         name: string::String,
         participants: vector<address>,
@@ -145,6 +145,17 @@ module raffle::coin_raffle {
         raffle.claimed = true;
   }
 
+   public entry fun cancel<T>(raffle : Raffle<T> , ctx: &mut TxContext){
+   let Raffle { id, name: _, participants: _, end_time: _, ticket_count: _, ticket_price: _, reward ,  balance, winner: _, owner: _, claimed: _, vrf_input: _ } = raffle;
+   let total_reward = balance::value(&reward);
+  
+    transfer::public_transfer(coin::take(&mut reward,total_reward , ctx), tx_context::sender(ctx));
+    balance::destroy_zero(balance);
+    balance::destroy_zero(reward);
+
+    object::delete(id);
+
+  }
 
   // getters
   public entry fun get_raffles(custom_raffles : &CustomRaffles) : vector<address> {
