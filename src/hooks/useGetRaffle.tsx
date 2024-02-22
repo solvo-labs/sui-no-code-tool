@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { BCS, getSuiMoveConfig } from "@mysten/bcs";
 
 export default function useGetRaffle(suiClient: SuiClient, account: WalletAccount) {
-  const [multiObjects, setMultiObjects] = useState<any>();
+  const [raffles, setRaffles] = useState<any>();
   const [loading, setLoading] = useState<Boolean>(true);
 
   // ref ->https://github.com/juzybits/polymedia-profile/blob/a701cae44d033cbafd657d5e8fb5b2563f97382a/sdk/src/profile.ts#L351
@@ -35,7 +35,7 @@ export default function useGetRaffle(suiClient: SuiClient, account: WalletAccoun
         const raffleObjects = bcs.de(valueType, valueData, "hex");
         const multiObjects = await getMultiObjects(raffleObjects);
 
-        setMultiObjects(multiObjects);
+        setRaffles(multiObjects);
         setLoading(false);
       }
     };
@@ -57,5 +57,5 @@ export default function useGetRaffle(suiClient: SuiClient, account: WalletAccoun
     }
   };
 
-  return { multiObjects, loading };
+  return { raffles, loading };
 }
