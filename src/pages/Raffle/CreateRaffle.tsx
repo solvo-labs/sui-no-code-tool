@@ -3,18 +3,19 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
 import { CoinBalance, CoinMetadata, CoinSupply, PaginatedCoins, SuiClient } from "@mysten/sui.js/client";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import useGetObjects from "../../hooks/useGetObjects";
 import { PACKAGE_ID, RAFFLES, getCoin, getCoins } from "../../utils";
 import { Select } from "../../components/Select";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { RaffleFormData } from "../../utils/types";
 import { Loader } from "../../components/Loader";
-import { PERIOD } from "../../utils/enum";
+import { PERIOD, ROUTES } from "../../utils/enum";
 
 const CreateRaffle = () => {
   const account = useCurrentAccount();
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
+  const navigate = useNavigate();
 
   const unitOfTime: { key: string; value: number }[] = Array.from({ length: 60 }, (_, value: number) => {
     return {
@@ -118,7 +119,7 @@ const CreateRaffle = () => {
                 digest: tx.digest,
               })
               .then(() => {
-                // navigate(ROUTES.NFT_LIST);
+                navigate(ROUTES.MANAGE_RAFFLE);
               });
           },
           onError: (error: any) => {
