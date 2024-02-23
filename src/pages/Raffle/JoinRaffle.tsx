@@ -9,7 +9,7 @@ import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { useState } from "react";
 import moment from "moment";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { PACKAGE_ID, RAFFLES } from "../../utils";
+import { PACKAGE_ID } from "../../utils";
 
 const rowsPerPage = 5;
 const paginationVariants = {
@@ -33,6 +33,8 @@ const JoinRaffle = () => {
   const account = useCurrentAccount();
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
   const { raffles, loading } = useGetRaffle(suiClient, account!);
+  console.log(raffles);
+
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
 
   const [page, setPage] = useState(0);
@@ -116,7 +118,7 @@ const JoinRaffle = () => {
                     .filter((raffle: any) => raffle.data.content.fields.owner !== account?.address)
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((item: any) => (
-                      <tr key={Math.random()} className="bg-white text-black hover:text-sui-blue hover:bg-gray-100">
+                      <tr key={Math.random()} className="bg-white text-black hover:text-sui-blue hover:bg-gray-50">
                         <td
                           className="px-6 py-3 text-md cursor-pointer"
                           onClick={() => {
@@ -152,16 +154,32 @@ const JoinRaffle = () => {
                                 />
                               </svg>
                             </button>
-                            <div className="opacity-0 invisible absolute rounded-lg w-max mt-2 bg-white border border-black shadow-xl px-2 py-2 -ml-20 z-50 group-focus-within:opacity-100 group-focus-within:visible transition-all">
+                            <div className="opacity-0 invisible cursor-default absolute rounded-lg w-max mt-2 bg-white border border-black shadow-xl px-2 py-2 -ml-20 z-50 group-focus-within:opacity-100 group-focus-within:visible transition-all">
                               <ul>
-                                <li className="hover:bg-sky-100 p-2 rounded-lg text-black" onClick={() => buy_ticket(item)}>
-                                  Buy Ticket
+                                <li>
+                                  <button
+                                    className={
+                                      item.data.content.fields.end_time > Date.now()
+                                        ? "hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"
+                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex cursor-not-allowed"
+                                    }
+                                    onClick={() => buy_ticket(item)}
+                                    disabled={item.data.content.fields.end_time < Date.now()}
+                                  >
+                                    Buy Ticket
+                                  </button>
                                 </li>
-                                <li className="hover:bg-sky-100 p-2 rounded-lg text-black">Another Action</li>
-                                <li className="hover:bg-sky-100 p-2 rounded-lg text-black">Bla Bla Bla</li>
+                                <li>
+                                  <button
+                                    className={"hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"}
+                                    onClick={() => console.log("clim")}
+                                  >
+                                    Another Action
+                                  </button>
+                                </li>
                               </ul>
                             </div>
-                            <div className="invisible fixed group-focus-within:visible inset-0 bg-black opacity-5"></div>
+                            <div className="invisible cursor-default fixed group-focus-within:visible inset-0 bg-black opacity-5"></div>
                           </div>
                         </td>
                       </tr>
@@ -187,7 +205,7 @@ const JoinRaffle = () => {
             containerClassName="flex justify-center items-center mt-8 mb-4"
             pageClassName="block border-solid w-10 h-10 flex justify-center items-center rounded-md mr-4"
             pageRangeDisplayed={2}
-            pageCount={Math.ceil(raffles.length / rowsPerPage)}
+            pageCount={Math.ceil(raffles.filter((raffle: any) => raffle.data.content.fields.owner !== account?.address).length / rowsPerPage)}
             activeClassName="bg-navy-blue text-white"
             onPageChange={handlePageClick}
           />
