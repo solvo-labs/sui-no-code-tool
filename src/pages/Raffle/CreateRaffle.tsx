@@ -94,43 +94,43 @@ const CreateRaffle = () => {
     init();
   }, [coins]);
 
-  const create_counter = async () => {
-    try {
-      const tx = new TransactionBlock();
+  // const create_counter = async () => {
+  //   try {
+  //     const tx = new TransactionBlock();
 
-      const [counterNft] = tx.moveCall({
-        target: `${PACKAGE_ID}::counter_nft::mint`,
-      });
+  //     const [counterNft] = tx.moveCall({
+  //       target: `${PACKAGE_ID}::counter_nft::mint`,
+  //     });
 
-      tx.moveCall({
-        target: `${PACKAGE_ID}::counter_nft::transfer_to_sender`,
-        arguments: [counterNft],
-      });
+  //     tx.moveCall({
+  //       target: `${PACKAGE_ID}::counter_nft::transfer_to_sender`,
+  //       arguments: [counterNft],
+  //     });
 
-      signAndExecute(
-        {
-          transactionBlock: tx,
-          account: account!,
-        },
-        {
-          onSuccess: (tx: any) => {
-            suiClient
-              .waitForTransactionBlock({
-                digest: tx.digest,
-              })
-              .then(() => {
-                navigate(ROUTES.MANAGE_RAFFLE);
-              });
-          },
-          onError: (error: any) => {
-            console.log(error);
-          },
-        }
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     signAndExecute(
+  //       {
+  //         transactionBlock: tx,
+  //         account: account!,
+  //       },
+  //       {
+  //         onSuccess: (tx: any) => {
+  //           suiClient
+  //             .waitForTransactionBlock({
+  //               digest: tx.digest,
+  //             })
+  //             .then(() => {
+  //               navigate(ROUTES.MANAGE_RAFFLE);
+  //             });
+  //         },
+  //         onError: (error: any) => {
+  //           console.log(error);
+  //         },
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const create_raffle = async () => {
     try {
@@ -159,7 +159,7 @@ const CreateRaffle = () => {
             tx.pure(raffleFormData.ticketPrice),
             tx.pure(period),
             splitCoin,
-            tx.object("0x807b486efe5a7cc2004df150824ea3492ce23014e253ea7496083b1dbb386da3"),
+            tx.object("0x67ebe26b7bdf79fe8908425cc72c4a4c46cee69bcd1c99ebbb3bcef96eca730c"),
             tx.pure("0x6"),
           ],
         });
@@ -176,8 +176,7 @@ const CreateRaffle = () => {
                   digest: tx.digest,
                 })
                 .then((data: any) => {
-                  console.log(data);
-                  window.location.reload();
+                  navigate(ROUTES.MANAGE_RAFFLE);
                 });
             },
             onError: (error: any) => {
@@ -253,8 +252,8 @@ const CreateRaffle = () => {
         ></Input>
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setRaffleFormData({ ...raffleFormData, balance: Number(event.target.value) })}
-          placeholder="Raffle Price"
-          title="Raffle Price"
+          placeholder="Raffle Reward"
+          title="Raffle Reward"
           type="text"
           key={"raffleBalance"}
           isRequired={true}
