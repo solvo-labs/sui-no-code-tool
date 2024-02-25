@@ -12,6 +12,7 @@ import { PACKAGE_ID, getVrf } from "../../utils";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { bcs } from "@mysten/sui.js/bcs";
 import { bls12_381 } from "@noble/curves/bls12-381";
+import { RaffleObject } from "../../utils/types";
 
 const rowsPerPage = 5;
 const paginationVariants = {
@@ -34,7 +35,7 @@ const paginationVariants = {
 const ManageRaffle = () => {
   const account = useCurrentAccount();
   const [suiClient] = useOutletContext<[suiClient: SuiClient]>();
-  const { raffles, loading } = useGetRaffle(suiClient, account!);
+  const { raffles, loadingRaffle } = useGetRaffle(account!, suiClient);
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
 
   const [page, setPage] = useState(0);
@@ -50,7 +51,6 @@ const ManageRaffle = () => {
       const raffleId = raffle.data.objectId;
 
       const vrfInput = await getVrf(PACKAGE_ID, raffleId, token, suiClient);
-      console.log(vrfInput);
 
       const sign = bls12_381.sign(new Uint8Array(vrfInput), bls12_381.utils.randomPrivateKey());
       // utils.hexToBytes(import.meta.env.VITE_SECRET_KEY)
@@ -87,7 +87,88 @@ const ManageRaffle = () => {
     }
   };
 
-  if (loading) {
+  const complate = async (raffle: any) => {
+    try {
+      const tx = new TransactionBlock();
+      const token = raffle.data.content.type.slice(88, -1);
+      const raffleId = raffle.data.objectId;
+
+      tx.moveCall({
+        target: `${PACKAGE_ID}::coin_raffle::complete`,
+        typeArguments: [token],
+        arguments: [tx.object(raffleId), tx.pure("0x6")],
+      });
+
+      signAndExecute(
+        {
+          transactionBlock: tx,
+          account: account!,
+        },
+        {
+          onSuccess: (tx: any) => {
+            suiClient
+              .waitForTransactionBlock({
+                digest: tx.digest,
+              })
+              .then((data: any) => {
+                console.log(data);
+                window.location.reload();
+              });
+          },
+          onError: (error: any) => {
+            console.log(error);
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const cancel = async (raffle: RaffleObject) => {
+    try {
+      const tx = new TransactionBlock();
+      const token = raffle.data.content.type.slice(88, -1);
+      const raffleId = raffle.data.objectId;
+
+      console.log(tx);
+      console.log(token);
+      console.log(raffleId);
+      console.log(PACKAGE_ID);
+
+      tx.moveCall({
+        target: `${PACKAGE_ID}::coin_raffle::cancel`,
+        typeArguments: [token],
+        arguments: [tx.object(raffleId)],
+      });
+
+      signAndExecute(
+        {
+          transactionBlock: tx,
+          account: account!,
+        },
+        {
+          onSuccess: (tx: any) => {
+            suiClient
+              .waitForTransactionBlock({
+                digest: tx.digest,
+              })
+              .then((data: any) => {
+                console.log(data);
+                window.location.reload();
+              });
+          },
+          onError: (error: any) => {
+            console.log(error);
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (loadingRaffle) {
     return <Loader />;
   }
 
@@ -117,10 +198,10 @@ const ManageRaffle = () => {
                 </thead>
                 <tbody className="text-black text-left">
                   {raffles
-                    .filter((raffle: any) => raffle.data.content.fields.owner === account?.address)
+                    .filter((raffle: RaffleObject) => raffle.data.content.fields.owner === account?.address)
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((item: any) => (
-                      <tr key={Math.random()} className="bg-white text-black hover:text-sui-blue hover:bg-gray-100">
+                    .map((item: RaffleObject) => (
+                      <tr key={Math.random()} className="bg-white text-black hover:text-sui-blue hover:bg-gray-50">
                         <td
                           className="px-6 py-3 text-md cursor-pointer"
                           onClick={() => {
@@ -130,11 +211,11 @@ const ManageRaffle = () => {
                           {item.data.content.fields.id.id.slice(0, 5) + "..." + item.data.content.fields.id.id.slice(-5)}
                         </td>
                         <td className="px-6 py-3 text-md">{item.data.content.fields.name}</td>
-                        <td className="px-6 py-3 text-md">{moment.unix(item.data.content.fields.end_time / 1000).format("MM/DD/YYYY h:mm A")}</td>
+                        <td className="px-6 py-3 text-md">{moment.unix(Number(item.data.content.fields.end_time) / 1000).format("MM/DD/YYYY h:mm A")}</td>
                         <td className="px-6 py-3 text-md">{item.data.content.fields.reward}</td>
                         <td className="px-6 py-3 text-md">{item.data.content.fields.ticket_price}</td>
                         <td className="px-6 py-3 text-md ">
-                          <div className="group flex justify-center gap-2 cursor-pointer">
+                          <div className="group flex justify-center gap-2 cursor-pointer" onClick={() => console.log(item.data.content.fields)}>
                             {item.data.content.fields.ticket_count}
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                               <path
@@ -158,11 +239,53 @@ const ManageRaffle = () => {
                             </button>
                             <div className="opacity-0 invisible absolute rounded-lg w-max mt-2 bg-white border border-black shadow-xl px-2 py-2 -ml-20 z-50 group-focus-within:opacity-100 group-focus-within:visible transition-all">
                               <ul>
-                                <li className="hover:bg-sky-100 p-2 rounded-lg text-black" onClick={() => draw(item)}>
-                                  Draw
+                                <li>
+                                  <button
+                                    className={
+                                      !item.data.content.fields.winner && Number(item.data.content.fields.end_time) < Date.now()
+                                        ? "hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"
+                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex cursor-not-allowed"
+                                    }
+                                    onClick={() => draw(item)}
+                                    disabled={item.data.content.fields.winner !== "" || Number(item.data.content.fields.end_time) > Date.now()}
+                                  >
+                                    Draw
+                                  </button>
                                 </li>
-                                <li className="hover:bg-sky-100 p-2 rounded-lg text-black">Complate</li>
-                                <li className="hover:bg-sky-100 p-2 rounded-lg text-black">Another Action</li>
+                                <li>
+                                  <button
+                                    className={
+                                      item.data.content.fields.claimed && Number(item.data.content.fields.reward) == 0 && Number(item.data.content.fields.balance) > 0
+                                        ? "hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"
+                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex cursor-not-allowed"
+                                    }
+                                    onClick={() => complate(item)}
+                                    disabled={!item.data.content.fields.claimed || Number(item.data.content.fields.reward) > 0 || Number(item.data.content.fields.balance) == 0}
+                                  >
+                                    Complate
+                                  </button>
+                                </li>
+                                <li>
+                                  <button
+                                    className={
+                                      Number(item.data.content.fields.balance) == 0 && item.data.content.fields.participants?.length === 0
+                                        ? "hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"
+                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex cursor-not-allowed"
+                                    }
+                                    onClick={() => cancel(item)}
+                                    disabled={Number(item.data.content.fields.balance) > 0 || item.data.content.fields.participants?.length > 0}
+                                  >
+                                    Cancel
+                                  </button>
+                                </li>
+                                <li>
+                                  <button
+                                    className={"hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"}
+                                    onClick={() => console.log("Another Action")}
+                                  >
+                                    Another Action
+                                  </button>
+                                </li>
                               </ul>
                             </div>
                             <div className="invisible fixed group-focus-within:visible inset-0 bg-black opacity-5"></div>
@@ -191,7 +314,7 @@ const ManageRaffle = () => {
             containerClassName="flex justify-center items-center mt-8 mb-4"
             pageClassName="block border-solid w-10 h-10 flex justify-center items-center rounded-md mr-4"
             pageRangeDisplayed={2}
-            pageCount={Math.ceil(raffles.length / rowsPerPage)}
+            pageCount={Math.ceil(raffles.filter((raffle: any) => raffle.data.content.fields.owner === account?.address).length / rowsPerPage)}
             activeClassName="bg-navy-blue text-white"
             onPageChange={handlePageClick}
           />
