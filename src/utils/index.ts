@@ -83,6 +83,14 @@ export function isMoveStructObject(obj: MoveStruct): obj is { fields: { [key: st
   return typeof obj === "object" && "fields" in obj && "type" in obj;
 }
 
+export function isStringId(obj: MoveValue): obj is { id: string } {
+  return obj !== null && typeof obj === "object" && "id" in obj;
+}
+
+export function isStringArray(obj: MoveValue): obj is Array<string> {
+  return obj !== null && Array.isArray(obj);
+}
+
 export function isCoinMetadata(obj: any): obj is { metadata: CoinMetadata; supply: CoinSupply } {
   return typeof obj === "object" && "metadata" in obj && "supply" in obj;
 }
@@ -142,5 +150,5 @@ export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const RAFFLES = "0xb40c9a721fc360b18eb39aa99ad007e92275832ea8836bf1969d30f683836555";
-export const PACKAGE_ID = "0x804d3c68237743fc5c195324125ae2af9e864433f68caec32ef1b10b25e3df53";
+export const RAFFLES = "0xf3cdddc876721a47039baca054fb598cb0a0a57f0f28f28a59eb257569d7f896";
+export const PACKAGE_ID = "0xb14a6edbd5fd238911d6cb868913563f06956941c04546b9fd3ad59ad7e4d571";
