@@ -1,4 +1,4 @@
-import { CoinMetadata, CoinSupply } from "@mysten/sui.js/client";
+import { CoinMetadata, CoinSupply, MoveValue } from "@mysten/sui.js/client";
 
 export type TokenForm = {
   name: string;
@@ -67,4 +67,55 @@ export type RaffleFormData = {
     period: number;
   };
   balance: number;
+};
+
+export type RaffleObject = {
+  data: {
+    content: {
+      dataType: "moveObject";
+      fields: RaffleObjectFields;
+      hasPublicTransfer: boolean;
+      type: string;
+    };
+    digest: string;
+    objectId: string;
+    version: string;
+    won?: boolean;
+    winnerTicketId?: string | undefined;
+  };
+};
+
+export type RaffleObjectFields = {
+  balance: string;
+  claimed: boolean;
+  end_time: string;
+  id: { id: string };
+  name: string;
+  owner: string;
+  participants: Array<string> | [];
+  reward: string;
+  ticket_count: string;
+  ticket_price: string;
+  vrf_input: MoveValue;
+  winner: string;
+};
+
+export type RaffleTicketObject = {
+  content: {
+    dataType: "moveObject";
+    fields: RaffleTicketObjectFields;
+    hasPublicTransfer: boolean;
+    type: string;
+  };
+  digest: string;
+  objectId: string;
+  version: string;
+};
+
+export type RaffleTicketObjectFields = {
+  id: {
+    id: string;
+  };
+  raffle_id: string;
+  ticket_no: string;
 };
