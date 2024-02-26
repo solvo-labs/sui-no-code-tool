@@ -1,4 +1,4 @@
-// ref-> https://github.com/MystenLabs/satoshi-coin-flip/blob/main/satoshi_flip/sources/counter_nft.move
+// REF https://github.com/MystenLabs/satoshi-coin-flip/blob/main/satoshi_flip/sources/counter_nft.move
 
 /// This module implements a simple, non transferable counter NFT.
 /// Creates a counter object that can be incremented and burned.

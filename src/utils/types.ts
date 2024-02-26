@@ -66,7 +66,7 @@ export type RaffleFormData = {
     unit: number;
     period: number;
   };
-  balance: number;
+  reward: number;
 };
 
 export type RaffleObject = {

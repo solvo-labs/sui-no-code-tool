@@ -48,7 +48,7 @@ const CreateRaffle = () => {
       unit: 1,
     },
     ticketPrice: 0,
-    balance: 0,
+    reward: 0,
   });
 
   const [selectedToken, setSelectedToken] = useState<{
@@ -86,82 +86,44 @@ const CreateRaffle = () => {
 
         const finalResult = result.filter((coin: any) => coin.total_balance > 0);
         setCoinsData(finalResult);
-
-        // console.log(finalResult);
       }
     };
 
     init();
   }, [coins]);
 
-  // const create_counter = async () => {
-  //   try {
-  //     const tx = new TransactionBlock();
-
-  //     const [counterNft] = tx.moveCall({
-  //       target: `${PACKAGE_ID}::counter_nft::mint`,
-  //     });
-
-  //     tx.moveCall({
-  //       target: `${PACKAGE_ID}::counter_nft::transfer_to_sender`,
-  //       arguments: [counterNft],
-  //     });
-
-  //     signAndExecute(
-  //       {
-  //         transactionBlock: tx,
-  //         account: account!,
-  //       },
-  //       {
-  //         onSuccess: (tx: any) => {
-  //           suiClient
-  //             .waitForTransactionBlock({
-  //               digest: tx.digest,
-  //             })
-  //             .then(() => {
-  //               navigate(ROUTES.MANAGE_RAFFLE);
-  //             });
-  //         },
-  //         onError: (error: any) => {
-  //           console.log(error);
-  //         },
-  //       }
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const create_raffle = async () => {
     try {
       if (selectedToken) {
         const tx = new TransactionBlock();
-
+        console.log(selectedToken.coins.data[0]);
         const primaryObject = selectedToken.coins.data[0].coinObjectId;
         const primaryBalance = selectedToken.coins.data[0].balance;
+        const reward = raffleFormData.reward * Math.pow(10, selectedToken?.detail.metadata?.decimals!);
 
-        if (Number(primaryBalance) < raffleFormData.balance) {
+        if (Number(primaryBalance) < reward) {
           tx.mergeCoins(
             tx.object(primaryObject),
             selectedToken.coins.data.slice(1)?.map((co) => tx.object(co.coinObjectId))
           );
         }
 
-        const splitCoin = tx.splitCoins(primaryObject, [tx.pure(raffleFormData.balance * Math.pow(10, selectedToken?.detail.metadata?.decimals!))]);
+        const splitCoin = tx.splitCoins(tx.object(primaryObject), [tx.pure(reward)]);
         const period = raffleFormData.lockPeriod.period * raffleFormData.lockPeriod.unit;
+
+        const [counterNft] = tx.moveCall({
+          target: `${PACKAGE_ID}::counter_nft::mint`,
+        });
 
         tx.moveCall({
           typeArguments: [raffleFormData.token],
           target: `${PACKAGE_ID}::coin_raffle::create_raffle`,
-          arguments: [
-            tx.pure(RAFFLES),
-            tx.pure(raffleFormData.name),
-            tx.pure(raffleFormData.ticketPrice),
-            tx.pure(period),
-            splitCoin,
-            tx.object("0x67ebe26b7bdf79fe8908425cc72c4a4c46cee69bcd1c99ebbb3bcef96eca730c"),
-            tx.pure("0x6"),
-          ],
+          arguments: [tx.pure(RAFFLES), tx.pure(raffleFormData.name), tx.pure(raffleFormData.ticketPrice), tx.pure(period), splitCoin, counterNft, tx.pure("0x6")],
+        });
+
+        tx.moveCall({
+          target: `${PACKAGE_ID}::counter_nft::transfer_to_sender`,
+          arguments: [counterNft],
         });
 
         signAndExecute(
@@ -175,7 +137,7 @@ const CreateRaffle = () => {
                 .waitForTransactionBlock({
                   digest: tx.digest,
                 })
-                .then((data: any) => {
+                .then(() => {
                   navigate(ROUTES.MANAGE_RAFFLE);
                 });
             },
@@ -204,7 +166,7 @@ const CreateRaffle = () => {
     } else {
       const totalBalance = Number(selectedToken?.detail.supply.value) / Math.pow(10, Number(selectedToken?.detail.metadata?.decimals));
       return (
-        raffleFormData.balance > totalBalance || !raffleFormData.name || raffleFormData.lockPeriod.period <= 0 || raffleFormData.lockPeriod.unit <= 0 || !raffleFormData.ticketPrice
+        raffleFormData.reward > totalBalance || !raffleFormData.name || raffleFormData.lockPeriod.period <= 0 || raffleFormData.lockPeriod.unit <= 0 || !raffleFormData.ticketPrice
       );
     }
   }, [raffleFormData, selectedToken]);
@@ -242,8 +204,8 @@ const CreateRaffle = () => {
         ></Input>
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setRaffleFormData({ ...raffleFormData, ticketPrice: Number(event.target.value) })}
-          placeholder="Ticket Price"
-          title="Ticket Price"
+          placeholder="Ticket Price (SUI)"
+          title="Ticket Price (SUI)"
           type="text"
           key={"ticketPrice"}
           isRequired={true}
@@ -251,13 +213,13 @@ const CreateRaffle = () => {
           disable={false}
         ></Input>
         <Input
-          onChange={(event: ChangeEvent<HTMLInputElement>) => setRaffleFormData({ ...raffleFormData, balance: Number(event.target.value) })}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setRaffleFormData({ ...raffleFormData, reward: Number(event.target.value) })}
           placeholder="Raffle Reward"
           title="Raffle Reward"
           type="text"
           key={"raffleBalance"}
           isRequired={true}
-          value={raffleFormData.balance}
+          value={raffleFormData.reward}
           disable={false}
         ></Input>
         <div className="flex justify-center">
