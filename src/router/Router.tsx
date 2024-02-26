@@ -16,7 +16,6 @@ import Raffle from "../pages/Token/Raffle";
 import Stake from "../pages/Stake/Stake";
 import Tokenomics from "../pages/Tokenomics/Tokenomics";
 import VestingList from "../pages/Tokenomics/VestingList";
-import Vesting from "../pages/Tokenomics/Vesting";
 import ContractPage from "../pages/ContractPage";
 import Login from "../pages/Login";
 import NotFoundPage from "../pages/NotFoundPage";
@@ -24,6 +23,7 @@ import CreateNFT from "../pages/NFT/CreateNFT";
 import ListNFTs from "../pages/NFT/ListNFTs";
 import NFTDetails from "../pages/NFT/NFTDetails";
 import CreateCollection from "../pages/NFT/CreateCollection";
+import CreateVesting from "../pages/Tokenomics/CreateVesting";
 
 const Router: React.FC = () => {
   return (
@@ -44,7 +44,7 @@ const Router: React.FC = () => {
             <Route path="/raffle" index element={<Raffle />} />
             <Route path="/tokenomics" index element={<Tokenomics />} />
             <Route path="/vesting-list" index element={<VestingList />} />
-            <Route path="/create-vesting/:tokenid/:name/:amount" index element={<Vesting />} />
+            <Route path="/create-vesting/" index element={<CreateVesting />} />
             <Route path="/contract" index element={<ContractPage />} />
             <Route path="/airdrop" index element={<Airdrop />} />
 
