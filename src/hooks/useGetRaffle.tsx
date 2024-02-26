@@ -1,10 +1,11 @@
-import { DevInspectResults, MoveValue, SuiClient, SuiExecutionResult, SuiObjectResponse } from "@mysten/sui.js/client";
+import { DevInspectResults, SuiClient, SuiExecutionResult, SuiObjectResponse } from "@mysten/sui.js/client";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { PACKAGE_ID, RAFFLES, isMoveObject, isMoveStructArray, isMoveStructObject, isStringArray, isStringId } from "../utils";
 import { WalletAccount } from "@wallet-standard/base";
 import { useEffect, useState } from "react";
 import { BCS, getSuiMoveConfig } from "@mysten/bcs";
 import { RaffleObject, RaffleObjectFields } from "../utils/types";
+import { MIST_PER_SUI } from "@mysten/sui.js/utils";
 
 export default function useGetRaffle(account: WalletAccount, suiClient: SuiClient) {
   const [raffles, setRaffles] = useState<RaffleObject[]>([]);
@@ -96,7 +97,7 @@ export default function useGetRaffle(account: WalletAccount, suiClient: SuiClien
                       participants: mainField.participants,
                       reward: mainField.reward,
                       ticket_count: mainField.ticket_count,
-                      ticket_price: mainField.ticket_price,
+                      ticket_price: (BigInt(mainField.ticket_price as unknown as number) / MIST_PER_SUI).toString(),
                       vrf_input: mainField.vrf_input,
                       winner: mainField.winner,
                     },

@@ -13,7 +13,6 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { bcs } from "@mysten/sui.js/bcs";
 import { bls12_381 } from "@noble/curves/bls12-381";
 import { RaffleObject } from "../../utils/types";
-
 const rowsPerPage = 5;
 const paginationVariants = {
   hidden: {
@@ -131,11 +130,6 @@ const ManageRaffle = () => {
       const token = raffle.data.content.type.slice(88, -1);
       const raffleId = raffle.data.objectId;
 
-      console.log(tx);
-      console.log(token);
-      console.log(raffleId);
-      console.log(PACKAGE_ID);
-
       tx.moveCall({
         target: `${PACKAGE_ID}::coin_raffle::cancel`,
         typeArguments: [token],
@@ -244,7 +238,7 @@ const ManageRaffle = () => {
                                     className={
                                       !item.data.content.fields.winner && Number(item.data.content.fields.end_time) < Date.now()
                                         ? "hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"
-                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex cursor-not-allowed"
+                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex"
                                     }
                                     onClick={() => draw(item)}
                                     disabled={item.data.content.fields.winner !== "" || Number(item.data.content.fields.end_time) > Date.now()}
@@ -257,7 +251,7 @@ const ManageRaffle = () => {
                                     className={
                                       item.data.content.fields.claimed && Number(item.data.content.fields.reward) == 0 && Number(item.data.content.fields.balance) > 0
                                         ? "hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"
-                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex cursor-not-allowed"
+                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex"
                                     }
                                     onClick={() => complate(item)}
                                     disabled={!item.data.content.fields.claimed || Number(item.data.content.fields.reward) > 0 || Number(item.data.content.fields.balance) == 0}
@@ -270,7 +264,7 @@ const ManageRaffle = () => {
                                     className={
                                       Number(item.data.content.fields.balance) == 0 && item.data.content.fields.participants?.length === 0
                                         ? "hover:bg-sky-100 p-2 rounded-lg text-black cursor-pointer w-full justify-items-start flex"
-                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex cursor-not-allowed"
+                                        : "p-2 rounded-lg text-gray-400 cursor-default w-full justify-items-start flex"
                                     }
                                     onClick={() => cancel(item)}
                                     disabled={Number(item.data.content.fields.balance) > 0 || item.data.content.fields.participants?.length > 0}

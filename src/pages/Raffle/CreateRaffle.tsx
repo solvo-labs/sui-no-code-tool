@@ -11,6 +11,7 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { RaffleFormData } from "../../utils/types";
 import { Loader } from "../../components/Loader";
 import { PERIOD, ROUTES } from "../../utils/enum";
+import { MIST_PER_SUI } from "@mysten/sui.js/utils";
 
 const CreateRaffle = () => {
   const account = useCurrentAccount();
@@ -99,7 +100,7 @@ const CreateRaffle = () => {
         console.log(selectedToken.coins.data[0]);
         const primaryObject = selectedToken.coins.data[0].coinObjectId;
         const primaryBalance = selectedToken.coins.data[0].balance;
-        const reward = raffleFormData.reward * Math.pow(10, selectedToken?.detail.metadata?.decimals!);
+        const reward = BigInt(raffleFormData.reward) * BigInt(Math.pow(10, selectedToken?.detail.metadata?.decimals!));
 
         if (Number(primaryBalance) < reward) {
           tx.mergeCoins(
@@ -118,7 +119,15 @@ const CreateRaffle = () => {
         tx.moveCall({
           typeArguments: [raffleFormData.token],
           target: `${PACKAGE_ID}::coin_raffle::create_raffle`,
-          arguments: [tx.pure(RAFFLES), tx.pure(raffleFormData.name), tx.pure(raffleFormData.ticketPrice), tx.pure(period), splitCoin, counterNft, tx.pure("0x6")],
+          arguments: [
+            tx.pure(RAFFLES),
+            tx.pure(raffleFormData.name),
+            tx.pure(BigInt(raffleFormData.ticketPrice) * MIST_PER_SUI),
+            tx.pure(period),
+            splitCoin,
+            counterNft,
+            tx.pure("0x6"),
+          ],
         });
 
         tx.moveCall({
