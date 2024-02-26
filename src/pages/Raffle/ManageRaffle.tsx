@@ -207,7 +207,7 @@ const ManageRaffle = () => {
                         <td className="px-6 py-3 text-md">{item.data.content.fields.name}</td>
                         <td className="px-6 py-3 text-md">{moment.unix(Number(item.data.content.fields.end_time) / 1000).format("MM/DD/YYYY h:mm A")}</td>
                         <td className="px-6 py-3 text-md">{item.data.content.fields.reward}</td>
-                        <td className="px-6 py-3 text-md">{item.data.content.fields.ticket_price}</td>
+                        <td className="px-6 py-3 text-md">{(item.data.content.fields.ticket_price as any) / Math.pow(10, 9)}</td>
                         <td className="px-6 py-3 text-md ">
                           <div className="group flex justify-center gap-2 cursor-pointer" onClick={() => console.log(item.data.content.fields)}>
                             {item.data.content.fields.ticket_count}
