@@ -150,5 +150,5 @@ export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const RAFFLES = "0xf3cdddc876721a47039baca054fb598cb0a0a57f0f28f28a59eb257569d7f896";
-export const PACKAGE_ID = "0xb14a6edbd5fd238911d6cb868913563f06956941c04546b9fd3ad59ad7e4d571";
+export const RAFFLES = "0x0cbd01c68632220405d0d1a495a39828ca854179ea439eeff4147b1f62689a4d";
+export const PACKAGE_ID = "0xa1a436f65c2ae39969e71f4b9e228d266924a23240fc4e7587015ac09a55b11e";

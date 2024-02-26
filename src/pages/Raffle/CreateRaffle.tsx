@@ -97,7 +97,6 @@ const CreateRaffle = () => {
     try {
       if (selectedToken) {
         const tx = new TransactionBlock();
-        console.log(selectedToken.coins.data[0]);
         const primaryObject = selectedToken.coins.data[0].coinObjectId;
         const primaryBalance = selectedToken.coins.data[0].balance;
         const reward = BigInt(raffleFormData.reward) * BigInt(Math.pow(10, selectedToken?.detail.metadata?.decimals!));

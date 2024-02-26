@@ -148,7 +148,7 @@ module raffle::coin_raffle {
 
    public entry fun cancel<T>(raffle : Raffle<T> , ctx: &mut TxContext){
     assert!(tx_context::sender(ctx) == raffle.owner, ENotAdmin);
-    assert!(raffle.ticket_count > 0, ERaffleAlreadyStart);
+    assert!(raffle.ticket_count == 0, ERaffleAlreadyStart);
 
    let Raffle { id, name: _, participants: _, end_time: _, ticket_count: _, ticket_price: _, reward ,  balance, winner: _, owner: _, claimed: _, vrf_input: _ } = raffle;
    let total_reward = balance::value(&reward);
