@@ -38,7 +38,9 @@ export default function useGetRaffle(account: WalletAccount, suiClient: SuiClien
 
           const multiObjects: SuiObjectResponse[] = await getMultiObjects(raffleObjects);
 
-          multiObjects.map((object: SuiObjectResponse) => {
+          const allValues: RaffleObject[] = [];
+
+          multiObjects.forEach((object: SuiObjectResponse) => {
             if (
               object.data &&
               object.data.content &&
@@ -56,9 +58,9 @@ export default function useGetRaffle(account: WalletAccount, suiClient: SuiClien
               let winner: string;
               let participants: Array<string>;
 
-              fields.claimed !== null && typeof fields.claimed === "boolean" ? (claimed = fields.claimed) : (claimed = false);
-              isStringId(fields.id) ? (id = fields.id) : { id: "" };
-              fields.winner !== null && typeof fields.winner === "string" ? (winner = fields.winner) : (winner = "");
+              claimed = fields.claimed !== null && typeof fields.claimed === "boolean" ? fields.claimed : false;
+              id = isStringId(fields.id) ? fields.id : { id: "" };
+              winner = fields.winner !== null && typeof fields.winner === "string" ? fields.winner : "";
               // isStringArray(fields.participants) ? (participants = fields.participands as any) : (participants = null);
 
               if (isStringArray(fields.participants)) {
@@ -108,9 +110,11 @@ export default function useGetRaffle(account: WalletAccount, suiClient: SuiClien
                   version: data.version,
                 },
               };
-              setRaffles(() => [...raffles, raffleData]);
+              allValues.push(raffleData);
             }
           });
+
+          setRaffles(allValues);
           setLoadingRaffle(false);
         }
       });
