@@ -21,13 +21,14 @@ module raffle::coin_raffle {
   const EWaitingClaim: u64 = 4;
   const EEndTimeExpire: u64 = 5;
   const EEndTimeDoesntExpire: u64 = 6;
+  const ERaffleAlreadyStart: u64 = 7;
 
   struct CustomRaffles has key , store {
         id: UID,
         raffles : Table<u64 , address>,
   }
 
-  struct Raffle <phantom T>  has key {
+  struct Raffle <phantom T> has key , store {
         id: UID,
         name: string::String,
         participants: vector<address>,
@@ -145,6 +146,20 @@ module raffle::coin_raffle {
         raffle.claimed = true;
   }
 
+   public entry fun cancel<T>(raffle : Raffle<T> , ctx: &mut TxContext){
+    assert!(tx_context::sender(ctx) == raffle.owner, ENotAdmin);
+    assert!(raffle.ticket_count == 0, ERaffleAlreadyStart);
+
+   let Raffle { id, name: _, participants: _, end_time: _, ticket_count: _, ticket_price: _, reward ,  balance, winner: _, owner: _, claimed: _, vrf_input: _ } = raffle;
+   let total_reward = balance::value(&reward);
+  
+    transfer::public_transfer(coin::take(&mut reward,total_reward , ctx), tx_context::sender(ctx));
+    balance::destroy_zero(balance);
+    balance::destroy_zero(reward);
+
+    object::delete(id);
+
+  }
 
   // getters
   public entry fun get_raffles(custom_raffles : &CustomRaffles) : vector<address> {
@@ -184,7 +199,7 @@ module raffle::coin_raffle {
         res
   }
 
-  public entry fun get_winner<T>(raffle : &Raffle<T>) : address {
+  public entry fun get_winner<T>(raffle : &Raffle<T>) : Option<u64> {
     raffle.winner
   }
 }

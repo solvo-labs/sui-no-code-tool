@@ -12,6 +12,9 @@ export enum ROUTES {
   NFT_LIST = "/list-nft",
   NFT_DETAILS = "/list-nft/:id",
   CREATE_COLLECTION = "/create-collection",
+  CREATE_RAFFLE = "/create-raffle",
+  JOIN_RAFFLE = "/join-raffle",
+  MANAGE_RAFFLE = "/manage-raffle",
 }
 
 export enum TOPBAR_PAGES {
@@ -19,6 +22,7 @@ export enum TOPBAR_PAGES {
   TOKENOMICS = "Tokenomics",
   NFT = "NFT",
   STAKE = "Stake",
+  RAFFLE = "Raffle",
 }
 
 export enum TOKEN_PAGES {
@@ -28,13 +32,28 @@ export enum TOKEN_PAGES {
   // TOKEN_MINT_BURN = "MINT & BURN",
 }
 
-export enum TOKENOMICS_PAGE {
+export enum TOKENOMICS_PAGES {
   TOKENOMICS_CREATE = "CREATE TOKENOMICS",
   TOKENOMICS_MANAGE = "MANAGE TOKENOMICS",
 }
 
-export enum NFT_PAGE {
+export enum NFT_PAGES {
   CREATE_COLLECTION = "CREATE COLLECTION",
   NFT_CREATE = "CREATE NFT",
   NFT_LIST = "LIST NFTs",
+}
+
+export enum RAFFLE_PAGES {
+  CREATE_RAFFLE = "CREATE RAFFLE",
+  JOIN_RAFFLE = "JOIN RAFFLE",
+  MANAGE_RAFFLE = "MANAGE RAFFLE",
+}
+
+export enum PERIOD {
+  "Minute" = 60000,
+  "Hour" = 3600000,
+  "Day" = 86400000,
+  "Week" = 604800000,
+  "Month" = 2629800000,
+  "Year" = 31557600000,
 }
