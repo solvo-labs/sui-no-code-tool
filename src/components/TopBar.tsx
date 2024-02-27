@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ConnectButton } from "@mysten/dapp-kit";
-import { NFT_PAGE, ROUTES, TOKENOMICS_PAGE, TOKEN_PAGES, TOPBAR_PAGES } from "../utils/enum";
+import { NFT_PAGES, RAFFLE_PAGES, ROUTES, TOKENOMICS_PAGES, TOKEN_PAGES, TOPBAR_PAGES } from "../utils/enum";
 import MobileMenu from "./MobileMenu";
 
 const TopBar: React.FC = () => {
@@ -12,11 +12,13 @@ const TopBar: React.FC = () => {
   const [isTokenomicsHovered, setIsTokenomicsHovered] = useState<Boolean>(false);
   const [isStakeHovered, setIsStakeHovered] = useState<Boolean>(false);
   const [isNFTHovered, setIsNFTHovered] = useState<Boolean>(false);
+  const [isRaffleHovered, setIsRaffleHovered] = useState<Boolean>(false);
 
   const tokenModalRef = useRef<HTMLDivElement | null>(null);
   const tokenomicsModalRef = useRef<HTMLDivElement | null>(null);
   const stakeModalRef = useRef<HTMLDivElement | null>(null);
   const nftModalRef = useRef<HTMLDivElement | null>(null);
+  const raffleModalRef = useRef<HTMLDivElement | null>(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -26,6 +28,7 @@ const TopBar: React.FC = () => {
     setIsNFTHovered(false);
     setIsTokenHovered(false);
     setIsTokenomicsHovered(false);
+    setIsRaffleHovered(false);
     setState(true);
   };
 
@@ -56,6 +59,9 @@ const TopBar: React.FC = () => {
     }
     if (nftModalRef.current && !nftModalRef.current.contains(event.target as Node)) {
       setIsNFTHovered(false);
+    }
+    if (raffleModalRef.current && !raffleModalRef.current.contains(event.target as Node)) {
+      setIsRaffleHovered(false);
     }
   };
 
@@ -105,7 +111,7 @@ const TopBar: React.FC = () => {
               </div>
               {isTokenomicsHovered && (
                 <div ref={tokenomicsModalRef} onMouseLeave={() => handleCloseMenu(setIsTokenomicsHovered)} className="pages-modal">
-                  <ul className="space-y-2">{pageLister(TOKENOMICS_PAGE)}</ul>
+                  <ul className="space-y-2">{pageLister(TOKENOMICS_PAGES)}</ul>
                 </div>
               )}
             </li>
@@ -115,7 +121,17 @@ const TopBar: React.FC = () => {
               </div>
               {isNFTHovered && (
                 <div ref={nftModalRef} onMouseLeave={() => handleCloseMenu(setIsNFTHovered)} className="pages-modal">
-                  <ul className="space-y-2">{pageLister(NFT_PAGE)}</ul>
+                  <ul className="space-y-2">{pageLister(NFT_PAGES)}</ul>
+                </div>
+              )}
+            </li>
+            <li className="relative group">
+              <div onMouseEnter={() => handleOpenMenu(setIsRaffleHovered)} className="cursor-pointer font-semibold text-xl text-sui-gray hover:text-sui-blue">
+                {TOPBAR_PAGES.RAFFLE}
+              </div>
+              {isRaffleHovered && (
+                <div ref={nftModalRef} onMouseLeave={() => handleCloseMenu(setIsRaffleHovered)} className="pages-modal">
+                  <ul className="space-y-2">{pageLister(RAFFLE_PAGES)}</ul>
                 </div>
               )}
             </li>
