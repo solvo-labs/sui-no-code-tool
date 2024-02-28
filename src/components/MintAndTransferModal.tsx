@@ -12,16 +12,15 @@ type Props = {
   form: TransferForm & { checkbox: boolean };
   address: string;
   handleForm: (form: TransferForm & { checkbox: boolean }) => void;
-  handleOpen: () => void;
   handleClose: () => void;
 };
 
-const MintAndTransferModal: React.FC<Props> = ({ open, disable, mintAndTransferCoin, form, address, handleForm, handleOpen, handleClose }) => {
+const MintAndTransferModal: React.FC<Props> = ({ open, disable, mintAndTransferCoin, form, address, handleForm, handleClose }) => {
   const cancelButtonRef = useRef(null);
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleOpen}>
+      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -60,25 +59,29 @@ const MintAndTransferModal: React.FC<Props> = ({ open, disable, mintAndTransferC
                           To transfer the coins, please enter the recipient's address below. If you enter the wrong recipient address, you may lose the coins permanently.
                         </p>
                         <Input
-                          value={form.balance}
                           className="mt-8 mb-4"
                           onChange={(e: any) => handleForm({ ...form, balance: Number(e.target.value) })}
                           placeholder="Transfer amount"
                           type="text"
                           disable={false}
+                          value={form.balance}
                         ></Input>
                         <Input
-                          value={form.recipient}
                           className="mt-8 mb-4"
                           onChange={(e: any) => handleForm({ ...form, recipient: e.target.value })}
                           placeholder="Recipient address"
                           type="text"
                           disable={form.checkbox}
+                          value={form.recipient}
                         ></Input>
                         <Checkbox
                           checked={form.checkbox}
                           text="I want to send it to my own wallet"
-                          onChange={(e: any) => handleForm({ ...form, checkbox: e.target.checked, recipient: e.target.checked ? address : "" })}
+                          onChange={(e: any) => {
+                            !form.checkbox
+                              ? handleForm({ ...form, checkbox: e.target.checked, recipient: address })
+                              : handleForm({ ...form, checkbox: e.target.checked, recipient: "" });
+                          }}
                         ></Checkbox>
                       </div>
                     </div>
