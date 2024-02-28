@@ -4,8 +4,9 @@ import { getCoin, isCoinMetadata, isMoveObject, ownerChecker } from "../utils";
 import { CoinDetail } from "../utils/types";
 import { WalletAccount } from "@wallet-standard/core";
 
-export default function useGetCoinDetails(account: WalletAccount, suiClient: SuiClient, id: string, setLoading: any) {
+export default function useGetCoinDetails(account: WalletAccount, suiClient: SuiClient, id: string) {
   const [coin, setCoin] = useState<CoinDetail>();
+  const [coinDetailLoading, setCoinDetailLoading] = useState<boolean>(true);
   const [coinObjects, setCoinObjects] = useState<CoinStruct[]>();
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function useGetCoinDetails(account: WalletAccount, suiClient: Sui
               owmer: ownerAddress,
             };
             setCoin(coinDetailData);
-            setLoading(false);
+            setCoinDetailLoading(false);
           }
         } else if (treasury.error) {
           console.log(treasury.error.code);
@@ -87,5 +88,5 @@ export default function useGetCoinDetails(account: WalletAccount, suiClient: Sui
     init();
   }, []);
 
-  return { coin, coinObjects };
+  return { coin, coinObjects, coinDetailLoading };
 }
