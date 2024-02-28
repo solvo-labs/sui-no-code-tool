@@ -10,16 +10,15 @@ type Props = {
   transferCoin: () => void;
   form: TransferForm;
   handleForm: (form: TransferForm) => void;
-  handleOpen: () => void;
   handleClose: () => void;
 };
 
-const TransferCoinModal: React.FC<Props> = ({ open, disable, transferCoin, form, handleForm, handleOpen, handleClose }) => {
+const TransferCoinModal: React.FC<Props> = ({ open, disable, transferCoin, form, handleForm, handleClose }) => {
   const cancelButtonRef = useRef(null);
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleOpen}>
+      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={handleClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -63,6 +62,7 @@ const TransferCoinModal: React.FC<Props> = ({ open, disable, transferCoin, form,
                           placeholder="Transfer amount"
                           type="text"
                           disable={false}
+                          value={form.balance}
                         ></Input>
                         <Input
                           className="mt-8 mb-4"
@@ -70,6 +70,7 @@ const TransferCoinModal: React.FC<Props> = ({ open, disable, transferCoin, form,
                           placeholder="Recipient address"
                           type="text"
                           disable={false}
+                          value={form.recipient}
                         ></Input>
                       </div>
                     </div>
