@@ -1,6 +1,6 @@
 import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
 import { SuiClient } from "@mysten/sui.js/client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { Loader } from "../../components/Loader";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
@@ -19,7 +19,7 @@ const TokenDetail = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
 
-  const { coin, coinObjects } = useGetCoinDetails(account!, suiClient, id!, setLoading);
+  const { coin, coinObjects, coinDetailLoading } = useGetCoinDetails(account!, suiClient, id!);
   const { currentBalance } = useGetTotalSupply(suiClient, account!, id!);
 
   const [burnBalance, setBurnBalance] = useState<number>(0);
@@ -33,7 +33,7 @@ const TokenDetail = () => {
     balance: 0,
   });
 
-  const [modals, setModals] = useState<{ transferModal: boolean; burnModal: boolean; mintAndTransferModal: false }>({
+  const [modals, setModals] = useState<{ transferModal: boolean; burnModal: boolean; mintAndTransferModal: boolean }>({
     transferModal: false,
     burnModal: false,
     mintAndTransferModal: false,
@@ -72,8 +72,6 @@ const TokenDetail = () => {
         });
 
         const to = treasuryObject.data[0];
-
-        console.log("main", to.data?.objectId);
 
         // setTreasury(to);
         setLoading(false);
@@ -219,12 +217,20 @@ const TokenDetail = () => {
     } catch (error) {}
   };
 
-  if (loading) {
+  const transferDisable = useMemo(() => {
+    return !transferForm.balance || !transferForm.recipient;
+  }, [transferForm]);
+
+  const mintAndTransferDisable = useMemo(() => {
+    return !mintAndTransferForm.balance || !mintAndTransferForm.recipient;
+  }, [mintAndTransferForm]);
+
+  if (loading || coinDetailLoading) {
     return <Loader />;
   }
 
   return (
-    <div className="p-8 flex flex-col 2xl:w-10/12 xl:w-10/12 lg:w-11/12 gap-4 h-max">
+    <div className="p-8 flex flex-col 2xl:w-10/12 xl:w-10/12 gap-4 h-max">
       <div className="bg-gray-100 p-4 flex flex-row items-center rounded-lg">
         {coin?.metadata.iconUrl ? (
           // eslint-disable-next-line jsx-a11y/alt-text
@@ -262,11 +268,11 @@ const TokenDetail = () => {
           <div className="flex flex-col gap-8">
             <div className="flex flex-row items-baseline justify-between">
               <h4 className="text-xl font-bold">{coin?.metadata.name} Supply</h4>
-              <h1 className="text-xl font-bold">{Number(coin?.supply.value) / Math.pow(10, coin?.metadata.decimals!)}</h1>
+              <h1 className="text-xl font-bold">{coin ? Number(coin?.supply.value) / Number(Math.pow(10, coin?.metadata.decimals!)) : ""}</h1>
             </div>
             <div className="flex flex-row items-baseline justify-between">
               <h4 className="text-xl font-bold">{coin?.metadata.name} Balance</h4>
-              <h1 className="text-xl font-bold">{Number(currentBalance) / Math.pow(10, coin?.metadata.decimals!)}</h1>
+              <h1 className="text-xl font-bold">{coin ? Number(currentBalance) / Number(Math.pow(10, coin?.metadata.decimals!)) : ""}</h1>
             </div>
           </div>
 
@@ -279,10 +285,11 @@ const TokenDetail = () => {
                 <BurnCoinModal
                   open={modals.burnModal}
                   burnCoin={burn}
+                  burnBalance={burnBalance}
                   handleBurnBalance={setBurnBalance}
                   handleClose={() => handleClose(setModals, "burnModal")}
                   handleOpen={() => {}}
-                  disable={false}
+                  disable={burnBalance <= 0}
                 />
                 <button className="bg-sky-400 text-white font-bold hover:bg-sky-500" onClick={() => handleOpen(setModals, "transferModal")}>
                   Transfer
@@ -293,8 +300,7 @@ const TokenDetail = () => {
                   form={transferForm}
                   handleForm={setTransferForm}
                   handleClose={() => handleClose(setModals, "transferModal")}
-                  handleOpen={() => {}}
-                  disable={false}
+                  disable={transferDisable}
                 />
               </>
             )}
@@ -307,9 +313,8 @@ const TokenDetail = () => {
               form={mintAndTransferForm}
               handleForm={setMintAndTransferForm}
               handleClose={() => handleClose(setModals, "mintAndTransferModal")}
-              handleOpen={() => {}}
               address={account?.address || ""}
-              disable={false}
+              disable={mintAndTransferDisable}
             />
           </div>
         </div>
