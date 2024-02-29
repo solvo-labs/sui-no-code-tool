@@ -48,7 +48,7 @@ const CreateRaffle = () => {
       period: PERIOD["Minute"],
       unit: 1,
     },
-    ticketPrice: 0,
+    ticketPrice: "0",
     reward: 0,
   });
 
@@ -121,7 +121,7 @@ const CreateRaffle = () => {
           arguments: [
             tx.pure(RAFFLES),
             tx.pure(raffleFormData.name),
-            tx.pure(BigInt(raffleFormData.ticketPrice) * MIST_PER_SUI),
+            tx.pure(parseFloat(raffleFormData.ticketPrice) * Math.pow(10, 9)),
             tx.pure(period),
             splitCoin,
             counterNft,
@@ -211,7 +211,7 @@ const CreateRaffle = () => {
           disable={false}
         ></Input>
         <Input
-          onChange={(event: ChangeEvent<HTMLInputElement>) => setRaffleFormData({ ...raffleFormData, ticketPrice: Number(event.target.value) })}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setRaffleFormData({ ...raffleFormData, ticketPrice: event.target.value })}
           placeholder="Ticket Price (SUI)"
           title="Ticket Price (SUI)"
           type="text"

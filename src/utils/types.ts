@@ -61,7 +61,7 @@ export type NftCollection = {
 export type RaffleFormData = {
   token: string;
   name: string;
-  ticketPrice: number;
+  ticketPrice: string;
   lockPeriod: {
     unit: number;
     period: number;
