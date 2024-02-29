@@ -13,7 +13,6 @@ import CloseAccount from "../pages/Token/CloseAccount";
 import Multisignature from "../pages/Token/Multisignature";
 import Airdrop from "../pages/Token/Airdrop";
 import Stake from "../pages/Stake/Stake";
-import Tokenomics from "../pages/Tokenomics/Tokenomics";
 import VestingList from "../pages/Tokenomics/VestingList";
 import ContractPage from "../pages/ContractPage";
 import Login from "../pages/Login";
@@ -26,6 +25,7 @@ import CreateVesting from "../pages/Tokenomics/CreateVesting";
 import CreateRaffle from "../pages/Raffle/CreateRaffle";
 import JoinRaffle from "../pages/Raffle/JoinRaffle";
 import ManageRaffle from "../pages/Raffle/ManageRaffle";
+import ManageVesting from "../pages/Tokenomics/ManageVesting";
 
 const Router: React.FC = () => {
   return (
@@ -46,9 +46,9 @@ const Router: React.FC = () => {
             <Route path={ROUTES.CREATE_RAFFLE} index element={<CreateRaffle />} />
             <Route path={ROUTES.JOIN_RAFFLE} index element={<JoinRaffle />} />
             <Route path={ROUTES.MANAGE_RAFFLE} index element={<ManageRaffle />} />
-            <Route path="/tokenomics" index element={<Tokenomics />} />
-            <Route path="/vesting-list" index element={<VestingList />} />
-            <Route path="/create-vesting/" index element={<CreateVesting />} />
+            <Route path={ROUTES.TOKENOMICS_CREATE} index element={<CreateVesting />} />
+            <Route path={ROUTES.TOKENOMICS_MANAGE} index element={<ManageVesting />} />
+            <Route path={ROUTES.TOKENOMICS_LIST} index element={<VestingList />} />
             <Route path="/contract" index element={<ContractPage />} />
             <Route path="/airdrop" index element={<Airdrop />} />
 
