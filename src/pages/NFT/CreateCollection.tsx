@@ -89,10 +89,10 @@ const CreateCollection = () => {
           type="text"
           key={"nftName"}
           isRequired={true}
+          value={collectionName}
         ></Input>
-
         <div className="flex justify-center">
-          <div className="w-4/5">
+          <div className="w-1/2">
             <Button disabled={!collectionName} onClick={createCollection} title="Create Collection"></Button>
           </div>
         </div>
