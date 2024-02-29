@@ -6,8 +6,9 @@ export enum ROUTES {
   TOKEN_TRANSFER = "/token-transfer",
   TOKEN_MINT_BURN = "/mint-burn-token",
   TOKEN_DETAILS = "/coin/:id",
-  TOKENOMICS_CREATE = "",
-  TOKENOMICS_MANAGE = "",
+  TOKENOMICS_CREATE = "/create-vesting",
+  TOKENOMICS_MANAGE = "/manage-vesting",
+  TOKENOMICS_LIST = "/list-vesting",
   NFT_CREATE = "/create-nfts",
   NFT_LIST = "/list-nft",
   NFT_DETAILS = "/list-nft/:id",
@@ -35,6 +36,7 @@ export enum TOKEN_PAGES {
 export enum TOKENOMICS_PAGES {
   TOKENOMICS_CREATE = "CREATE TOKENOMICS",
   TOKENOMICS_MANAGE = "MANAGE TOKENOMICS",
+  TOKENOMICS_LIST = "LIST TOKENOMICS",
 }
 
 export enum NFT_PAGES {
