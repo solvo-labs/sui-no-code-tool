@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@heroicons/react": "^2.1.1",
     "@mysten/dapp-kit": "^0.10.3",
     "@mysten/sui.js": "^0.48.1",
     "@mysten/wallet-kit": "^0.8.6",
