@@ -27,7 +27,7 @@ const ProtectedRoute: React.FC = () => {
 
   return isConnected ? (
     <div className="flex flex-col min-h-screen">
-      <div className="sticky top-0 z-1 bg-white">
+      <div className="sticky top-0 z-10 bg-white">
         <TopBar />
       </div>
       <div className="flex justify-center flex-grow">
