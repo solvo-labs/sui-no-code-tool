@@ -23,7 +23,6 @@ const CreateVesting = () => {
   const [coinsData, setCoinsData] = useState<((CoinMetadata & { hex: string }) | null)[]>([]);
   const [recipientModal, setRecipientModal] = useState<boolean>(false);
 
-  // const [recipientList, setRecipientList] = useState<RecipientForm[]>([]);
   const [recipient, setRecipient] = useState<RecipientForm>({
     amount: "",
     walletAddress: "",
@@ -37,11 +36,8 @@ const CreateVesting = () => {
       unit: 0,
     },
     recipients: [],
-    scheduleTime: {
-      schedule: 0,
-      unit: 0,
-    },
-    startTime: 0,
+    scheduleTime: 0,
+    startTime: moment().unix(),
     token: "",
   });
 
@@ -147,9 +143,15 @@ const CreateVesting = () => {
         />
         <TimeSelector
           title="Select Start Time"
-          handleChange={(e: ChangeEvent<HTMLInputElement>) => {
+          date={vestingFormData.startTime}
+          handleDate={(e: ChangeEvent<HTMLInputElement>) => {
             const date = new Date(e.target.value);
-            var timestamp = moment(date).valueOf();
+            const timestamp = moment(date).valueOf();
+            setVestingFormData({ ...vestingFormData, startTime: timestamp });
+          }}
+          handleTime={(e: ChangeEvent<HTMLInputElement>) => {
+            const vestingTime = moment(vestingFormData.startTime).format(`ddd MMM DD YYYY ${e.target.value}:00 [GMT]ZZ`);
+            const timestamp = moment(vestingTime).valueOf();
             setVestingFormData({ ...vestingFormData, startTime: timestamp });
           }}
         ></TimeSelector>
@@ -185,46 +187,22 @@ const CreateVesting = () => {
                 })
               }
               selectedOption={vestingFormData.durationTime.duration}
-              placeholder="Select token for Raffle"
+              placeholder="Select duration"
             ></Select>
           </div>
         </div>
-        <div className="flex">
-          <div className="w-2/5 pr-1">
-            <Input
-              onChange={(e) =>
-                setVestingFormData({
-                  ...vestingFormData,
-                  scheduleTime: {
-                    ...vestingFormData.scheduleTime,
-                    unit: Number(e.target.value),
-                  },
-                })
-              }
-              placeholder="Unit"
-              type="text"
-              value={vestingFormData.scheduleTime.unit}
-              title="Unit"
-            ></Input>
-          </div>
-          <div className="w-3/5 pl-1">
-            <Select
-              title="Unlock Schedule"
-              options={scheduleList}
-              onSelect={(value) =>
-                setVestingFormData({
-                  ...vestingFormData,
-                  scheduleTime: {
-                    ...vestingFormData.scheduleTime,
-                    schedule: Number(value),
-                  },
-                })
-              }
-              selectedOption={vestingFormData.scheduleTime.schedule}
-              placeholder="Unlock Schedule"
-            ></Select>
-          </div>
-        </div>
+        <Select
+          title="Unlock Schedule"
+          options={scheduleList}
+          onSelect={(value) =>
+            setVestingFormData({
+              ...vestingFormData,
+              scheduleTime: Number(value),
+            })
+          }
+          selectedOption={vestingFormData.scheduleTime}
+          placeholder="Unlock Schedule"
+        ></Select>
         <Checkbox
           checked={vestingFormData.autoWithdraw}
           onChange={() =>
