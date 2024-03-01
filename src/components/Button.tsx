@@ -6,9 +6,10 @@ type Props = {
   onClick: () => void;
   leftImage?: any;
   rightImage?: any;
+  textSize?: string;
 };
 
-const Button: React.FC<Props> = ({ title, disabled, rightImage, leftImage, onClick }) => {
+const Button: React.FC<Props> = ({ title, disabled, rightImage, leftImage, textSize = "[14px]", onClick }) => {
   return (
     <button
       disabled={disabled}
@@ -16,7 +17,7 @@ const Button: React.FC<Props> = ({ title, disabled, rightImage, leftImage, onCli
       onClick={onClick}
     >
       <div className="pr-2">{leftImage}</div>
-      <p className="text-[16px] font-bold">{title}</p>
+      <p className={`text-${textSize} font-bold`}>{title}</p>
       <div className="pl-2">{rightImage}</div>
     </button>
   );
