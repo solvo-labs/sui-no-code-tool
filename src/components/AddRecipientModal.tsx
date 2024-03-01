@@ -134,33 +134,6 @@ const AddRecipientModal: React.FC<Props> = ({ open, disable, recipient, recipien
                           </div>
                         </div>
                       )}
-                      {/* {raffle && raffle.data.content.fields.participants.length <= 0 && (
-                        <div>
-                          <div className="mt-2">
-                            <p className="text-sm text-gray-500">No one has participated in this raffle.</p>
-                          </div>
-                        </div>
-                      )}
-                      {raffle && raffle.data.content.fields.participants.length > 0 && (
-                        <div>
-                          <div className="mt-2">
-                            <p className="text-sm text-gray-500">The participants are listed below.</p>
-                          </div>
-                          <div className="mt-4 flex flex-col max-h-32 overflow-y-auto">
-                            {raffle.data.content.fields.participants.map((participant: string) => (
-                              <a
-                                onClick={() => {
-                                  window.open("https://suiexplorer.com/address/" + participant + "?network=testnet", "_blank");
-                                }}
-                                className="text-sm hover:cursor-pointer hover:text-sui-blue py-4"
-                                key={participant}
-                              >
-                                {participant}
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      )} */}
                     </div>
                   </div>
                 </div>
@@ -173,16 +146,6 @@ const AddRecipientModal: React.FC<Props> = ({ open, disable, recipient, recipien
                   >
                     Close
                   </button>
-                  {/* {raffle && address !== raffle.data.content.fields.owner && Number(raffle.data.content.fields.end_time) > Date.now() && (
-                    <button
-                      type="button"
-                      className="mt-3 inline-flex w-full justify-center rounded-lg bg-sui-blue px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sui-blue-h hover:ring-1 hover:ring-sui-blue sm:mt-0 sm:w-auto"
-                      onClick={buy_ticket}
-                      ref={cancelButtonRef}
-                    >
-                      {raffle.data.content.fields.participants.length > 0 ? "I also want to participate in the raffle" : "I want to participate in the raffle"}
-                    </button>
-                  )} */}
                 </div>
               </Dialog.Panel>
             </Transition.Child>
