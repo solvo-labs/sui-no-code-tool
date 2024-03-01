@@ -119,3 +119,8 @@ export type RaffleTicketObjectFields = {
   raffle_id: string;
   ticket_no: string;
 };
+
+export type RecipientForm = {
+  walletAddress: string;
+  amount: string;
+};
