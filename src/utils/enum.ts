@@ -59,3 +59,14 @@ export enum PERIOD {
   "Month" = 2629800000,
   "Year" = 31557600000,
 }
+
+export enum SCHEDULE {
+  "Per Second" = 1,
+  "Per Minute" = 60,
+  "Hourly" = 3600,
+  "Daily" = 86400,
+  "Weekly" = 604800,
+  "Monthly" = 2592000,
+  "Quarterly" = 7776000,
+  "Yearly" = 31536000,
+}
