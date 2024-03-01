@@ -132,10 +132,7 @@ export type VestingForm = {
     unit: number;
     duration: number;
   };
-  scheduleTime: {
-    unit: number;
-    schedule: number;
-  };
+  scheduleTime: number;
   autoWithdraw: boolean;
   activeCliff: boolean;
   recipients: RecipientForm[];
