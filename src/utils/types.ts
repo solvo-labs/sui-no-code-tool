@@ -124,3 +124,19 @@ export type RecipientForm = {
   walletAddress: string;
   amount: string;
 };
+
+export type VestingForm = {
+  token: string;
+  startTime: number;
+  durationTime: {
+    unit: number;
+    duration: number;
+  };
+  scheduleTime: {
+    unit: number;
+    schedule: number;
+  };
+  autoWithdraw: boolean;
+  activeCliff: boolean;
+  recipients: RecipientForm[];
+};
