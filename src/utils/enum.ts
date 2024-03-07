@@ -66,7 +66,7 @@ export enum SCHEDULE {
   "Hourly" = 3600,
   "Daily" = 86400,
   "Weekly" = 604800,
-  "Monthly" = 2592000,
-  "Quarterly" = 7776000,
-  "Yearly" = 31536000,
+  "Monthly" = 2629800,
+  "Quarterly" = 7889400,
+  "Yearly" = 31557600,
 }

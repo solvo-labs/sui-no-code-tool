@@ -41,7 +41,7 @@ const CreateNFT = () => {
   const createNft = async () => {
     try {
       console.log(account, nftFormData.asset);
-      if (account && nftFormData.asset) {
+      if (account) {
         const tx = new TransactionBlock();
         const target: any = selectedOption + "::mint_to_sender";
 
