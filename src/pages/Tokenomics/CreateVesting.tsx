@@ -10,10 +10,12 @@ import TimeSelector from "../../components/TimeSelector";
 import Input from "../../components/Input";
 import Checkbox from "../../components/Checkbox";
 import Button from "../../components/Button";
-import AddRecipientModal from "../../components/AddRecipientModal";
-import { RecipientForm, VestingForm } from "../../utils/types";
+import { Recipient, RecipientForm, VestingForm } from "../../utils/types";
 import { PERIOD, SCHEDULE } from "../../utils/enum";
 import moment from "moment";
+import { getBN } from "@streamflow/stream";
+import AddRecipientModal from "../../components/AddRecipientModal";
+import { vestMulti } from "../../lib/vesting";
 
 const CreateVesting = () => {
   const account = useCurrentAccount();
@@ -31,14 +33,16 @@ const CreateVesting = () => {
   const [vestingFormData, setVestingFormData] = useState<VestingForm>({
     activeCliff: false,
     autoWithdraw: false,
+    cliffAmount: 0,
+    cliffTime: moment().unix() * 1000,
     durationTime: {
-      duration: 0,
+      period: 0,
       unit: 0,
     },
     recipients: [],
     scheduleTime: 0,
-    startTime: moment().unix(),
-    token: "",
+    startDate: moment().unix() * 1000,
+    token: undefined,
   });
 
   const [durationList, setDurationList] = useState<Option[]>([]);
@@ -53,6 +57,7 @@ const CreateVesting = () => {
     setRecipient({
       amount: "",
       walletAddress: "",
+      name: "",
     });
   };
 
@@ -85,9 +90,19 @@ const CreateVesting = () => {
     setDurationList(duration);
   }, []);
 
-  const disable = useMemo(() => {
+  const disableAddRecipient = useMemo(() => {
     return !recipient.amount || !recipient.walletAddress;
   }, [recipient]);
+
+  const disable = useMemo(() => {
+    return (
+      !vestingFormData.token ||
+      vestingFormData.startDate <= moment().unix() * 1000 ||
+      !vestingFormData.durationTime.unit ||
+      !vestingFormData.durationTime.period ||
+      !vestingFormData.scheduleTime
+    );
+  }, [vestingFormData]);
 
   useEffect(() => {
     const init = async () => {
@@ -120,6 +135,27 @@ const CreateVesting = () => {
     init();
   }, [coins]);
 
+  const create_vesting = async () => {
+    if (account && vestingFormData.recipients.length > 0) {
+      const amountPer = (vestingFormData.durationTime.period * vestingFormData.durationTime.unit) / vestingFormData.scheduleTime;
+
+      const recipientList: Recipient[] = vestingFormData.recipients.map((recipient: RecipientForm) => {
+        return {
+          recipient: recipient.walletAddress,
+          amount: getBN(Number(recipient.amount), 8),
+          name: recipient.name || "",
+          cliffAmount: getBN(vestingFormData.cliffAmount || 0, vestingFormData.token!.decimals),
+          amountPerPeriod: getBN(Number(recipient.amount) / amountPer, vestingFormData.token!.decimals),
+        };
+      });
+
+      console.log(recipientList);
+
+      const data = await vestMulti(account!, vestingFormData, recipientList);
+      console.log(data);
+    }
+  };
+
   if (objectLoading) {
     return <Loader />;
   }
@@ -136,23 +172,24 @@ const CreateVesting = () => {
             return { key: co?.name! + " (" + co?.symbol + ")", value: co?.hex! };
           })}
           onSelect={(value) => {
-            setVestingFormData({ ...vestingFormData, token: value });
+            const selectedCoin = coinsData.find((coin: (CoinMetadata & { hex: string }) | null) => coin!.hex === value);
+            setVestingFormData({ ...vestingFormData, token: selectedCoin! });
           }}
-          selectedOption={vestingFormData.token}
-          placeholder="Select token for Raffle"
+          selectedOption={vestingFormData.token ? vestingFormData.token.hex : undefined}
+          placeholder="Select token for Vesting"
         />
         <TimeSelector
           title="Select Start Time"
-          date={vestingFormData.startTime}
+          date={vestingFormData.startDate}
           handleDate={(e: ChangeEvent<HTMLInputElement>) => {
             const date = new Date(e.target.value);
             const timestamp = moment(date).valueOf();
-            setVestingFormData({ ...vestingFormData, startTime: timestamp });
+            setVestingFormData({ ...vestingFormData, startDate: timestamp });
           }}
           handleTime={(e: ChangeEvent<HTMLInputElement>) => {
-            const vestingTime = moment(vestingFormData.startTime).format(`ddd MMM DD YYYY ${e.target.value}:00 [GMT]ZZ`);
+            const vestingTime = moment(vestingFormData.startDate).format(`ddd MMM DD YYYY ${e.target.value}:00 [GMT]ZZ`);
             const timestamp = moment(vestingTime).valueOf();
-            setVestingFormData({ ...vestingFormData, startTime: timestamp });
+            setVestingFormData({ ...vestingFormData, startDate: timestamp });
           }}
         ></TimeSelector>
         <div className="flex">
@@ -182,11 +219,11 @@ const CreateVesting = () => {
                   ...vestingFormData,
                   durationTime: {
                     ...vestingFormData.durationTime,
-                    duration: Number(value),
+                    period: Number(value),
                   },
                 })
               }
-              selectedOption={vestingFormData.durationTime.duration}
+              selectedOption={vestingFormData.durationTime.period}
               placeholder="Select duration"
             ></Select>
           </div>
@@ -223,6 +260,38 @@ const CreateVesting = () => {
           }
           text="Activate Cliff"
         ></Checkbox>
+        {vestingFormData.activeCliff && (
+          <>
+            <Input
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setVestingFormData({
+                  ...vestingFormData,
+                  cliffAmount: Number(e.target.value),
+                })
+              }
+              placeholder="Cliff Amount"
+              title="Cliff Amount"
+              type="text"
+              value={vestingFormData.cliffAmount ? vestingFormData.cliffAmount : "0"}
+              disable={false}
+              isRequired={false}
+            ></Input>
+            <TimeSelector
+              title="Select Cliff Time"
+              date={vestingFormData.cliffTime}
+              handleDate={(e: ChangeEvent<HTMLInputElement>) => {
+                const date = new Date(e.target.value);
+                const timestamp = moment(date).valueOf();
+                setVestingFormData({ ...vestingFormData, cliffTime: timestamp });
+              }}
+              handleTime={(e: ChangeEvent<HTMLInputElement>) => {
+                const vestingTime = moment(vestingFormData.startDate).format(`ddd MMM DD YYYY ${e.target.value}:00 [GMT]ZZ`);
+                const timestamp = moment(vestingTime).valueOf();
+                setVestingFormData({ ...vestingFormData, cliffTime: timestamp });
+              }}
+            ></TimeSelector>
+          </>
+        )}
         <div className="flex justify-center">
           <div className="w-max">
             <Button
@@ -246,7 +315,7 @@ const CreateVesting = () => {
               recipient={recipient!}
               handleRecipient={setRecipient}
               handleRecipients={addRecipient}
-              disable={disable}
+              disable={disableAddRecipient}
               handleRemoveRecipient={removeRecipient}
             ></AddRecipientModal>
           </div>
@@ -254,7 +323,7 @@ const CreateVesting = () => {
 
         <div className="flex justify-center">
           <div className="w-max">
-            <Button onClick={() => console.log(vestingFormData)} textSize="base" title="Create Vesting Contract"></Button>
+            <Button disabled={disable} onClick={create_vesting} textSize="base" title="Create Vesting Contract"></Button>
           </div>
         </div>
       </div>
