@@ -10,12 +10,10 @@ import TimeSelector from "../../components/TimeSelector";
 import Input from "../../components/Input";
 import Checkbox from "../../components/Checkbox";
 import Button from "../../components/Button";
-import { Recipient, RecipientForm, VestingForm } from "../../utils/types";
+import { RecipientForm, VestingForm } from "../../utils/types";
 import { PERIOD, SCHEDULE } from "../../utils/enum";
 import moment from "moment";
-import { getBN } from "@streamflow/stream";
 import AddRecipientModal from "../../components/AddRecipientModal";
-import { vestMulti } from "../../lib/vesting";
 
 const CreateVesting = () => {
   const account = useCurrentAccount();
@@ -137,22 +135,18 @@ const CreateVesting = () => {
 
   const create_vesting = async () => {
     if (account && vestingFormData.recipients.length > 0) {
-      const amountPer = (vestingFormData.durationTime.period * vestingFormData.durationTime.unit) / vestingFormData.scheduleTime;
-
-      const recipientList: Recipient[] = vestingFormData.recipients.map((recipient: RecipientForm) => {
-        return {
-          recipient: recipient.walletAddress,
-          amount: getBN(Number(recipient.amount), 8),
-          name: recipient.name || "",
-          cliffAmount: getBN(vestingFormData.cliffAmount || 0, vestingFormData.token!.decimals),
-          amountPerPeriod: getBN(Number(recipient.amount) / amountPer, vestingFormData.token!.decimals),
-        };
-      });
-
-      console.log(recipientList);
-
-      const data = await vestMulti(account!, vestingFormData, recipientList);
-      console.log(data);
+      // const amountPer = (vestingFormData.durationTime.period * vestingFormData.durationTime.unit) / vestingFormData.scheduleTime;
+      // const recipientList: Recipient[] = vestingFormData.recipients.map((recipient: RecipientForm) => {
+      //   return {
+      //     recipient: recipient.walletAddress,
+      //     amount: getBN(Number(recipient.amount), 8),
+      //     name: recipient.name || "",
+      //     cliffAmount: getBN(vestingFormData.cliffAmount || 0, vestingFormData.token!.decimals),
+      //     amountPerPeriod: getBN(Number(recipient.amount) / amountPer, vestingFormData.token!.decimals),
+      //   };
+      // });
+      // const data = await vestMulti(account!, vestingFormData, recipientList);
+      // const data = await vestSingle(account!, vestingFormData, recipientList[0]);
     }
   };
 
