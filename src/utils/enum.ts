@@ -9,6 +9,7 @@ export enum ROUTES {
   TOKENOMICS_CREATE = "/create-vesting",
   TOKENOMICS_MANAGE = "/manage-vesting",
   TOKENOMICS_LIST = "/list-vesting",
+  TOKENOMICS_DETAILS = "/vesting-detail/:id",
   NFT_CREATE = "/create-nfts",
   NFT_LIST = "/list-nft",
   NFT_DETAILS = "/list-nft/:id",
