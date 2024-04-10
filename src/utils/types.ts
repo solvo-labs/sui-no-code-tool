@@ -121,10 +121,17 @@ export type RaffleTicketObjectFields = {
   ticket_no: string;
 };
 
-export type RecipientForm = {
-  walletAddress: string;
-  amount: string;
-  name?: string;
+export type ParticipantForm = {
+  selected_token: string;
+  wallet_address: string;
+  start_date: number;
+  end_date: number;
+  cliff_time: number;
+  durationTime: {
+    unit: number;
+    period: number;
+  };
+  balance: number;
 };
 
 export type VestingForm = {
@@ -139,7 +146,7 @@ export type VestingForm = {
   activeCliff: boolean;
   cliffAmount?: number;
   cliffTime: number;
-  recipients: RecipientForm[];
+  // recipients: RecipientForm[];
 };
 
 export type Recipient = {
@@ -148,4 +155,25 @@ export type Recipient = {
   name: string;
   cliffAmount: BN;
   amountPerPeriod: BN;
+};
+
+export type VestingMetadata = {
+  content: {
+    dataType: "moveObject";
+    fields: VestingObjectFields;
+    hasPublicTransfer: boolean;
+    type: string;
+  };
+  digest: string;
+  objectId: string;
+  version: string;
+};
+
+export type VestingObjectFields = {
+  id: { id: string };
+  items: {
+    fields: { id: { id: string }; size: string };
+    type: string;
+  };
+  name: string;
 };
