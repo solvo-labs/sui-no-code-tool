@@ -26,6 +26,7 @@ import CreateRaffle from "../pages/Raffle/CreateRaffle";
 import JoinRaffle from "../pages/Raffle/JoinRaffle";
 import ManageRaffle from "../pages/Raffle/ManageRaffle";
 import ManageVesting from "../pages/Tokenomics/ManageVesting";
+import VestingDetails from "../pages/Tokenomics/VestingDetails";
 
 const Router: React.FC = () => {
   return (
@@ -49,6 +50,7 @@ const Router: React.FC = () => {
             <Route path={ROUTES.TOKENOMICS_CREATE} index element={<CreateVesting />} />
             <Route path={ROUTES.TOKENOMICS_MANAGE} index element={<ManageVesting />} />
             <Route path={ROUTES.TOKENOMICS_LIST} index element={<VestingList />} />
+            <Route path={ROUTES.TOKENOMICS_DETAILS} index element={<VestingDetails />} />
             <Route path="/contract" index element={<ContractPage />} />
             <Route path="/airdrop" index element={<Airdrop />} />
 
