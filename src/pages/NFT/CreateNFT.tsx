@@ -53,7 +53,7 @@ const CreateNFT = () => {
 
         signAndExecute(
           {
-            transactionBlock: tx,
+            transactionBlock: tx as any,
             account: account,
           },
           {

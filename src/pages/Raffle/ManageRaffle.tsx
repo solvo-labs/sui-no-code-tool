@@ -66,7 +66,7 @@ const ManageRaffle = () => {
 
       signAndExecute(
         {
-          transactionBlock: tx,
+          transactionBlock: tx as any,
           account: account!,
         },
         {
@@ -104,7 +104,7 @@ const ManageRaffle = () => {
 
       signAndExecute(
         {
-          transactionBlock: tx,
+          transactionBlock: tx as any,
           account: account!,
         },
         {
@@ -142,7 +142,7 @@ const ManageRaffle = () => {
 
       signAndExecute(
         {
-          transactionBlock: tx,
+          transactionBlock: tx as any,
           account: account!,
         },
         {

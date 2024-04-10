@@ -1,9 +1,5 @@
-import React from 'react'
-
 const Stake = () => {
-  return (
-    <div>Stake</div>
-  )
-}
+  return <div>Stake</div>;
+};
 
-export default Stake
+export default Stake;

@@ -5,7 +5,7 @@ import { ParticipantForm } from "../../utils/types";
 import { Option, Select } from "../../components/Select";
 import { CoinMetadata } from "@mysten/sui.js/client";
 import TimeSelector from "../TimeSelector";
-import { PERIOD, SCHEDULE } from "../../utils/enum";
+import { PERIOD } from "../../utils/enum";
 import moment from "moment";
 
 type Props = {

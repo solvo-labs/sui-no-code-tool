@@ -102,7 +102,7 @@ const JoinRaffle = () => {
 
       signAndExecute(
         {
-          transactionBlock: tx,
+          transactionBlock: tx as any,
           account: account!,
         },
         {
@@ -147,7 +147,7 @@ const JoinRaffle = () => {
 
       signAndExecute(
         {
-          transactionBlock: tx,
+          transactionBlock: tx as any,
           account: account!,
         },
         {

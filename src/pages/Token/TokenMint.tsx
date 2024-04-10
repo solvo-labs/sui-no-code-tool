@@ -81,7 +81,7 @@ const TokenMint = () => {
 
       signAndExecute(
         {
-          transactionBlock: tx,
+          transactionBlock: tx as any,
           account: account,
         },
         {

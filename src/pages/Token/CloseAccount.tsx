@@ -1,9 +1,5 @@
-import React from 'react'
-
 const CloseAccount = () => {
-  return (
-    <div>CloseAccount</div>
-  )
-}
+  return <div>CloseAccount</div>;
+};
 
-export default CloseAccount
+export default CloseAccount;

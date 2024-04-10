@@ -47,7 +47,7 @@ const CreateCollection = () => {
 
         signAndExecute(
           {
-            transactionBlock: tx,
+            transactionBlock: tx as any,
             account: account,
           },
           {

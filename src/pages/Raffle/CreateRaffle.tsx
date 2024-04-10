@@ -11,7 +11,6 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { RaffleFormData } from "../../utils/types";
 import { Loader } from "../../components/Loader";
 import { PERIOD, ROUTES } from "../../utils/enum";
-import { MIST_PER_SUI } from "@mysten/sui.js/utils";
 
 const CreateRaffle = () => {
   const account = useCurrentAccount();
@@ -136,7 +135,7 @@ const CreateRaffle = () => {
 
         signAndExecute(
           {
-            transactionBlock: tx,
+            transactionBlock: tx as any,
             account: account!,
           },
           {

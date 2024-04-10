@@ -44,7 +44,7 @@ const NFTDetails = () => {
 
         signAndExecute(
           {
-            transactionBlock: tx,
+            transactionBlock: tx as any,
             account: account,
           },
           {
@@ -81,7 +81,7 @@ const NFTDetails = () => {
 
         signAndExecute(
           {
-            transactionBlock: tx,
+            transactionBlock: tx as any,
             account: account,
           },
           {
@@ -181,6 +181,7 @@ const NFTDetails = () => {
         handleRecipient={setRecipient}
         disable={!recipient}
         transferNft={transferNft}
+        recipient={recipient}
       ></TransferNftModal>
       <DeleteNftModal open={burnOpen} handleOpen={() => handleOpen(setBurnOpen)} handleClose={() => handleClose(setBurnOpen)} burnNft={burnNFT}></DeleteNftModal>
     </div>

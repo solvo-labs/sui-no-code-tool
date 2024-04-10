@@ -9,12 +9,11 @@ import useGetObjects from "../../hooks/useGetObjects";
 import { CoinBalance, CoinMetadata, CoinSupply, PaginatedCoins } from "@mysten/sui.js/client";
 import moment from "moment";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { ROUTES } from "../../utils/enum";
 
 const VestingDetails = () => {
   const account = useCurrentAccount();
   const [suiClient] = useOutletContext<[suiClient: any]>();
-  const { coins, objectLoading } = useGetObjects(account!);
+  const { coins } = useGetObjects(account!);
   const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
   const [coinsData, setCoinsData] = useState<(CoinMetadata & { hex: string })[]>([]);
 
