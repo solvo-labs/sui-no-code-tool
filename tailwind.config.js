@@ -11,7 +11,7 @@ module.exports = {
         "sui-blue-d": "#1F5B7D",
         "sui-blue-h": "#388BFF",
         "sui-gray": "#91a3b1",
-        "h-gray": "#f3f4f6",
+        "h-gray": "#e1e3e8",
       },
       borderRadius: {
         "sui-radius": "100px",

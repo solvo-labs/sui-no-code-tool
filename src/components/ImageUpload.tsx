@@ -37,7 +37,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, title, setFile, handleCle
         {!loading && (
           <div className="flex flex-row gap-8 p-4 justify-center items-center">
             <div className="flex flex-col gap-2 justify-center">
-              <p>{title}</p>
+              <p className="flex justify-center">{title}</p>
               <input className="hidden" accept="image/*" multiple id="contained-button-file" type="file" onChange={handleFileInputChange} ref={inputRef} />
               <Button onClick={handleButtonClick} title={file ? "Upload new image" : "Upload"}></Button>
             </div>
@@ -61,7 +61,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, title, setFile, handleCle
         {loading && (
           <div className="relative flex flex-row gap-8 p-4 justify-center items-center">
             <div className="flex flex-col gap-2 justify-center">
-              <p className="text-gray-400">{title}</p>
+              <p className="flex justify-center text-gray-400">{title}</p>
               <input className="hidden" accept="image/*" multiple id="contained-button-file" type="file" onChange={handleFileInputChange} ref={inputRef} />
               <Button onClick={handleButtonClick} title="Uploading image" disabled={true}></Button>
             </div>

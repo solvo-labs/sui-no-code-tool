@@ -152,3 +152,5 @@ export const sleep = (ms: number) => {
 
 export const RAFFLES = "0x0cbd01c68632220405d0d1a495a39828ca854179ea439eeff4147b1f62689a4d";
 export const PACKAGE_ID = "0xa1a436f65c2ae39969e71f4b9e228d266924a23240fc4e7587015ac09a55b11e";
+
+export const VESTING_PACKAGE_ID = "0x4c46b21634c11f139fe04cc1698eea105f77ab69c11872d8efde7d6eb0b4925b";

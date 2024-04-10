@@ -6,8 +6,10 @@ export enum ROUTES {
   TOKEN_TRANSFER = "/token-transfer",
   TOKEN_MINT_BURN = "/mint-burn-token",
   TOKEN_DETAILS = "/coin/:id",
-  TOKENOMICS_CREATE = "",
-  TOKENOMICS_MANAGE = "",
+  TOKENOMICS_CREATE = "/create-vesting",
+  TOKENOMICS_MANAGE = "/manage-vesting",
+  TOKENOMICS_LIST = "/list-vesting",
+  TOKENOMICS_DETAILS = "/vesting-detail/:id",
   NFT_CREATE = "/create-nfts",
   NFT_LIST = "/list-nft",
   NFT_DETAILS = "/list-nft/:id",
@@ -35,6 +37,7 @@ export enum TOKEN_PAGES {
 export enum TOKENOMICS_PAGES {
   TOKENOMICS_CREATE = "CREATE TOKENOMICS",
   TOKENOMICS_MANAGE = "MANAGE TOKENOMICS",
+  TOKENOMICS_LIST = "LIST TOKENOMICS",
 }
 
 export enum NFT_PAGES {
@@ -56,4 +59,15 @@ export enum PERIOD {
   "Week" = 604800000,
   "Month" = 2629800000,
   "Year" = 31557600000,
+}
+
+export enum SCHEDULE {
+  "Per Second" = 1,
+  "Per Minute" = 60,
+  "Hourly" = 3600,
+  "Daily" = 86400,
+  "Weekly" = 604800,
+  "Monthly" = 2629800,
+  "Quarterly" = 7889400,
+  "Yearly" = 31557600,
 }

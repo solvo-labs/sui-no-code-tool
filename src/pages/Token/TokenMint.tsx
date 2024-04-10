@@ -81,7 +81,7 @@ const TokenMint = () => {
 
       signAndExecute(
         {
-          transactionBlock: tx,
+          transactionBlock: tx as any,
           account: account,
         },
         {
@@ -125,6 +125,7 @@ const TokenMint = () => {
           key={"nftName"}
           isRequired={true}
           disable={fileLoading}
+          value={tokenFormData.name}
         />
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, symbol: event?.target.value })}
@@ -134,6 +135,7 @@ const TokenMint = () => {
           key={"nftSymbol"}
           isRequired={true}
           disable={fileLoading}
+          value={tokenFormData.symbol}
         />
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, description: event?.target.value })}
@@ -143,6 +145,7 @@ const TokenMint = () => {
           key={"description"}
           isRequired={true}
           disable={fileLoading}
+          value={tokenFormData.description}
         />
         <Input
           onChange={(event: ChangeEvent<HTMLInputElement>) => setTokenFormData({ ...tokenFormData, decimal: Number(event?.target.value) })}
@@ -152,10 +155,11 @@ const TokenMint = () => {
           key={"tokenDecimal"}
           isRequired={true}
           disable={fileLoading}
+          value={tokenFormData.decimal}
         />
         <ImageUpload file={file} setFile={(data) => setFile(data)} loading={fileLoading} handleClear={() => handleFileClear} title="Upload image for Token"></ImageUpload>
         <div className="flex justify-center">
-          <div className="w-2/5">
+          <div className="w-1/2">
             <Button onClick={mintToken} disabled={disable} title="Create Token"></Button>
           </div>
         </div>

@@ -6,13 +6,14 @@ import Input from "./Input";
 type Props = {
   open: boolean;
   disable: boolean;
+  recipient: string;
   transferNft: () => void;
   handleRecipient: (recipient: string) => void;
   handleOpen: () => void;
   handleClose: () => void;
 };
 
-const TransferNftModal: React.FC<Props> = ({ open, disable, transferNft, handleRecipient, handleOpen, handleClose }) => {
+const TransferNftModal: React.FC<Props> = ({ open, disable, recipient, transferNft, handleRecipient, handleOpen, handleClose }) => {
   const cancelButtonRef = useRef(null);
 
   return (
@@ -55,7 +56,14 @@ const TransferNftModal: React.FC<Props> = ({ open, disable, transferNft, handleR
                         <p className="text-sm text-gray-500">
                           To transfer the NFT, please enter the recipient's address below. If you enter the wrong recipient address, you may lose the NFT permanently.
                         </p>
-                        <Input className="mt-8 mb-4" onChange={(e: any) => handleRecipient(e.target.value)} placeholder="Recipient address" type="text" disable={false}></Input>
+                        <Input
+                          value={recipient}
+                          className="mt-8 mb-4"
+                          onChange={(e: any) => handleRecipient(e.target.value)}
+                          placeholder="Recipient address"
+                          type="text"
+                          disable={false}
+                        ></Input>
                       </div>
                     </div>
                   </div>

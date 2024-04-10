@@ -47,35 +47,24 @@ const RaffleParticipantsModal: FC<Props> = ({ open, setOpen, raffle, address, ha
                     <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
                       <QueueListIcon className="h-6 w-6 text-blue-600" aria-hidden="true" />
                     </div>
-                    {raffle && raffle.data.content.fields.participants.length <= 0 && (
-                      <div className="flex flex-col mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                        <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                          {raffle?.data.content.fields.name} Raffle's Participiant List
-                        </Dialog.Title>
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-500">No one has participated in this raffle.</p>
+                    <div className="flex flex-col mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                      <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                        {raffle?.data.content.fields.name} Raffle's Participiant List
+                      </Dialog.Title>
+                      {raffle && raffle.data.content.fields.participants.length <= 0 && (
+                        <div>
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-500">No one has participated in this raffle.</p>
+                          </div>
                         </div>
-                        <div className="mt-4 flex flex-col max-h-32 overflow-y-auto">
-                          {raffle &&
-                            raffle.data.content.fields.participants.map((participant: string) => (
-                              <a className="text-sm hover:cursor-pointer hover:text-sui-blue py-4" key={participant}>
-                                {participant}
-                              </a>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-                    {raffle && raffle.data.content.fields.participants.length > 0 && (
-                      <div className="flex flex-col mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                        <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                          {raffle?.data.content.fields.name} Raffle's Participiant List
-                        </Dialog.Title>
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-500">The participants are listed below.</p>
-                        </div>
-                        <div className="mt-4 flex flex-col max-h-32 overflow-y-auto">
-                          {raffle &&
-                            raffle.data.content.fields.participants.map((participant: string) => (
+                      )}
+                      {raffle && raffle.data.content.fields.participants.length > 0 && (
+                        <div>
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-500">The participants are listed below.</p>
+                          </div>
+                          <div className="mt-4 flex flex-col max-h-32 overflow-y-auto">
+                            {raffle.data.content.fields.participants.map((participant: string) => (
                               <a
                                 onClick={() => {
                                   window.open("https://suiexplorer.com/address/" + participant + "?network=testnet", "_blank");
@@ -86,9 +75,10 @@ const RaffleParticipantsModal: FC<Props> = ({ open, setOpen, raffle, address, ha
                                 {participant}
                               </a>
                             ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">

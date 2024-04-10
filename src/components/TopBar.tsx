@@ -155,7 +155,6 @@ const TopBar: React.FC = () => {
                     MY TOKENS
                   </Link>
                 </li>
-                {/* Diğer menü öğelerini ekleyin */}
               </ul>
             </div>
           </div>

@@ -11,7 +11,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (isConnected) {
-      navigate("/");
+      navigate("/create-token");
     }
   }, [isConnected, navigate]);
 

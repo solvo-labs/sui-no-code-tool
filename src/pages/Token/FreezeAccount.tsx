@@ -1,9 +1,5 @@
-import React from 'react'
-
 const FreezeAccount = () => {
-  return (
-    <div>FreezeAccount</div>
-  )
-}
+  return <div>FreezeAccount</div>;
+};
 
-export default FreezeAccount
+export default FreezeAccount;

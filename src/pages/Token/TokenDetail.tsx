@@ -56,22 +56,22 @@ const TokenDetail = () => {
   useEffect(() => {
     const init = async () => {
       if (id && account) {
-        const treasuryObject = await suiClient.getOwnedObjects({
-          owner: account.address,
-          filter: {
-            MatchAll: [
-              {
-                StructType: "0x2::coin::TreasuryCap<" + id + ">",
-              },
-            ],
-          },
-          options: {
-            showContent: true,
-            showType: true,
-          },
-        });
+        // const treasuryObject = await suiClient.getOwnedObjects({
+        //   owner: account.address,
+        //   filter: {
+        //     MatchAll: [
+        //       {
+        //         StructType: "0x2::coin::TreasuryCap<" + id + ">",
+        //       },
+        //     ],
+        //   },
+        //   options: {
+        //     showContent: true,
+        //     showType: true,
+        //   },
+        // });
 
-        const to = treasuryObject.data[0];
+        // const to = treasuryObject.data[0];
 
         // setTreasury(to);
         setLoading(false);
@@ -99,7 +99,7 @@ const TokenDetail = () => {
 
         signAndExecute(
           {
-            transactionBlock: tx,
+            transactionBlock: tx as any,
             account: account,
           },
           {
@@ -149,7 +149,7 @@ const TokenDetail = () => {
 
         signAndExecute(
           {
-            transactionBlock: tx,
+            transactionBlock: tx as any,
             account: account,
           },
           {
@@ -194,7 +194,7 @@ const TokenDetail = () => {
 
         signAndExecute(
           {
-            transactionBlock: tx,
+            transactionBlock: tx as any,
             account: account,
           },
           {

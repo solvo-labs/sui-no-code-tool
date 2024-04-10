@@ -1,4 +1,5 @@
 import { CoinMetadata, CoinSupply, MoveValue } from "@mysten/sui.js/client";
+import BN from "bn.js";
 
 export type TokenForm = {
   name: string;
@@ -118,4 +119,61 @@ export type RaffleTicketObjectFields = {
   };
   raffle_id: string;
   ticket_no: string;
+};
+
+export type ParticipantForm = {
+  selected_token: string;
+  wallet_address: string;
+  start_date: number;
+  end_date: number;
+  cliff_time: number;
+  durationTime: {
+    unit: number;
+    period: number;
+  };
+  balance: number;
+};
+
+export type VestingForm = {
+  token: (CoinMetadata & { hex: string }) | undefined;
+  startDate: number;
+  durationTime: {
+    unit: number;
+    period: number;
+  };
+  scheduleTime: number;
+  autoWithdraw: boolean;
+  activeCliff: boolean;
+  cliffAmount?: number;
+  cliffTime: number;
+  // recipients: RecipientForm[];
+};
+
+export type Recipient = {
+  recipient: string;
+  amount: BN;
+  name: string;
+  cliffAmount: BN;
+  amountPerPeriod: BN;
+};
+
+export type VestingMetadata = {
+  content: {
+    dataType: "moveObject";
+    fields: VestingObjectFields;
+    hasPublicTransfer: boolean;
+    type: string;
+  };
+  digest: string;
+  objectId: string;
+  version: string;
+};
+
+export type VestingObjectFields = {
+  id: { id: string };
+  items: {
+    fields: { id: { id: string }; size: string };
+    type: string;
+  };
+  name: string;
 };
