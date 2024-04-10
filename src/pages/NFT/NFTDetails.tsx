@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import useGetNftDetails from "../../hooks/useGetNftDetails";
 import { hexFormatter } from "../../utils";
@@ -33,8 +34,11 @@ const NFTDetails = () => {
     try {
       if (account && nftObjectID && recipient) {
         const tx = new TransactionBlock();
+
+        const parts = nftDetail?.data.type.split("::") || [];
+
         tx.moveCall({
-          target: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::transfer",
+          target: `${parts[0]!}::${parts[1]}::${"transfer"}`,
           arguments: [tx.object(nftObjectID), tx.pure(recipient)],
         });
 
@@ -68,8 +72,10 @@ const NFTDetails = () => {
       if (account && nftObjectID) {
         const tx = new TransactionBlock();
 
+        const parts = nftDetail?.data.type.split("::") || [];
+
         tx.moveCall({
-          target: "0x44d12155bb085df7d5432f0ad2419eb46195c449c327c716f43b733cfd17884d::devnet_nft::burn",
+          target: `${parts[0]!}::${parts[1]}::${"burn"}`,
           arguments: [tx.object(nftObjectID)],
         });
 
@@ -85,7 +91,7 @@ const NFTDetails = () => {
                   digest: tx.digest,
                 })
                 .then(() => {
-                  navigate(ROUTES.NFT_LIST);
+                  navigate(ROUTES.NFT_CREATE);
                   setBurnOpen(false);
                 });
             },

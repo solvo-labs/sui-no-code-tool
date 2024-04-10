@@ -72,7 +72,8 @@ export default function useGetNftDetails(objectID: string) {
     };
 
     init();
-  }, [nftDetail, objectID, suiClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [objectID, suiClient]);
 
   return { nftDetail };
 }
