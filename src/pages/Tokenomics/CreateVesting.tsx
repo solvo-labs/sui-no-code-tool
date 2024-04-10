@@ -1,158 +1,201 @@
-import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useOutletContext } from "react-router-dom";
+import { useCurrentAccount, useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import useGetObjects from "../../hooks/useGetObjects";
 import { Option, Select } from "../../components/Select";
 import { CoinBalance, CoinMetadata } from "@mysten/sui.js/client";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { getCoins } from "../../utils";
+import { getCoins, PACKAGE_ID, VESTING_PACKAGE_ID } from "../../utils";
 import { Loader } from "../../components/Loader";
 import TimeSelector from "../../components/TimeSelector";
 import Input from "../../components/Input";
 import Checkbox from "../../components/Checkbox";
 import Button from "../../components/Button";
-import { RecipientForm, VestingForm } from "../../utils/types";
-import { PERIOD, SCHEDULE } from "../../utils/enum";
+import { VestingForm } from "../../utils/types";
+import { PERIOD, ROUTES, SCHEDULE, TOKENOMICS_PAGES } from "../../utils/enum";
 import moment from "moment";
-import AddRecipientModal from "../../components/AddRecipientModal";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
 
 const CreateVesting = () => {
   const account = useCurrentAccount();
   const [suiClient] = useOutletContext<[suiClient: any]>();
-  const { coins, objectLoading } = useGetObjects(account!);
+  const [vestingName, setVestingName] = useState<string>("");
+  const navigate = useNavigate();
 
-  const [coinsData, setCoinsData] = useState<((CoinMetadata & { hex: string }) | null)[]>([]);
-  const [recipientModal, setRecipientModal] = useState<boolean>(false);
+  const { mutate: signAndExecute } = useSignAndExecuteTransactionBlock();
 
-  const [recipient, setRecipient] = useState<RecipientForm>({
-    amount: "",
-    walletAddress: "",
-  });
+  // const { coins, objectLoading } = useGetObjects(account!);
 
-  const [vestingFormData, setVestingFormData] = useState<VestingForm>({
-    activeCliff: false,
-    autoWithdraw: false,
-    cliffAmount: 0,
-    cliffTime: moment().unix() * 1000,
-    durationTime: {
-      period: 0,
-      unit: 0,
-    },
-    recipients: [],
-    scheduleTime: 0,
-    startDate: moment().unix() * 1000,
-    token: undefined,
-  });
+  // const [coinsData, setCoinsData] = useState<((CoinMetadata & { hex: string }) | null)[]>([]);
+  // const [recipientModal, setRecipientModal] = useState<boolean>(false);
 
-  const [durationList, setDurationList] = useState<Option[]>([]);
-  const [scheduleList, setScheduleList] = useState<Option[]>([]);
+  // const [recipient, setRecipient] = useState<RecipientForm>({
+  //   amount: "",
+  //   walletAddress: "",
+  // });
 
-  const addRecipient = () => {
-    const recipientData = recipient;
-    setVestingFormData((vestingFormData) => ({
-      ...vestingFormData,
-      recipients: [...vestingFormData.recipients, recipientData],
-    }));
-    setRecipient({
-      amount: "",
-      walletAddress: "",
-      name: "",
-    });
-  };
+  // const [vestingFormData, setVestingFormData] = useState<VestingForm>({
+  //   activeCliff: false,
+  //   autoWithdraw: false,
+  //   cliffAmount: 0,
+  //   cliffTime: moment().unix() * 1000,
+  //   durationTime: {
+  //     period: 0,
+  //     unit: 0,
+  //   },
+  //   recipients: [],
+  //   scheduleTime: 0,
+  //   startDate: moment().unix() * 1000,
+  //   token: undefined,
+  // });
 
-  const removeRecipient = (recipient: RecipientForm) => {
-    setVestingFormData((vestingFormData) => ({
-      ...vestingFormData,
-      recipients: vestingFormData.recipients.filter((item) => item !== recipient),
-    }));
-  };
+  // const [durationList, setDurationList] = useState<Option[]>([]);
+  // const [scheduleList, setScheduleList] = useState<Option[]>([]);
 
-  useEffect(() => {
-    const durationArray: string[] = Object.keys(PERIOD).filter((key) => isNaN(Number(key)));
-    const duration: { key: string; value: number }[] = durationArray.map((period: any) => {
-      return {
-        key: period,
-        value: Number(PERIOD[period]),
-      };
-    });
+  // const addRecipient = () => {
+  //   const recipientData = recipient;
+  //   setVestingFormData((vestingFormData) => ({
+  //     ...vestingFormData,
+  //     recipients: [...vestingFormData.recipients, recipientData],
+  //   }));
+  //   setRecipient({
+  //     amount: "",
+  //     walletAddress: "",
+  //     name: "",
+  //   });
+  // };
 
-    const scheduleArray: string[] = Object.keys(SCHEDULE).filter((key) => isNaN(Number(key)));
-    const schedule: { key: string; value: number }[] = scheduleArray.map((period: any) => {
-      return {
-        key: period,
-        value: Number(SCHEDULE[period]),
-      };
-    });
+  // const removeRecipient = (recipient: RecipientForm) => {
+  //   setVestingFormData((vestingFormData) => ({
+  //     ...vestingFormData,
+  //     recipients: vestingFormData.recipients.filter((item) => item !== recipient),
+  //   }));
+  // };
 
-    setScheduleList(schedule);
+  // useEffect(() => {
+  //   const durationArray: string[] = Object.keys(PERIOD).filter((key) => isNaN(Number(key)));
+  //   const duration: { key: string; value: number }[] = durationArray.map((period: any) => {
+  //     return {
+  //       key: period,
+  //       value: Number(PERIOD[period]),
+  //     };
+  //   });
 
-    setDurationList(duration);
-  }, []);
+  //   const scheduleArray: string[] = Object.keys(SCHEDULE).filter((key) => isNaN(Number(key)));
+  //   const schedule: { key: string; value: number }[] = scheduleArray.map((period: any) => {
+  //     return {
+  //       key: period,
+  //       value: Number(SCHEDULE[period]),
+  //     };
+  //   });
 
-  const disableAddRecipient = useMemo(() => {
-    return !recipient.amount || !recipient.walletAddress;
-  }, [recipient]);
+  //   setScheduleList(schedule);
+
+  //   setDurationList(duration);
+  // }, []);
+
+  // const disableAddRecipient = useMemo(() => {
+  //   return !recipient.amount || !recipient.walletAddress;
+  // }, [recipient]);
 
   const disable = useMemo(() => {
-    return (
-      !vestingFormData.token ||
-      vestingFormData.startDate <= moment().unix() * 1000 ||
-      !vestingFormData.durationTime.unit ||
-      !vestingFormData.durationTime.period ||
-      !vestingFormData.scheduleTime
-    );
-  }, [vestingFormData]);
+    return !vestingName;
+    // return (
+    //   !vestingFormData.token ||
+    //   vestingFormData.startDate <= moment().unix() * 1000 ||
+    //   !vestingFormData.durationTime.unit ||
+    //   !vestingFormData.durationTime.period ||
+    //   !vestingFormData.scheduleTime
+    // );
+  }, [vestingName]);
 
-  useEffect(() => {
-    const init = async () => {
-      const { coinList } = await getCoins(suiClient, coins || []);
+  // useEffect(() => {
+  //   const init = async () => {
+  //     const { coinList } = await getCoins(suiClient, coins || []);
 
-      if (coins) {
-        const balancesPromise = coins!.map(async (coin: any) => {
-          const currentBalanceData: CoinBalance = await suiClient.getBalance({
-            owner: account?.address!,
-            coinType: coin,
-          });
+  //     if (coins) {
+  //       const balancesPromise = coins!.map(async (coin: any) => {
+  //         const currentBalanceData: CoinBalance = await suiClient.getBalance({
+  //           owner: account?.address!,
+  //           coinType: coin,
+  //         });
 
-          return currentBalanceData;
-        });
+  //         return currentBalanceData;
+  //       });
 
-        const balances = await Promise.all(balancesPromise);
+  //       const balances = await Promise.all(balancesPromise);
 
-        const result = coinList.map((coinD: any, index: number) => {
-          return {
-            ...coinD,
-            total_balance: balances[index].totalBalance,
-          };
-        });
+  //       const result = coinList.map((coinD: any, index: number) => {
+  //         return {
+  //           ...coinD,
+  //           total_balance: balances[index].totalBalance,
+  //         };
+  //       });
 
-        const finalResult = result.filter((coin: any) => coin.total_balance > 0);
-        setCoinsData(finalResult);
-      }
-    };
+  //       const finalResult = result.filter((coin: any) => coin.total_balance > 0);
+  //       setCoinsData(finalResult);
+  //     }
+  //   };
 
-    init();
-  }, [coins]);
+  //   init();
+  // }, []);
 
   const create_vesting = async () => {
-    if (account && vestingFormData.recipients.length > 0) {
-      // const amountPer = (vestingFormData.durationTime.period * vestingFormData.durationTime.unit) / vestingFormData.scheduleTime;
-      // const recipientList: Recipient[] = vestingFormData.recipients.map((recipient: RecipientForm) => {
-      //   return {
-      //     recipient: recipient.walletAddress,
-      //     amount: getBN(Number(recipient.amount), 8),
-      //     name: recipient.name || "",
-      //     cliffAmount: getBN(vestingFormData.cliffAmount || 0, vestingFormData.token!.decimals),
-      //     amountPerPeriod: getBN(Number(recipient.amount) / amountPer, vestingFormData.token!.decimals),
-      //   };
-      // });
-      // const data = await vestMulti(account!, vestingFormData, recipientList);
-      // const data = await vestSingle(account!, vestingFormData, recipientList[0]);
+    if (account) {
+      try {
+        const tx = new TransactionBlock();
+
+        const [vestingRecord] = tx.moveCall({
+          target: `${VESTING_PACKAGE_ID}::vesting_contract::init_vesting`,
+          arguments: [tx.pure(vestingName)],
+        });
+
+        tx.moveCall({
+          target: `${VESTING_PACKAGE_ID}::vesting_contract::transfer_vesting_record`,
+          arguments: [vestingRecord],
+        });
+
+        signAndExecute(
+          {
+            transactionBlock: tx as any,
+            account: account,
+          },
+          {
+            onSuccess: (tx: any) => {
+              suiClient
+                .waitForTransactionBlock({
+                  digest: tx.digest,
+                })
+                .then(() => {
+                  navigate(ROUTES.TOKENOMICS_MANAGE);
+                });
+            },
+            onError: (error: any) => {
+              console.log(error);
+            },
+          }
+        );
+      } catch (error) {}
     }
+
+    // if (account && vestingFormData.recipients.length > 0) {
+    // const amountPer = (vestingFormData.durationTime.period * vestingFormData.durationTime.unit) / vestingFormData.scheduleTime;
+    // const recipientList: Recipient[] = vestingFormData.recipients.map((recipient: RecipientForm) => {
+    //   return {
+    //     recipient: recipient.walletAddress,
+    //     amount: getBN(Number(recipient.amount), 8),
+    //     name: recipient.name || "",
+    //     cliffAmount: getBN(vestingFormData.cliffAmount || 0, vestingFormData.token!.decimals),
+    //     amountPerPeriod: getBN(Number(recipient.amount) / amountPer, vestingFormData.token!.decimals),
+    //   };
+    // });
+    // const data = await vestMulti(account!, vestingFormData, recipientList);
+    // const data = await vestSingle(account!, vestingFormData, recipientList[0]);
+    // }
   };
 
-  if (objectLoading) {
-    return <Loader />;
-  }
+  // if (objectLoading) {
+  //   return <Loader />;
+  // }
 
   return (
     <div className="flex flex-col items-center my-12">
@@ -160,7 +203,14 @@ const CreateVesting = () => {
         <p className="page-title">Create Tokenomics</p>
       </div>
       <div className="flex flex-col w-96 gap-8">
-        <Select
+        <Input
+          onChange={(event: ChangeEvent<HTMLInputElement>) => setVestingName(event.target.value)}
+          placeholder="Vesting Round Name"
+          type="text"
+          value={vestingName}
+          title="Vesting Round Name"
+        ></Input>
+        {/* <Select
           title="Tokens"
           options={coinsData.map((co) => {
             return { key: co?.name! + " (" + co?.symbol + ")", value: co?.hex! };
@@ -285,8 +335,8 @@ const CreateVesting = () => {
               }}
             ></TimeSelector>
           </>
-        )}
-        <div className="flex justify-center">
+        )} */}
+        {/* <div className="flex justify-center">
           <div className="w-max">
             <Button
               onClick={() => setRecipientModal(true)}
@@ -313,7 +363,7 @@ const CreateVesting = () => {
               handleRemoveRecipient={removeRecipient}
             ></AddRecipientModal>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex justify-center">
           <div className="w-max">
