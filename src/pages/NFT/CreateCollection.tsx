@@ -57,7 +57,7 @@ const CreateCollection = () => {
                   digest: tx.digest,
                 })
                 .then(() => {
-                  navigate("/my-collections");
+                  navigate("/create-nfts");
                   setLoading(false);
                 });
             },
