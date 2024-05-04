@@ -5,7 +5,7 @@ type Props = {
 
 const VestingCard: React.FC<Props> = ({ vesting, handleClick }) => {
   return (
-    <div className="vesting-card p-4 rounded-lg hover:bg-h-gray cursor-pointer" key={"key"} onClick={handleClick}>
+    <div className="vesting-card p-4 rounded-lg hover:bg-h-gray cursor-pointer shadow-lg" key={"key"} onClick={handleClick}>
       <div className="flex flexdir-col items-center gap-4">
         {/* {nft.data.content?.fields.url ? (
           <img className="w-[100px] h-[100px] rounded-full" src={nft.data.content.fields.url} alt={nft.data.content.fields.name}></img>

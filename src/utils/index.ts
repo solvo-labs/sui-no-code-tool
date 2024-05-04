@@ -79,9 +79,13 @@ export function isMoveStructArray(obj: MoveStruct): obj is MoveValue[] {
   return Array.isArray(obj);
 }
 
-export function isMoveStructObject(obj: MoveStruct): obj is { fields: { [key: string]: MoveValue }; type: string } {
-  return typeof obj === "object" && "fields" in obj && "type" in obj;
+export function isMoveStructObject(obj: MoveStruct | MoveValue): obj is { fields: { [key: string]: MoveValue }; type: string } {
+  return obj !== null && typeof obj === "object" && "fields" in obj && "type" in obj;
 }
+
+// export function isMoveValue(obj: MoveValue): obj is { fields: { [key: string]: MoveValue }; type: string } {
+//   return obj !== null && typeof obj === "object" && "fields" in obj && "type" in obj;
+// }
 
 export function isStringId(obj: MoveValue): obj is { id: string } {
   return obj !== null && typeof obj === "object" && "id" in obj;
@@ -125,7 +129,7 @@ export const getVrf = async (packageId: string, raffle: string, token: string, s
       sender: "0x7777777777777777777777777777777777777777777777777777777777777777",
     })
     .then((resp) => {
-      if (resp.results && resp.results[0].returnValues && resp.effects.status.status == "success") {
+      if (resp.results && resp.results[0].returnValues && resp.effects.status.status === "success") {
         // Deserialize the returned value into an array of LookupResult objects
 
         const returnValue = resp.results[0].returnValues[0]; // grab the 1st and only tuple

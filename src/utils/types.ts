@@ -177,3 +177,29 @@ export type VestingObjectFields = {
   };
   name: string;
 };
+
+export type TVestingRecord = {
+  content: TVestingRecordContent;
+  digest: string;
+  objectId: string;
+  owner: string;
+  type: string;
+  version: string;
+};
+
+export type TVestingRecordContent = {
+  dataType: "moveObject";
+  fiels: {
+    id: { id: string };
+    items: {
+      type: string;
+      fields: {
+        id: { id: string };
+        size: string;
+      };
+    };
+    name: string;
+  };
+  hasPublicTransfer: boolean;
+  type: string;
+};

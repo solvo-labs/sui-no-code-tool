@@ -11,10 +11,11 @@ module.exports = {
         "sui-blue-d": "#1F5B7D",
         "sui-blue-h": "#388BFF",
         "sui-gray": "#91a3b1",
-        "h-gray": "#e1e3e8",
+        "h-gray": "#FAFAFC",
+        "sui-card": "#E8F5FC",
       },
-      borderRadius: {
-        "sui-radius": "100px",
+      "border-radius": {
+        "sui-radius": "1rem",
       },
       screens: {
         "2xl": "1536px",
